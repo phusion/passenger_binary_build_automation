@@ -1,7 +1,10 @@
 #!/bin/bash
 set -e
+SELFDIR=`dirname "$0"`
+SELFDIR=`cd "$SELFDIR" && pwd`
 
-/pbba_build/build_stages/essentials.sh
-/pbba_build/build_stages/install_rvm.sh
-/pbba_build/build_stages/install_ruby.sh
-/pbba_build/build_stages/cleanup.sh
+"$SELFDIR"/essentials.sh
+"$SELFDIR"/install_git.sh
+"$SELFDIR"/install_rvm.sh
+"$SELFDIR"/install_ruby.sh
+"$SELFDIR"/cleanup.sh

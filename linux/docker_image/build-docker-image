@@ -1,9 +1,0 @@
-#!/bin/bash
-set -e
-
-DOCKER_IMAGE_VERSION=$(cat support/docker_image_version)
-
-set -x
-rm -rf definitions
-cp -pR ../../definitions .
-exec docker build --force-rm -t phusion/passenger_binary_build_automation:$DOCKER_IMAGE_VERSION .

@@ -1,0 +1,9 @@
+source 'https://rubygems.org/'
+
+# Needed by our own tooling
+gem 'paint'
+
+# Needed by Passenger
+gem 'drake'
+gem 'bluecloth'
+gem 'rspec', '2.14.1'

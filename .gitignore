@@ -1,3 +1,5 @@
 *.DS_Store
 *.sublime-workspace
-/linux/docker_image/definitions
+/play
+/linux/cache
+/linux/output

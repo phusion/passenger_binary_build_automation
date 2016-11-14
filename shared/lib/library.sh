@@ -29,9 +29,27 @@ function run()
 	"$@"
 }
 
+function absolute_path()
+{
+	local dir="`dirname \"$1\"`"
+	local name="`basename \"$1\"`"
+	dir="`cd \"$dir\" && pwd`"
+	echo "$dir/$name"
+}
+
 function run_yum_install()
 {
 	run yum install -y "$@"
+}
+
+function require_args_exact()
+{
+	local count="$1"
+	shift
+	if [[ $# -ne $count ]]; then
+		echo "ERROR: $count arguments expected, but got $#."
+		exit 1
+	fi
 }
 
 function download_and_extract()

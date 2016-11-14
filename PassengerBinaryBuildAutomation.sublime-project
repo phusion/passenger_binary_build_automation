@@ -3,7 +3,10 @@
 	[
 		{
 			"path": ".",
-			"folder_exclude_patterns": []
+			"folder_exclude_patterns": [
+				"linux/docker_image/cache",
+				"linux/docker_image/output"
+			]
 		}
 	]
 }
