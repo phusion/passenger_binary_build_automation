@@ -6,18 +6,31 @@ set -e
 ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/../.." && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
+shopt -s dotglob
 
 require_args_exact 2 "$@"
 INPUT_DIR="$1"
 OUTPUT_DIR="$2"
 
-header "Creating Passenger official tarball"
-# The input directory may be mounted read-only, but 'rake' may have to
-# create files, e.g. to generate documentation files. So we copy it to
+header "Creating Passenger source directory copy"
+
+# The input directory may be mounted read-only. So we copy it to
 # a temporary directory which is writable.
-run rm -rf "$OUTPUT_DIR"
-if [[ -e "$INPUT_DIR"/.git ]]; then
-	run mkdir "$OUTPUT_DIR"
+
+run rm -rf "$OUTPUT_DIR"/*
+
+function should_git_copy_input_dir()
+{
+	if [[ -e "$INPUT_DIR"/.git ]]; then
+		local SHORTSTAT="$(cd "$INPUT_DIR" && git diff --shortstat 2> /dev/null | tail -n1)"
+		[[ "$SHORTSTAT" = "" ]]
+	else
+		return 0
+	fi
+}
+
+if should_git_copy_input_dir; then
+	run mkdir -p "$OUTPUT_DIR"
 	echo "+ cd $INPUT_DIR"
 	cd "$INPUT_DIR"
 	echo "+ Git copying to $OUTPUT_DIR"
@@ -39,9 +52,10 @@ if [[ -e "$INPUT_DIR"/.git ]]; then
 
 	cd "$OUTPUT_DIR"
 else
-	run cp -dpR "$INPUT_DIR" "$OUTPUT_DIR"
+	run cp -pR "$INPUT_DIR"/* "$OUTPUT_DIR"/
+	run rm -rf "$OUTPUT_DIR/.git"
 	cd "$OUTPUT_DIR"
-	run rake clean
+	run rake clean CACHING=false
 fi
 
 header "Finalizing source directory"

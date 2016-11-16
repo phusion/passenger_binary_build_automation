@@ -1,0 +1,138 @@
+SELFDIR = File.absolute_path(File.dirname(__FILE__))
+require "#{SELFDIR}/rakefile_support"
+
+initialize_rakefile!
+include FileUtils
+
+
+desc 'Build Passenger binaries'
+task :passenger => ['passenger:agent', 'passenger:ruby_extension']
+
+desc 'Build Nginx binaries'
+task :nginx => ['nginx:source_copy', 'passenger:agent'] do
+  manipulate_file("#{$NGINX_SOURCE_DIR_COPY}/auto/lib/openssl/conf") do |content|
+    content.sub(/-lssl -lcrypto/, '-lssl -lcrypto -lz')
+  end
+
+  command =
+    "#{activate_exe_compilation_environment} " \
+    "#{ROOT}/shared/build-passenger/configure-nginx.sh " \
+    '--prefix=/tmp ' \
+    '--with-cc="ccache cc" ' \
+    '--with-cc-opt="-Wno-error" ' \
+    '--with-http_ssl_module ' \
+    '--with-http_v2_module ' \
+    '--with-http_realip_module ' \
+    '--with-http_gzip_static_module ' \
+    '--with-http_stub_status_module ' \
+    '--with-http_addition_module ' \
+    '--with-http_geoip_module ' \
+    "--add-module=#{shesc $PASSENGER_SOURCE_DIR_COPY}/src/nginx_module || true"
+  run(command.strip, chdir: $NGINX_SOURCE_DIR_COPY)
+
+  run("#{activate_exe_compilation_environment}" \
+    " env CCACHE_BASEDIR=#{shesc $NGINX_SOURCE_DIR_COPY}" \
+    " make -C #{shesc $NGINX_SOURCE_DIR_COPY} -j#{CONCURRENCY}".strip)
+  run("#{strip_all} #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
+  run("hardening-check -b #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
+  run("libcheck #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
+
+  cp("#{$NGINX_SOURCE_DIR_COPY}/objs/nginx",
+    "#{OUTPUT_DIR}/support-binaries/nginx-#{NGINX_VERSION}",
+    verbose: true)
+end
+
+
+namespace :passenger do
+  task :source_copy do
+    $PASSENGER_SOURCE_DIR_COPY = Dir.mktmpdir
+    at_exit do
+      log("Removing #{$PASSENGER_SOURCE_DIR_COPY}")
+      FileUtils.remove_entry_secure($PASSENGER_SOURCE_DIR_COPY)
+    end
+
+    run("#{ROOT}/shared/build-passenger/copy-passenger-source-dir.sh" \
+      " #{shesc PASSENGER_DIR}" \
+      " #{shesc $PASSENGER_SOURCE_DIR_COPY}")
+  end
+
+  desc 'Build Passenger agent binary'
+  task :agent => :source_copy do
+    command = "#{activate_exe_compilation_environment}" \
+      " rvm-exec ruby-#{DEFAULT_RUBY_VERSION}" \
+      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+      " drake nginx_without_native_support" \
+      " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
+    run(command, chdir: $PASSENGER_SOURCE_DIR_COPY)
+
+    run("#{strip_all} buildout/support-binaries/PassengerAgent",
+      chdir: $PASSENGER_SOURCE_DIR_COPY)
+    if IN_HOLY_BUILD_BOX
+      run('hardening-check -b buildout/support-binaries/PassengerAgent',
+        chdir: $PASSENGER_SOURCE_DIR_COPY)
+      run('libcheck buildout/support-binaries/PassengerAgent',
+        chdir: $PASSENGER_SOURCE_DIR_COPY)
+    end
+
+    mkdir_p("#{OUTPUT_DIR}/support-binaries", verbose: true)
+    cp("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent",
+      "#{OUTPUT_DIR}/support-binaries", verbose: true)
+  end
+
+  desc 'Build all Ruby extension binaries'
+  task :ruby_extension
+
+  RUBY_VERSIONS.each do |ruby_version|
+    task :ruby_extension => "ruby_extension:#{ruby_version}"
+
+    desc "Build Ruby #{ruby_version} extension binary"
+    task "ruby_extension:#{ruby_version}" => :source_copy do
+      command = "#{activate_library_compilation_environment}" \
+        " rvm-exec ruby-#{ruby_version}" \
+        " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+        " drake native_support OUTPUT_DIR=".strip
+      run(command, chdir: $PASSENGER_SOURCE_DIR_COPY)
+
+      output_file = Dir["#{$PASSENGER_SOURCE_DIR_COPY}" \
+        "/buildout/ruby/ruby-#{ruby_version}-*/*.so"].first
+      run("#{strip_debug} #{shesc output_file}")
+      if IN_HOLY_BUILD_BOX
+        # We don't run hardening-check here because the Passenger
+        # build system does not yet modify the mkmf Makefile
+        # to properly pass environment variables like CFLAGS.
+        run("env LIBCHECK_ALLOW=libruby libcheck #{shesc output_file}")
+      end
+
+      archdir = File.basename(File.dirname(output_file))
+      mkdir_p("#{OUTPUT_DIR}/ruby-extensions/#{archdir}", verbose: true)
+      cp(output_file, "#{OUTPUT_DIR}/ruby-extensions/#{archdir}/", verbose: true)
+    end
+  end
+end
+
+namespace :nginx do
+  task :source_copy do
+    $NGINX_SOURCE_DIR_COPY = Dir.mktmpdir
+    at_exit do
+      log("Removing #{$NGINX_SOURCE_DIR_COPY}")
+      FileUtils.remove_entry_secure($NGINX_SOURCE_DIR_COPY)
+    end
+
+    if NGINX_DIR
+      run("#{ROOT}/shared/build-passenger/copy-nginx-source-dir.sh" \
+        " #{shesc NGINX_DIR}" \
+        " #{shesc $NGINX_SOURCE_DIR_COPY}")
+    else
+      tarball_path = "#{CACHE_DIR}/#{nginx_tarball_basename}"
+      if !File.exist?(tarball_path)
+        download(nginx_tarball_url, CACHE_DIR)
+      end
+      run("tar -xzf #{shesc tarball_path} -C #{shesc $NGINX_SOURCE_DIR_COPY}")
+      run("mv #{shesc $NGINX_SOURCE_DIR_COPY}/*/* #{shesc $NGINX_SOURCE_DIR_COPY}/")
+    end
+  end
+end
+
+task :finish do
+  log('Building finished')
+end

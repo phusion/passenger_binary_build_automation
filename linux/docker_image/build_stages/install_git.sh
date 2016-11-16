@@ -5,6 +5,7 @@ source /hbb/activate
 GIT_VERSION=`cat /pbba_build/shared/definitions/git_version`
 
 header "Installing Git"
+cd /tmp
 run_yum_install expat-devel gettext
 download_and_extract git-$GIT_VERSION.tar.gz git-$GIT_VERSION \
 	https://github.com/git/git/archive/v$GIT_VERSION.tar.gz
