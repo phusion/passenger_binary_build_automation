@@ -23,10 +23,21 @@ else
 		export NGINX_DIR=/nginx
 	fi
 
-	run mkdir -p "$CCACHE_DIR"
-	run chown builder: "$CCACHE_DIR" /output /cache
+	run mkdir -p "$CCACHE_DIR" /work
+	run chown builder: /cache "$CCACHE_DIR" /output /work
 
 	run setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
+		env OUTPUT_DIR=/work \
 		drake -f /system/shared/build-passenger/Rakefile "$@"
+
+	run chown -R "$APP_UID:$APP_GID" /work
+	if [[ -e /work/support-binaries ]]; then
+		run rm -rf "$OUTPUT_DIR/support-binaries"
+		run mv /work/support-binaries "$OUTPUT_DIR/"
+	fi
+	if [[ -e /work/ruby-extensions ]]; then
+		run rm -rf "$OUTPUT_DIR/ruby-extensions"
+		run mv /work/ruby-extensions "$OUTPUT_DIR/"
+	fi
 fi
