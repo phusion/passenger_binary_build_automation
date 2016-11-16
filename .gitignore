@@ -3,3 +3,6 @@
 /play
 /linux/cache
 /linux/output
+/osx/cache
+/osx/runtime-output
+/osx/output

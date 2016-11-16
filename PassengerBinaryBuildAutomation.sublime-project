@@ -5,7 +5,10 @@
 			"path": ".",
 			"folder_exclude_patterns": [
 				"linux/cache",
-				"linux/output"
+				"linux/output",
+				"osx/cache",
+				"osx/runtime-output",
+				"osx/output"
 			]
 		}
 	]

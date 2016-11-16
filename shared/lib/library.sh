@@ -73,3 +73,20 @@ function download_and_extract()
 	echo "Entering $RUNTIME_DIR/$DIRNAME"
 	pushd "$DIRNAME" >/dev/null
 }
+
+function _cleanup()
+{
+	set +e
+	
+	local PIDS=`jobs -p`
+	if [[ "$PIDS" != "" ]]; then
+		kill $PIDS
+	fi
+
+	local t=`type -t cleanup`
+	if [[ "$t" = 'function' ]]; then
+		cleanup
+	fi
+}
+
+trap _cleanup EXIT
