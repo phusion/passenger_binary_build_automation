@@ -24,7 +24,7 @@ else
 	fi
 
 	run mkdir -p "$CCACHE_DIR" /work
-	run chown builder: /cache "$CCACHE_DIR" /output /work
+	run chown builder: /cache "$CCACHE_DIR" /work
 
 	run setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
