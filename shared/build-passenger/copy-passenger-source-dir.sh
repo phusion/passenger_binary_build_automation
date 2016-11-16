@@ -52,12 +52,16 @@ if should_git_copy_input_dir; then
 
 	cd "$OUTPUT_DIR"
 else
-	run cp -pR "$INPUT_DIR"/* "$OUTPUT_DIR"/
-	run rm -rf "$OUTPUT_DIR/.git"
+	run "$ROOTDIR/shared/build-passenger/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR"
 	cd "$OUTPUT_DIR"
-	run rake clean CACHING=false
+	run env OUTPUT_DIR= rake clean CACHING=false
+	run rm -f config.rb
 fi
 
 header "Finalizing source directory"
 echo "+ Normalizing timestamps"
-find . -print0 | xargs -0 touch -d '2013-10-27 00:00:00 UTC'
+if [[ -e /usr/bin/sw_vers ]]; then
+	find . -print0 | xargs -0 touch -t '201310270000.00'
+else
+	find . -print0 | xargs -0 touch -d '2013-10-27 00:00:00 UTC'
+fi

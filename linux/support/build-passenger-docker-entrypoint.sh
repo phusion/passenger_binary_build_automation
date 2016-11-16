@@ -23,6 +23,11 @@ else
 		export NGINX_DIR=/nginx
 	fi
 
+	export USE_CCACHE=true
+	export CCACHE_SLOPPINESS=time_macros
+	export CCACHE_NOHASHDIR=true
+	unset CCACHE_HASHDIR
+
 	run mkdir -p "$CCACHE_DIR" /work
 	run chown builder: /cache "$CCACHE_DIR" /work
 

@@ -46,10 +46,6 @@ end
 
 def set_constants_and_envvars
   set_constant_and_envvar :SHOW_TASKS, getenv('SHOW_TASKS', 'false') == 'true'
-  ENV['USE_CCACHE'] = 'true'
-  ENV['CCACHE_SLOPPINESS'] = 'time_macros'
-  ENV['CCACHE_NOHASHDIR'] = 'true'
-  ENV.delete('CCACHE_HASHDIR')
 
   if !SHOW_TASKS
     set_constant_and_envvar :PASSENGER_DIR, getenv('PASSENGER_DIR')
@@ -58,6 +54,7 @@ def set_constants_and_envvars
     set_constant_and_envvar :CONCURRENCY, getenv('CONCURRENCY', '2').to_i
     set_constant_and_envvar :IN_HOLY_BUILD_BOX, getenv('IN_HOLY_BUILD_BOX', 'false') == 'true'
     set_constant_and_envvar :NGINX_DIR, getenv('NGINX_DIR', nil)
+    set_constant_and_envvar :RVM_EXEC, getenv('RVM_EXEC', 'rvm-exec')
   end
 end
 
@@ -185,5 +182,13 @@ def manipulate_file(path)
   content = yield(content.dup)
   File.open(path, 'wb') do |f|
     f.write(content)
+  end
+end
+
+def libext
+  if RUBY_PLATFORM =~ /darwin/
+    'bundle'
+  else
+    'so'
   end
 end

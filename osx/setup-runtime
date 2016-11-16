@@ -104,3 +104,6 @@ fi
 if [[ ! -e "$OUTPUT_DIR/lib/libpcre.a" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_pcre.sh"
 fi
+"$SELFDIR/runtime_setup_stages/install_gems.sh"
+
+header "All done!"

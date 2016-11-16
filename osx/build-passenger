@@ -1,0 +1,176 @@
+#!/bin/bash
+set -e
+ROOTDIR=`dirname "$0"`
+ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+source "$ROOTDIR/shared/lib/library.sh"
+
+PASSENGER_DIR=
+RUNTIME_DIR=
+CACHE_DIR=
+OUTPUT_DIR=
+NGINX_DIR=
+NGINX_VERSION=
+CONCURRENCY=2
+SHOW_BACKTRACES=false
+SHOW_TASKS=false
+ARGV=
+
+function usage()
+{
+	echo "Usage: ./build-passenger [OPTIONS] <TASKS...>"
+	echo "Build Passenger binaries."
+	echo
+	echo "Required options:"
+	echo "  -p DIR     Path to Passenger source directory"
+	echo "  -r DIR     Path to runtime directory"
+	echo "  -c DIR     Path to cache directory"
+	echo "  -o DIR     Path in which to store build products"
+	echo
+	echo "Optional options:"
+	echo "  -n DIR     Path to Nginx source directory"
+	echo "  -N VER     Nginx version number"
+	echo "  -j NUM     Set build concurrency. Default: 2"
+	echo "  -t         Show backtraces on error"
+	echo
+	echo "  -T         Show all tasks"
+	echo "  -h         Show usage"
+}
+
+function parse_options()
+{
+	local OPTIND=1
+	local ORIG_ARGV
+	local opt
+	while getopts "p:r:c:o:n:N:j:tTh" opt; do
+		case "$opt" in
+		p)
+			PASSENGER_DIR="$OPTARG"
+			;;
+		r)
+			RUNTIME_DIR="$OPTARG"
+			;;
+		c)
+			CACHE_DIR="$OPTARG"
+			;;
+		o)
+			OUTPUT_DIR="$OPTARG"
+			;;
+		n)
+			NGINX_DIR="$OPTARG"
+			;;
+		N)
+			NGINX_VERSION="$OPTARG"
+			;;
+		j)
+			CONCURRENCY=$OPTARG
+			;;
+		t)
+			SHOW_BACKTRACES=true
+			;;
+		T)
+			SHOW_TASKS=true
+			;;
+		h)
+			usage
+			exit
+			;;
+		*)
+			return 1
+			;;
+		esac
+	done
+
+	(( OPTIND -= 1 )) || true
+	shift $OPTIND || true
+	ORIG_ARGV=("$@")
+
+	if [[ ${#ORIG_ARGV[@]} = 0 ]]; then
+		SHOW_TASKS=true
+	else
+		ARGV=()
+		ARGV+=("${ORIG_ARGV[@]}" finish)
+		if $SHOW_BACKTRACES; then
+			ARGV+=(--trace)
+		fi
+	fi
+
+	if [[ "$RUNTIME_DIR" = "" ]]; then
+		echo "ERROR: please specify a runtime directory with -r."
+		exit 1
+	fi
+	if ! $SHOW_TASKS; then
+		if [[ "$PASSENGER_DIR" = "" ]]; then
+			echo "ERROR: please specify a Passenger source directory with -p."
+			exit 1
+		fi
+		if [[ ! -e "$PASSENGER_DIR" ]]; then
+			echo "ERROR: $PASSENGER_DIR does not exist."
+			exit 1
+		fi
+		if [[ ! -e "$RUNTIME_DIR" ]]; then
+			echo "ERROR: $RUNTIME_DIR does not exist."
+			exit 1
+		fi
+		if [[ "$CACHE_DIR" = "" ]]; then
+			echo "ERROR: please specify a cache directory with -c."
+			exit 1
+		fi
+		if [[ "$OUTPUT_DIR" = "" ]]; then
+			echo "ERROR: please specify an output directory with -o."
+			exit 1
+		fi
+		if [[ "$NGINX_DIR" != "" ]]; then
+			if [[ ! -e "$NGINX_DIR" ]]; then
+				echo "ERROR: $NGINX_DIR does not exist."
+				exit 1
+			fi
+			if [[ "$NGINX_VERSION" = "" ]]; then
+				echo "ERROR: please specify an Nginx version with -N."
+				exit 1
+			fi
+		fi
+	fi
+}
+
+parse_options "$@"
+export RUNTIME_DIR="`absolute_path \"$RUNTIME_DIR\"`"
+export SHOW_TASKS
+
+source "$ROOTDIR/osx/support/reset_environment.sh"
+export PATH="$ROOTDIR/osx/support/bin:$RUNTIME_DIR/bin:$PATH"
+export LDFLAGS="-Wl,-dead_strip"
+export EXTRA_LDFLAGS="$LDFLAGS"
+
+if tty -s; then
+	TTY_ARGS="-t -i"
+else
+	TTY_ARGS=
+fi
+if [[ -e /usr/local/rvm/bin/rvm-exec ]]; then
+	export RVM_EXEC=/usr/local/rvm/bin/rvm-exec
+elif [[ -e $HOME/.rvm/bin/rvm-exec ]]; then
+	export RVM_EXEC=$HOME/.rvm/bin/rvm-exec
+else
+	echo "*** ERROR: you must have RVM installed"
+	exit 1
+fi
+
+if $SHOW_TASKS; then
+	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build-passenger/Rakefile" -T
+else
+	export PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
+	export CACHE_DIR="`absolute_path \"$CACHE_DIR\"`"
+	export OUTPUT_DIR="`absolute_path \"$OUTPUT_DIR\"`"
+	if [[ "$NGINX_DIR" != "" ]]; then
+		export NGINX_DIR="`absolute_path \"$NGINX_DIR\"`"
+	fi
+	if [[ "$NGINX_VERSION" != "" ]]; then
+		export NGINX_VERSION
+	fi
+	export CONCURRENCY
+
+	run mkdir -p "$CACHE_DIR"
+	run mkdir -p "$OUTPUT_DIR"
+
+	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build-passenger/Rakefile" "${ARGV[@]}"
+fi

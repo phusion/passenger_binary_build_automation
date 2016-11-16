@@ -34,8 +34,10 @@ task :nginx => ['nginx:source_copy', 'passenger:agent'] do
     " env CCACHE_BASEDIR=#{shesc $NGINX_SOURCE_DIR_COPY}" \
     " make -C #{shesc $NGINX_SOURCE_DIR_COPY} -j#{CONCURRENCY}".strip)
   run("#{strip_all} #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
-  run("hardening-check -b #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
-  run("libcheck #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
+  if IN_HOLY_BUILD_BOX
+    run("hardening-check -b #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
+    run("libcheck #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
+  end
 
   cp("#{$NGINX_SOURCE_DIR_COPY}/objs/nginx",
     "#{OUTPUT_DIR}/support-binaries/nginx-#{NGINX_VERSION}",
@@ -59,7 +61,7 @@ namespace :passenger do
   desc 'Build Passenger agent binary'
   task :agent => :source_copy do
     command = "#{activate_exe_compilation_environment}" \
-      " rvm-exec ruby-#{DEFAULT_RUBY_VERSION}" \
+      " #{RVM_EXEC} ruby-#{DEFAULT_RUBY_VERSION}" \
       " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
       " drake nginx_without_native_support" \
       " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
@@ -88,13 +90,13 @@ namespace :passenger do
     desc "Build Ruby #{ruby_version} extension binary"
     task "ruby_extension:#{ruby_version}" => :source_copy do
       command = "#{activate_library_compilation_environment}" \
-        " rvm-exec ruby-#{ruby_version}" \
+        " #{RVM_EXEC} ruby-#{ruby_version}" \
         " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
         " drake native_support OUTPUT_DIR=".strip
       run(command, chdir: $PASSENGER_SOURCE_DIR_COPY)
 
       output_file = Dir["#{$PASSENGER_SOURCE_DIR_COPY}" \
-        "/buildout/ruby/ruby-#{ruby_version}-*/*.so"].first
+        "/buildout/ruby/ruby-#{ruby_version}-*/*.#{libext}"].first
       run("#{strip_debug} #{shesc output_file}")
       if IN_HOLY_BUILD_BOX
         # We don't run hardening-check here because the Passenger
