@@ -52,6 +52,16 @@ function require_args_exact()
 	fi
 }
 
+function require_envvar()
+{
+	local name="$1"
+	local value="$2"
+	if [[ "$value" = "" ]]; then
+		echo "ERROR: the environment variable '$name' is required."
+		exit 1
+	fi
+}
+
 function download_and_extract()
 {
 	local BASENAME="$1"
@@ -77,7 +87,7 @@ function download_and_extract()
 function _cleanup()
 {
 	set +e
-	
+
 	local PIDS=`jobs -p`
 	if [[ "$PIDS" != "" ]]; then
 		kill $PIDS
