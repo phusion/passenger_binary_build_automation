@@ -52,7 +52,7 @@ if should_git_copy_input_dir; then
 
 	cd "$OUTPUT_DIR"
 else
-	run "$ROOTDIR/shared/build-passenger/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR"
+	run "$ROOTDIR/shared/build/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR"
 	cd "$OUTPUT_DIR"
 	run env OUTPUT_DIR= rake clean CACHING=false
 	run rm -f config.rb

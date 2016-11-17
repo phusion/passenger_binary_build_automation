@@ -16,7 +16,7 @@ task :nginx => ['nginx:source_copy', 'passenger:agent'] do
 
   command =
     "#{activate_exe_compilation_environment} " \
-    "#{ROOT}/shared/build-passenger/configure-nginx.sh " \
+    "#{ROOT}/shared/build/configure-nginx.sh " \
     '--prefix=/tmp ' \
     '--with-cc="ccache cc" ' \
     '--with-cc-opt="-Wno-error" ' \
@@ -53,7 +53,7 @@ namespace :passenger do
       FileUtils.remove_entry_secure($PASSENGER_SOURCE_DIR_COPY)
     end
 
-    run("#{ROOT}/shared/build-passenger/copy-passenger-source-dir.sh" \
+    run("#{ROOT}/shared/build/copy-passenger-source-dir.sh" \
       " #{shesc PASSENGER_DIR}" \
       " #{shesc $PASSENGER_SOURCE_DIR_COPY}")
   end
@@ -121,7 +121,7 @@ namespace :nginx do
     end
 
     if NGINX_DIR
-      run("#{ROOT}/shared/build-passenger/copy-nginx-source-dir.sh" \
+      run("#{ROOT}/shared/build/copy-nginx-source-dir.sh" \
         " #{shesc NGINX_DIR}" \
         " #{shesc $NGINX_SOURCE_DIR_COPY}")
     else

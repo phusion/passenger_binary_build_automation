@@ -18,8 +18,8 @@ ARGV=
 
 function usage()
 {
-	echo "Usage: ./build-passenger [OPTIONS] <TASKS...>"
-	echo "Build Passenger binaries."
+	echo "Usage: ./build [OPTIONS] <TASKS...>"
+	echo "Build binaries."
 	echo
 	echo "Required options:"
 	echo "  -p DIR     Path to Passenger source directory"
@@ -149,7 +149,7 @@ if $SHOW_TASKS; then
 		-v "$ROOTDIR:/system:ro" \
 		-e "SHOW_TASKS=true" \
 		$DOCKER_IMAGE:$DOCKER_IMAGE_MAJOR_VERSION \
-		$LINUX32 /system/linux/support/build-passenger-docker-entrypoint.sh -T
+		$LINUX32 /system/linux/support/build-script-docker-entrypoint.sh -T
 else
 	EXTRA_DOCKER_ARGS=()
 	PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
@@ -178,6 +178,6 @@ else
 		-e "CONCURRENCY=$CONCURRENCY" \
 		"${EXTRA_DOCKER_ARGS[@]}" \
 		$DOCKER_IMAGE:$DOCKER_IMAGE_MAJOR_VERSION \
-		$LINUX32 /system/linux/support/build-passenger-docker-entrypoint.sh \
+		$LINUX32 /system/linux/support/build-script-docker-entrypoint.sh \
 		"${ARGV[@]}"
 fi

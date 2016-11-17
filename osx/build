@@ -17,8 +17,8 @@ ARGV=
 
 function usage()
 {
-	echo "Usage: ./build-passenger [OPTIONS] <TASKS...>"
-	echo "Build Passenger binaries."
+	echo "Usage: ./build [OPTIONS] <TASKS...>"
+	echo "Build binaries."
 	echo
 	echo "Required options:"
 	echo "  -p DIR     Path to Passenger source directory"
@@ -156,7 +156,7 @@ else
 fi
 
 if $SHOW_TASKS; then
-	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build-passenger/Rakefile" -T
+	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build/Rakefile" -T
 else
 	export PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
 	export CACHE_DIR="`absolute_path \"$CACHE_DIR\"`"
@@ -172,5 +172,5 @@ else
 	run mkdir -p "$CACHE_DIR"
 	run mkdir -p "$OUTPUT_DIR"
 
-	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build-passenger/Rakefile" "${ARGV[@]}"
+	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build/Rakefile" "${ARGV[@]}"
 fi

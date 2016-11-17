@@ -40,7 +40,7 @@ if [[ -e "$INPUT_DIR"/.git ]]; then
 
 	cd "$OUTPUT_DIR"
 else
-	run "$ROOTDIR/shared/build-passenger/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR"
+	run "$ROOTDIR/shared/build/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR"
 	cd "$OUTPUT_DIR"
 	run make clean
 fi

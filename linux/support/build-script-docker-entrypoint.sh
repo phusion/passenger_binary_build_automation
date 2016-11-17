@@ -13,7 +13,7 @@ export CCACHE_COMPRESSLEVEL=3
 if $SHOW_TASKS; then
 	exec setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
-		rake -f /system/shared/build-passenger/Rakefile -T
+		rake -f /system/shared/build/Rakefile -T
 else
 	export PASSENGER_DIR=/passenger
 	export CACHE_DIR=/cache
@@ -34,7 +34,7 @@ else
 	run setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
 		env OUTPUT_DIR=/work \
-		drake -f /system/shared/build-passenger/Rakefile "$@"
+		drake -f /system/shared/build/Rakefile "$@"
 
 	run chown -R "$APP_UID:$APP_GID" /work
 	if [[ -e /work/support-binaries ]]; then
