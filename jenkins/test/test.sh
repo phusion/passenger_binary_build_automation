@@ -32,12 +32,18 @@ echo 'import random, time; time.sleep(random.random() * 4)' | python
 
 run mkdir -p "$WORKSPACE/cache/x86" "$WORKSPACE/output/x86" \
 	"$WORKSPACE/cache/x86_64" "$WORKSPACE/output/x86_64"
+
+echo
+echo "---------- Building x86 binaries ----------"
 run ./linux/build \
 	-p "$PASSENGER_ROOT" \
 	-c "$WORKSPACE/cache/x86" \
 	-o "$WORKSPACE/output/x86" \
 	-a x86 \
 	passenger nginx
+
+echo
+echo "---------- Building x86_64 binaries ----------"
 run ./linux/build \
 	-p "$PASSENGER_ROOT" \
 	-c "$WORKSPACE/cache/x86_64" \
