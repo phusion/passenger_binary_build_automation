@@ -1,0 +1,32 @@
+#!/bin/bash
+set -e
+set -o pipefail
+ROOTDIR=`dirname "$0"`
+ROOTDIR=`cd "$ROOTDIR/../../.." && pwd`
+source "$ROOTDIR/shared/lib/library.sh"
+
+function grep_without_fail()
+{
+	grep "$@" || true
+}
+
+DIR="$1"
+TAB=`perl -e 'print "\t"'`
+ERROR=false
+STANDARD_LIBS="(@executable_path/|/usr/lib/libobjc|/usr/lib/libSystem|/usr/lib/libutil|/usr/lib/libz"
+STANDARD_LIBS="$STANDARD_LIBS|/usr/lib/libiconv|/usr/lib/libstdc\+\+|/usr/lib/libc\+\+)\."
+STANDARD_LIBS="($STANDARD_LIBS|CoreFoundation\.framework|CoreServices\.framework|Security\.framework)"
+
+for F in "$@"; do
+	EXTRA_LIBS=`otool -L $F | tail -n +2 | sed "s/^${TAB}//" | sed "s/ (.*//" | grep_without_fail -vE "$STANDARD_LIBS"`
+	EXTRA_LIBS=`echo $EXTRA_LIBS`
+	if [[ "$EXTRA_LIBS" != "" ]]; then
+		echo "$F is linked to non-system libraries: $EXTRA_LIBS"
+		ERROR=true
+	fi
+done
+if $ERROR; then
+	exit 1
+else
+	echo "All OK."
+fi

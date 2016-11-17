@@ -6,7 +6,7 @@ include FileUtils
 
 
 desc 'Build Passenger binaries'
-task :passenger => ['passenger:agent', 'passenger:ruby_extension']
+task :passenger => ['passenger:agent']
 
 desc 'Build Nginx binaries'
 task :nginx => ['nginx:source_copy', 'passenger:agent'] do
@@ -34,9 +34,9 @@ task :nginx => ['nginx:source_copy', 'passenger:agent'] do
     " env CCACHE_BASEDIR=#{shesc $NGINX_SOURCE_DIR_COPY}" \
     " make -C #{shesc $NGINX_SOURCE_DIR_COPY} -j#{CONCURRENCY}".strip)
   run("#{strip_all} #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
+  run("libcheck #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
   if IN_HOLY_BUILD_BOX
     run("hardening-check -b #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
-    run("libcheck #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
   end
 
   cp("#{$NGINX_SOURCE_DIR_COPY}/objs/nginx",
@@ -69,10 +69,10 @@ namespace :passenger do
 
     run("#{strip_all} buildout/support-binaries/PassengerAgent",
       chdir: $PASSENGER_SOURCE_DIR_COPY)
+    run('libcheck buildout/support-binaries/PassengerAgent',
+        chdir: $PASSENGER_SOURCE_DIR_COPY)
     if IN_HOLY_BUILD_BOX
       run('hardening-check -b buildout/support-binaries/PassengerAgent',
-        chdir: $PASSENGER_SOURCE_DIR_COPY)
-      run('libcheck buildout/support-binaries/PassengerAgent',
         chdir: $PASSENGER_SOURCE_DIR_COPY)
     end
 
@@ -80,34 +80,39 @@ namespace :passenger do
     cp("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent",
       "#{OUTPUT_DIR}/support-binaries", verbose: true)
   end
+end
 
-  desc 'Build all Ruby extension binaries'
-  task :ruby_extension
-
+if RUBY_PLATFORM !~ /darwin/
   RUBY_VERSIONS.each do |ruby_version|
-    task :ruby_extension => "ruby_extension:#{ruby_version}"
+    task :passenger => "passenger:ruby_extension:#{ruby_version}"
+    task 'passenger:ruby_extension' => "passenger:ruby_extension:#{ruby_version}"
+  end
 
-    desc "Build Ruby #{ruby_version} extension binary"
-    task "ruby_extension:#{ruby_version}" => :source_copy do
-      command = "#{activate_library_compilation_environment}" \
-        " #{RVM_EXEC} ruby-#{ruby_version}" \
-        " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-        " drake native_support OUTPUT_DIR=".strip
-      run(command, chdir: $PASSENGER_SOURCE_DIR_COPY)
+  namespace :passenger do
+    desc 'Build all Ruby extension binaries'
+    task :ruby_extension
 
-      output_file = Dir["#{$PASSENGER_SOURCE_DIR_COPY}" \
-        "/buildout/ruby/ruby-#{ruby_version}-*/*.#{libext}"].first
-      run("#{strip_debug} #{shesc output_file}")
-      if IN_HOLY_BUILD_BOX
+    RUBY_VERSIONS.each do |ruby_version|
+      desc "Build Ruby #{ruby_version} extension binary"
+      task "ruby_extension:#{ruby_version}" => :source_copy do
+        command = "#{activate_library_compilation_environment}" \
+          " #{RVM_EXEC} ruby-#{ruby_version}" \
+          " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+          " drake native_support OUTPUT_DIR=".strip
+        run(command, chdir: $PASSENGER_SOURCE_DIR_COPY)
+
+        output_file = Dir["#{$PASSENGER_SOURCE_DIR_COPY}" \
+          "/buildout/ruby/ruby-#{ruby_version}-*/*.#{libext}"].first
+        run("#{strip_debug} #{shesc output_file}")
+        run("env LIBCHECK_ALLOW=libruby libcheck #{shesc output_file}")
         # We don't run hardening-check here because the Passenger
         # build system does not yet modify the mkmf Makefile
         # to properly pass environment variables like CFLAGS.
-        run("env LIBCHECK_ALLOW=libruby libcheck #{shesc output_file}")
-      end
 
-      archdir = File.basename(File.dirname(output_file))
-      mkdir_p("#{OUTPUT_DIR}/ruby-extensions/#{archdir}", verbose: true)
-      cp(output_file, "#{OUTPUT_DIR}/ruby-extensions/#{archdir}/", verbose: true)
+        archdir = File.basename(File.dirname(output_file))
+        mkdir_p("#{OUTPUT_DIR}/ruby-extensions/#{archdir}", verbose: true)
+        cp(output_file, "#{OUTPUT_DIR}/ruby-extensions/#{archdir}/", verbose: true)
+      end
     end
   end
 end

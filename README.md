@@ -132,13 +132,10 @@ More command line options are available. Run `./build -h` to learn more. You can
 
 When the above example build is finished, the output directory will contain these files:
 
-    ruby-extensions/ruby-1.9.3-x86_64-macosx/passenger_native_support.bundle
-    ruby-extensions/ruby-2.0.0-x86_64-macosx/passenger_native_support.bundle
-    ruby-extensions/ruby-2.1.9-x86_64-macosx/passenger_native_support.bundle
-    ruby-extensions/ruby-2.2.5-x86_64-macosx/passenger_native_support.bundle
-    ruby-extensions/ruby-2.3.2-x86_64-macosx/passenger_native_support.bundle
     support-binaries/nginx-1.10.1
     support-binaries/PassengerAgent
+
+The macOS build script does not build Ruby native extensions because we haven't yet figured out a way to do that in a portable manner.
 
 ## Maintenance
 
