@@ -136,8 +136,8 @@ parse_options "$@"
 export RUNTIME_DIR="`absolute_path \"$RUNTIME_DIR\"`"
 export SHOW_TASKS
 
-source "$ROOTDIR/osx/support/reset_environment.sh"
-export PATH="$ROOTDIR/osx/support/bin:$RUNTIME_DIR/bin:$PATH"
+source "$ROOTDIR/macos/support/reset_environment.sh"
+export PATH="$ROOTDIR/macos/support/bin:$RUNTIME_DIR/bin:$PATH"
 export LDFLAGS="-Wl,-dead_strip"
 export EXTRA_LDFLAGS="$LDFLAGS"
 

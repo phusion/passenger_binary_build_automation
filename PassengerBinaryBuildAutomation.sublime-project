@@ -6,9 +6,9 @@
 			"folder_exclude_patterns": [
 				"linux/cache",
 				"linux/output",
-				"osx/cache",
-				"osx/runtime-output",
-				"osx/output"
+				"macos/cache",
+				"macos/runtime-output",
+				"macos/output"
 			]
 		}
 	]

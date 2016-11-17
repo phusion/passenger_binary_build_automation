@@ -67,7 +67,7 @@ export RUNTIME_DIR="$OUTPUT_DIR"
 source "$SELFDIR/support/reset_environment.sh"
 
 export CONCURRENCY
-export PATH="$ROOTDIR/osx/support/bin:$RUNTIME_DIR/bin:$PATH"
+export PATH="$ROOTDIR/macos/support/bin:$RUNTIME_DIR/bin:$PATH"
 if [[ "$CACHE_DIR" != "" ]]; then
 	export CACHE_DIR="`absolute_path \"$CACHE_DIR\"`"
 	export CCACHE_DIR="$CACHE_DIR/ccache-runtime"
