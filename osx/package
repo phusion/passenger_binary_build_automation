@@ -1,0 +1,101 @@
+#!/bin/bash
+set -e
+ROOTDIR=`dirname "$0"`
+ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+source "$ROOTDIR/shared/lib/library.sh"
+DEFAULT_MACOS_VERSION=`cat "$ROOTDIR/shared/definitions/macosx_deployment_target"`
+MACOS_VERSIONS=(`cat "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets"`)
+
+INPUT_DIR=
+OUTPUT_DIR=
+
+function usage()
+{
+	echo "Usage: ./package [OPTIONS]"
+	echo "Package built Passenger binaries."
+	echo
+	echo "Required options:"
+	echo "  -i DIR     The output directory written to by build-passenger"
+	echo "  -o DIR     Path in which to store output products"
+	echo
+	echo "Optional options:"
+	echo "  -h         Show usage"
+}
+
+function parse_options()
+{
+	local OPTIND=1
+	local opt
+	while getopts "i:o:h" opt; do
+		case "$opt" in
+		i)
+			INPUT_DIR="$OPTARG"
+			;;
+		o)
+			OUTPUT_DIR="$OPTARG"
+			;;
+		h)
+			usage
+			exit
+			;;
+		*)
+			return 1
+			;;
+		esac
+	done
+
+	if [[ "$INPUT_DIR" = "" ]]; then
+		echo "ERROR: please specify an input directory with -i."
+		exit 1
+	fi
+	if [[ "$OUTPUT_DIR" = "" ]]; then
+		echo "ERROR: please specify an output directory with -o."
+		exit 1
+	fi
+}
+
+parse_options "$@"
+set -o pipefail
+export GZIP=--best
+
+INPUT_DIR="`absolute_path \"$INPUT_DIR\"`"
+OUTPUT_DIR="`absolute_path \"$OUTPUT_DIR\"`"
+
+NGINX_VERSION=`/bin/ls -1 "$INPUT_DIR"/support-binaries/nginx-* | sed 's/.*-//'`
+
+run mkdir -p "$OUTPUT_DIR"
+
+header "Packaging PassengerAgent and Nginx"
+run tar -czf "$OUTPUT_DIR/agent-x86_64-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
+	-C "$INPUT_DIR/support-binaries" PassengerAgent
+run tar -czf "$OUTPUT_DIR/nginx-$NGINX_VERSION-x86_64-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
+	-C "$INPUT_DIR/support-binaries" "nginx-$NGINX_VERSION"
+
+header "Creating compatibility symlinks for PassengerAgent and Nginx"
+for MACOS_VERSION in "${MACOS_VERSIONS[@]}"; do
+	LINKNAME="$OUTPUT_DIR/agent-x86_64-macosx-$MACOS_VERSION.tar.gz"
+	if [[ -h "$LINKNAME" || ! -e "$LINKNAME" ]]; then
+		run ln -sf "agent-x86_64-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
+			"$LINKNAME"
+	fi
+
+	LINKNAME="$OUTPUT_DIR/nginx-$NGINX_VERSION-x86_64-macosx-$MACOS_VERSION.tar.gz"
+	if [[ -h "$LINKNAME" || ! -e "$LINKNAME" ]]; then
+		run ln -sf "nginx-$NGINX_VERSION-x86_64-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
+			"$LINKNAME"
+	fi
+done
+
+header "Packaging Ruby extensions and creating compatibility symlinks"
+for RUBY_EXT_DIR in `/bin/ls -1 "$INPUT_DIR/ruby-extensions"`; do
+	run tar -czf "$OUTPUT_DIR/rubyext-$RUBY_EXT_DIR-$DEFAULT_MACOS_VERSION.tar.gz" \
+		-C "$INPUT_DIR/ruby-extensions/$RUBY_EXT_DIR" \
+		passenger_native_support.bundle
+	for MACOS_VERSION in "${MACOS_VERSIONS[@]}"; do
+		LINKNAME="$OUTPUT_DIR/rubyext-$RUBY_EXT_DIR-$MACOS_VERSION.tar.gz"
+		if [[ -h "$LINKNAME" || ! -e "$LINKNAME" ]]; then
+			run ln -sf "rubyext-$RUBY_EXT_DIR-$DEFAULT_MACOS_VERSION.tar.gz" \
+				"$LINKNAME"
+		fi
+	done
+done
