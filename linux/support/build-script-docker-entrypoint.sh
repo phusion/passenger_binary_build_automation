@@ -30,8 +30,8 @@ else
 	export CCACHE_NOHASHDIR=true
 	unset CCACHE_HASHDIR
 
-	run setuser builder mkdir -p "$CCACHE_DIR" /work
-	run setuser builder chown builder: /cache "$CCACHE_DIR" /work
+	run setuser builder mkdir -p "$CCACHE_DIR"
+	run chown builder: /cache "$CCACHE_DIR"
 
 	run_exec setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
