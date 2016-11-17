@@ -29,6 +29,12 @@ function run()
 	"$@"
 }
 
+function run_exec()
+{
+	echo "+ $@"
+	exec "$@"
+}
+
 function absolute_path()
 {
 	local dir="`dirname \"$1\"`"

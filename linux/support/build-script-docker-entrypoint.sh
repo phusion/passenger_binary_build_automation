@@ -10,8 +10,10 @@ export CCACHE_DIR=/cache/ccache
 export CCACHE_COMPRESS=1
 export CCACHE_COMPRESSLEVEL=3
 
+/system/linux/support/inituidgid.sh
+
 if $SHOW_TASKS; then
-	exec setuser builder \
+	run_exec setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
 		rake -f /system/shared/build/Rakefile -T
 else
@@ -28,21 +30,10 @@ else
 	export CCACHE_NOHASHDIR=true
 	unset CCACHE_HASHDIR
 
-	run mkdir -p "$CCACHE_DIR" /work
-	run chown builder: /cache "$CCACHE_DIR" /work
+	run setuser builder mkdir -p "$CCACHE_DIR" /work
+	run setuser builder chown builder: /cache "$CCACHE_DIR" /work
 
-	run setuser builder \
+	run_exec setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
-		env OUTPUT_DIR=/work \
 		drake -f /system/shared/build/Rakefile "$@"
-
-	run chown -R "$APP_UID:$APP_GID" /work
-	if [[ -e /work/support-binaries ]]; then
-		run rm -rf "$OUTPUT_DIR/support-binaries"
-		run mv /work/support-binaries "$OUTPUT_DIR/"
-	fi
-	if [[ -e /work/ruby-extensions ]]; then
-		run rm -rf "$OUTPUT_DIR/ruby-extensions"
-		run mv /work/ruby-extensions "$OUTPUT_DIR/"
-	fi
 fi
