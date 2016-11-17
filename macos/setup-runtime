@@ -50,8 +50,16 @@ function parse_options()
 		esac
 	done
 
+	if [[ ! -e "$CACHE_DIR" ]]; then
+		echo "ERROR: $CACHE_DIR does not exist."
+		exit 1
+	fi
 	if [[ "$OUTPUT_DIR" = "" ]]; then
 		echo "ERROR: please specify an output directory with -o."
+		exit 1
+	fi
+	if [[ ! -e "$OUTPUT_DIR" ]]; then
+		echo "ERROR: $OUTPUT_DIR does not exist."
 		exit 1
 	fi
 }
@@ -71,7 +79,6 @@ export PATH="$ROOTDIR/macos/support/bin:$RUNTIME_DIR/bin:$PATH"
 if [[ "$CACHE_DIR" != "" ]]; then
 	export CACHE_DIR="`absolute_path \"$CACHE_DIR\"`"
 	export CCACHE_DIR="$CACHE_DIR/ccache-runtime"
-	run mkdir -p "$CCACHE_DIR"
 fi
 
 export WORKDIR=`mktemp -d /tmp/pbba.XXXXXX`
@@ -80,7 +87,6 @@ function cleanup()
 	run rm -rf "$WORKDIR"
 }
 
-run mkdir -p "$OUTPUT_DIR"
 cd "$WORKDIR"
 
 if [[ ! -e "$OUTPUT_DIR/bin/ccache" ]]; then

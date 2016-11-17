@@ -69,8 +69,8 @@ Use the `linux/build` script to build binaries for Linux. [Docker](http://www.do
 The `build` script expects at least the following arguments:
 
  * `-p`: path to the Passenger source code that you want to build.
- * `-c`: a directory which the script can use for caching data, in order to make subsequent builds faster. If this directory does not exist, then it will be created.
- * `-o`: a directory to store the built binaries in. If this directory does not exist, then it will be created.
+ * `-c`: a directory which the script can use for caching data, in order to make subsequent builds faster.
+ * `-o`: a directory to store the built binaries in.
  * `-a`: the architecture to build for. Either `x86` or `x86_64`.
  * And finally, a list of things that the script should build (_tasks_). In this example we specified two tasks, `passenger` and `nginx`. The passenger task builds the Passenger agent and all Ruby extensions, while the nginx task builds Nginx.
 
@@ -107,8 +107,8 @@ Here is an example invocation:
 
 The `setup-runtime` script expects at least the following arguments:
 
- * `-c`: a directory which the script can use for caching data, in order to make subsequent runtime builds faster. If this directory does not exist, then it will be created.
- * `-o`: a directory to store the runtime in. If this directory does not exist, then it will be created.
+ * `-c`: a directory which the script can use for caching data, in order to make subsequent runtime builds faster.
+ * `-o`: a directory to store the runtime in.
 
 #### Building
 
@@ -124,8 +124,8 @@ Use the `macos/build` script to build binaries for macOS. Here is an example:
 The `build` script expects at least the following arguments:
 
  * `-p`: path to the Passenger source code that you want to build.
- * `-c`: a directory which the script can use for caching data, in order to make subsequent builds faster. If this directory does not exist, then it will be created.
- * `-o`: a directory to store the built binaries in. If this directory does not exist, then it will be created.
+ * `-c`: a directory which the script can use for caching data, in order to make subsequent builds faster.
+ * `-o`: a directory to store the built binaries in.
  * And finally, a list of things that the script should build (_tasks_). In this example we specified two tasks, `passenger` and `nginx`. The passenger task builds the Passenger agent and all Ruby extensions, while the nginx task builds Nginx.
 
 More command line options are available. Run `./build -h` to learn more. You can also run `./build -T` to learn which tasks are available.

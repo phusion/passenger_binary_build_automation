@@ -115,8 +115,16 @@ function parse_options()
 			echo "ERROR: please specify a cache directory with -c."
 			exit 1
 		fi
+		if [[ ! -e "$CACHE_DIR" ]]; then
+			echo "ERROR: $CACHE_DIR does not exist."
+			exit 1
+		fi
 		if [[ "$OUTPUT_DIR" = "" ]]; then
 			echo "ERROR: please specify an output directory with -o."
+			exit 1
+		fi
+		if [[ ! -e "$OUTPUT_DIR" ]]; then
+			echo "ERROR: $OUTPUT_DIR does not exist."
 			exit 1
 		fi
 		if [[ "$NGINX_DIR" != "" ]]; then
@@ -168,9 +176,6 @@ else
 		export NGINX_VERSION
 	fi
 	export CONCURRENCY
-
-	run mkdir -p "$CACHE_DIR"
-	run mkdir -p "$OUTPUT_DIR"
 
 	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build/Rakefile" "${ARGV[@]}"
 fi

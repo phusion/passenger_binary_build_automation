@@ -108,8 +108,16 @@ function parse_options()
 			echo "ERROR: please specify a cache directory with -c."
 			exit 1
 		fi
+		if [[ ! -e "$CACHE_DIR" ]]; then
+			echo "ERROR: $CACHE_DIR does not exist."
+			exit 1
+		fi
 		if [[ "$OUTPUT_DIR" = "" ]]; then
 			echo "ERROR: please specify an output directory with -o."
+			exit 1
+		fi
+		if [[ ! -e "$OUTPUT_DIR" ]]; then
+			echo "ERROR: $OUTPUT_DIR does not exist."
 			exit 1
 		fi
 		if [[ "$ARCHITECTURE" = "" ]]; then
@@ -162,9 +170,6 @@ else
 			EXTRA_DOCKER_ARGS+=(-e "NGINX_VERSION=$NGINX_VERSION")
 		fi
 	fi
-
-	run mkdir -p "$CACHE_DIR"
-	run mkdir -p "$OUTPUT_DIR"
 
 	echo "-------- Entering Docker container --------"
 	exec docker run -t -i --rm \
