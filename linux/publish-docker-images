@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+ROOTDIR=`dirname "$0"`
+ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
+DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
+source "$ROOTDIR/shared/lib/library.sh"
+
+run docker tag phusion/passenger_binary_build_automation_32:$(DOCKER_IMAGE_VERSION) \
+	phusion/passenger_binary_build_automation_32:$(DOCKER_IMAGE_MAJOR_VERSION)
+run docker tag phusion/passenger_binary_build_automation_64:$(DOCKER_IMAGE_VERSION) \
+	phusion/passenger_binary_build_automation_64:$(DOCKER_IMAGE_MAJOR_VERSION)
+run docker tag phusion/passenger_binary_build_automation_32:$(DOCKER_IMAGE_VERSION) \
+	phusion/passenger_binary_build_automation_32:latest
+run docker tag phusion/passenger_binary_build_automation_64:$(DOCKER_IMAGE_VERSION) \
+	phusion/passenger_binary_build_automation_64:latest
+
+run docker push phusion/passenger_binary_build_automation_32
+run docker push phusion/passenger_binary_build_automation_64
