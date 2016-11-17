@@ -156,7 +156,7 @@ else
 fi
 
 if $SHOW_TASKS; then
-	exec docker run -t -i --rm \
+	exec docker run $TTY_ARGS --rm \
 		-v "$ROOTDIR:/system:ro" \
 		-e "SHOW_TASKS=true" \
 		$DOCKER_IMAGE:$DOCKER_IMAGE_MAJOR_VERSION \
@@ -175,7 +175,7 @@ else
 	fi
 
 	echo "-------- Entering Docker container --------"
-	exec docker run -t -i --rm \
+	exec docker run $TTY_ARGS --rm \
 		-v "$ROOTDIR:/system:ro" \
 		-v "$PASSENGER_DIR:/passenger:ro" \
 		-v "$CACHE_DIR:/cache" \
