@@ -124,6 +124,9 @@ function parse_options()
 			echo "ERROR: please specify an architecture with -a."
 			exit 1
 		fi
+		if [[ "$ARCHITECTURE" != x86 && "$ARCHITECTURE" != x86_64 ]]; then
+			echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either x86 or x86_64."
+		fi
 		if [[ "$NGINX_DIR" != "" ]]; then
 			if [[ ! -e "$NGINX_DIR" ]]; then
 				echo "ERROR: $NGINX_DIR does not exist."
