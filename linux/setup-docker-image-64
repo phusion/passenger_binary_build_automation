@@ -6,7 +6,7 @@ DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
 DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
 source "$ROOTDIR/shared/lib/library.sh"
 
-run docker build --force-rm \
+run docker build --force-rm --pull \
 	-t "phusion/passenger_binary_build_automation_64:$DOCKER_IMAGE_VERSION" \
 	-f "$ROOTDIR/linux/docker_image/Dockerfile-64" \
 	"$ROOTDIR"
