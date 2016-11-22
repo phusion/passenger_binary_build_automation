@@ -2,8 +2,9 @@ source 'https://rubygems.org/'
 
 # Needed by our own tooling
 gem 'paint'
+gem 'drake'
+gem 'rspec'
 
 # Needed by Passenger
-gem 'drake'
+gem 'rack', '< 2.0' # Rack 2.0+ does not work with Ruby 2.0, which is default on OS X
 gem 'bluecloth'
-gem 'rspec', '2.14.1'

@@ -24,7 +24,7 @@ source "./shared/lib/library.sh"
 require_envvar WORKSPACE "$WORKSPACE"
 
 PASSENGER_ROOT="${PASSENGER_ROOT:-$WORKSPACE}"
-CONCURRENCY=${CONCURRENCY:-4}
+CONCURRENCY=${CONCURRENCY:-2}
 
 # Sleep for a random amount of time in order to work around Docker/AUFS bugs
 # that may be triggered if multiple containers are shut down at the same time.
@@ -40,6 +40,7 @@ run ./linux/build \
 	-c "$WORKSPACE/cache/x86" \
 	-o "$WORKSPACE/output/x86" \
 	-a x86 \
+	-j "$CONCURRENCY" \
 	passenger nginx
 
 echo
@@ -49,4 +50,29 @@ run ./linux/build \
 	-c "$WORKSPACE/cache/x86_64" \
 	-o "$WORKSPACE/output/x86_64" \
 	-a x86_64 \
+	-j "$CONCURRENCY" \
 	passenger nginx
+
+echo
+echo "---------- Testing x86 binaries ----------"
+run ./linux/package \
+	-i "$WORKSPACE/output/x86" \
+	-o "$WORKSPACE/output/x86" \
+	-a x86
+run ./linux/test \
+	-p "$PASSENGER_ROOT" \
+	-i "$WORKSPACE/output/x86" \
+	-I "$WORKSPACE/output/x86" \
+	-a x86
+
+echo
+echo "---------- Testing x86_64 binaries ----------"
+run ./linux/package \
+	-i "$WORKSPACE/output/x86_64" \
+	-o "$WORKSPACE/output/x86_64" \
+	-a x86_64
+run ./linux/test \
+	-p "$PASSENGER_ROOT" \
+	-i "$WORKSPACE/output/x86_64" \
+	-I "$WORKSPACE/output/x86_64" \
+	-a x86_64

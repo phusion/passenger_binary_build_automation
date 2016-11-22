@@ -10,7 +10,10 @@ header "Installing system Ruby gems"
 if [[ ! -e /usr/local/bin/bundle ]]; then
 	run sudo gem install bundler --no-document
 fi
-run env BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" /usr/local/bin/bundle install --system -j2
+
+# Copy over the Gemfile to prevent creating a .bundle directory in shared/.
+run cp "$ROOTDIR/shared/Gemfile" "$ROOTDIR/shared/Gemfile.lock" "$WORKDIR"
+run env BUNDLE_GEMFILE="$WORKDIR/Gemfile" /usr/local/bin/bundle install --system -j2
 
 if [[ -e /usr/local/rvm/bin/rvm-exec ]]; then
 	RVM_EXEC=/usr/local/rvm/bin/rvm-exec

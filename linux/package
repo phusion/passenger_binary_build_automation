@@ -14,7 +14,7 @@ function usage()
 	echo "Package built Passenger binaries."
 	echo
 	echo "Required options:"
-	echo "  -i DIR     The output directory written to by build-passenger"
+	echo "  -i DIR     The output directory written to by build script"
 	echo "  -a ARCH    Architecture of the build (x86, x86_64)"
 	echo "  -o DIR     Path in which to store output products"
 	echo

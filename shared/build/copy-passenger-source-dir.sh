@@ -55,7 +55,7 @@ else
 	run "$ROOTDIR/shared/build/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR"
 	cd "$OUTPUT_DIR"
 	run env OUTPUT_DIR= rake clean CACHING=false
-	run rm -f config.rb
+	run rm -rf config.rb download_cache
 fi
 
 header "Finalizing source directory"

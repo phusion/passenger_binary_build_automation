@@ -1,0 +1,122 @@
+#!/bin/bash
+set -e
+ROOTDIR=`dirname "$0"`
+ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
+source "$ROOTDIR/shared/lib/library.sh"
+
+PASSENGER_DIR=
+UNPACKAGED_INPUT_DIR=
+PACKAGED_INPUT_DIR=
+ARCHITECTURE=
+
+function usage()
+{
+	echo "Usage: ./test [OPTIONS] <TASKS...>"
+	echo "Test built and packaged binaries."
+	echo
+	echo "Required options:"
+	echo "  -p DIR     Path to Passenger source directory"
+	echo "  -i DIR     Path to directory containing unpackaged build products"
+	echo "  -I DIR     Path to directory containing packaged build products"
+	echo "  -a ARCH    Architecture to test for (x86, x86_64)"
+	echo
+	echo "Optional options:"
+	echo "  -h         Show usage"
+}
+
+function parse_options()
+{
+	local OPTIND=1
+	local ORIG_ARGV
+	local opt
+	while getopts "p:i:I:a:h" opt; do
+		case "$opt" in
+		p)
+			PASSENGER_DIR="$OPTARG"
+			;;
+		i)
+			UNPACKAGED_INPUT_DIR="$OPTARG"
+			;;
+		I)
+			PACKAGED_INPUT_DIR="$OPTARG"
+			;;
+		a)
+			ARCHITECTURE="$OPTARG"
+			;;
+		h)
+			usage
+			exit
+			;;
+		*)
+			return 1
+			;;
+		esac
+	done
+
+	(( OPTIND -= 1 )) || true
+	shift $OPTIND || true
+	ORIG_ARGV=("$@")
+
+	if [[ "$PASSENGER_DIR" = "" ]]; then
+		echo "ERROR: please specify a Passenger source directory with -p."
+		exit 1
+	fi
+	if [[ ! -e "$PASSENGER_DIR" ]]; then
+		echo "ERROR: $PASSENGER_DIR does not exist."
+		exit 1
+	fi
+	if [[ "$UNPACKAGED_INPUT_DIR" = "" ]]; then
+		echo "ERROR: please specify an unpackaged input directory with -p."
+		exit 1
+	fi
+	if [[ ! -e "$UNPACKAGED_INPUT_DIR" ]]; then
+		echo "ERROR: $UNPACKAGED_INPUT_DIR does not exist."
+		exit 1
+	fi
+	if [[ "$UNPACKAGED_INPUT_DIR" = "" ]]; then
+		echo "ERROR: please specify a packaged input directory with -p."
+		exit 1
+	fi
+	if [[ ! -e "$UNPACKAGED_INPUT_DIR" ]]; then
+		echo "ERROR: $UNPACKAGED_INPUT_DIR does not exist."
+		exit 1
+	fi
+	if [[ "$ARCHITECTURE" = "" ]]; then
+		echo "ERROR: please specify an architecture with -a."
+		exit 1
+	fi
+	if [[ "$ARCHITECTURE" != x86 && "$ARCHITECTURE" != x86_64 ]]; then
+		echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either x86 or x86_64."
+	fi
+}
+
+parse_options "$@"
+
+if tty -s; then
+	TTY_ARGS="-t -i"
+else
+	TTY_ARGS=
+fi
+if [[ "$ARCHITECTURE" = x86 ]]; then
+	DOCKER_IMAGE=phusion/passenger_binary_build_automation_32
+	LINUX32=linux32
+else
+	DOCKER_IMAGE=phusion/passenger_binary_build_automation_64
+	LINUX32=
+fi
+
+PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
+PACKAGED_INPUT_DIR="`absolute_path \"$PACKAGED_INPUT_DIR\"`"
+UNPACKAGED_INPUT_DIR="`absolute_path \"$UNPACKAGED_INPUT_DIR\"`"
+
+echo "-------- Entering Docker container --------"
+exec docker run $TTY_ARGS --rm \
+	-v "$ROOTDIR:/system:ro" \
+	-v "$PASSENGER_DIR:/passenger:ro" \
+	-v "$PACKAGED_INPUT_DIR:/packaged:ro" \
+	-v "$UNPACKAGED_INPUT_DIR:/unpackaged:ro" \
+	-e "APP_UID=`/usr/bin/id -u`" \
+	-e "APP_GID=`/usr/bin/id -g`" \
+	$DOCKER_IMAGE:$DOCKER_IMAGE_MAJOR_VERSION \
+	$LINUX32 /system/linux/support/test-script-docker-entrypoint.sh

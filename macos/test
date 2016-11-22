@@ -1,0 +1,124 @@
+#!/bin/bash
+set -e
+ROOTDIR=`dirname "$0"`
+ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+SELFDIR=`dirname "$0"`
+SELFDIR=`cd "$SELFDIR" && pwd`
+DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
+source "$ROOTDIR/shared/lib/library.sh"
+
+PASSENGER_DIR=
+RUNTIME_DIR=
+UNPACKAGED_INPUT_DIR=
+PACKAGED_INPUT_DIR=
+ARGV=
+
+function usage()
+{
+	echo "Usage: ./test [OPTIONS] <TASKS...>"
+	echo "Test built and packaged binaries."
+	echo
+	echo "Required options:"
+	echo "  -p DIR     Path to Passenger source directory"
+	echo "  -r DIR     Path to the runtime"
+	echo "  -i DIR     Path to directory containing unpackaged build products"
+	echo "  -I DIR     Path to directory containing packaged build products"
+	echo
+	echo "Optional options:"
+	echo "  -h         Show usage"
+}
+
+function parse_options()
+{
+	local OPTIND=1
+	local opt
+	while getopts "p:r:i:I:a:h" opt; do
+		case "$opt" in
+		p)
+			PASSENGER_DIR="$OPTARG"
+			;;
+		r)
+			RUNTIME_DIR="$OPTARG"
+			;;
+		i)
+			UNPACKAGED_INPUT_DIR="$OPTARG"
+			;;
+		I)
+			PACKAGED_INPUT_DIR="$OPTARG"
+			;;
+		h)
+			usage
+			exit
+			;;
+		*)
+			return 1
+			;;
+		esac
+	done
+
+	(( OPTIND -= 1 )) || true
+	shift $OPTIND || true
+	ARGV=("$@")
+
+	if [[ "$PASSENGER_DIR" = "" ]]; then
+		echo "ERROR: please specify a Passenger source directory with -p."
+		exit 1
+	fi
+	if [[ ! -e "$PASSENGER_DIR" ]]; then
+		echo "ERROR: $PASSENGER_DIR does not exist."
+		exit 1
+	fi
+	if [[ "$RUNTIME_DIR" = "" ]]; then
+		echo "ERROR: please specify a runtime directory with -r."
+		exit 1
+	fi
+	if [[ ! -e "$RUNTIME_DIR" ]]; then
+		echo "ERROR: $RUNTIME_DIR does not exist."
+		exit 1
+	fi
+	if [[ "$UNPACKAGED_INPUT_DIR" = "" ]]; then
+		echo "ERROR: please specify an unpackaged input directory with -p."
+		exit 1
+	fi
+	if [[ ! -e "$UNPACKAGED_INPUT_DIR" ]]; then
+		echo "ERROR: $UNPACKAGED_INPUT_DIR does not exist."
+		exit 1
+	fi
+	if [[ "$UNPACKAGED_INPUT_DIR" = "" ]]; then
+		echo "ERROR: please specify a packaged input directory with -p."
+		exit 1
+	fi
+	if [[ ! -e "$UNPACKAGED_INPUT_DIR" ]]; then
+		echo "ERROR: $UNPACKAGED_INPUT_DIR does not exist."
+		exit 1
+	fi
+}
+
+parse_options "$@"
+
+if tty -s; then
+	TTY_ARGS="-t -i"
+else
+	TTY_ARGS=
+fi
+
+PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
+export PACKAGED_ARTEFACTS_DIR="`absolute_path \"$PACKAGED_INPUT_DIR\"`"
+export UNPACKAGED_ARTEFACTS_DIR="`absolute_path \"$UNPACKAGED_INPUT_DIR\"`"
+
+export RUNTIME_DIR="$RUNTIME_DIR"
+source "$SELFDIR/support/reset_environment.sh"
+
+TEMP_DIR=`mktemp -d /tmp/passenger-test.XXXXXXXX`
+function cleanup()
+{
+	rm -rf "$TEMP_DIR"
+}
+
+export PASSENGER_ROOT="$TEMP_DIR/passenger"
+run "$ROOTDIR/shared/build/copy-passenger-source-dir.sh" "$PASSENGER_DIR" "$PASSENGER_ROOT"
+
+header "Running integration tests"
+run env BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
+	/usr/local/bin/bundle exec \
+	/usr/local/bin/rspec --tty -c -f d "$ROOTDIR/shared/test/integration_test.rb" "${ARGV[@]}"

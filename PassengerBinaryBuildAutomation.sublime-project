@@ -2,14 +2,18 @@
 	"folders":
 	[
 		{
-			"path": ".",
-			"folder_exclude_patterns": [
+			"folder_exclude_patterns":
+			[
 				"linux/cache",
 				"linux/output",
 				"macos/cache",
 				"macos/runtime-output",
 				"macos/output"
-			]
+			],
+			"path": "."
+		},
+		{
+			"path": "/Users/hongli/Projects/passenger_autobuilder"
 		}
 	]
 }
