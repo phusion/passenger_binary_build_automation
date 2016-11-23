@@ -30,6 +30,7 @@ CONCURRENCY=${CONCURRENCY:-2}
 # that may be triggered if multiple containers are shut down at the same time.
 echo 'import random, time; time.sleep(random.random() * 4)' | python
 
+run rm -rf "$WORKSPACE/output"/*
 run mkdir -p "$WORKSPACE/cache/x86" "$WORKSPACE/output/x86" \
 	"$WORKSPACE/cache/x86_64" "$WORKSPACE/output/x86_64"
 
