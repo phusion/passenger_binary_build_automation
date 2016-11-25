@@ -11,9 +11,6 @@
 				"macos/output"
 			],
 			"path": "."
-		},
-		{
-			"path": "/Users/hongli/Projects/passenger_autobuilder"
 		}
 	]
 }
