@@ -1,0 +1,157 @@
+#!/bin/bash
+set -e
+ROOTDIR=`dirname "$0"`
+ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+SELFDIR=`dirname "$0"`
+SELFDIR=`cd "$SELFDIR" && pwd`
+DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
+source "$ROOTDIR/shared/lib/library.sh"
+
+INPUT_DIR=
+REPOSITORY_NAME=oss
+S3_BUCKET_NAME=passenger
+VERSION=
+SIGNING_KEY_FILE=
+FILE_SERVER_PASSWORD_FILE=
+AWS_ACCESS_KEY=
+AWS_SECRET_KEY_FILE=
+SIGNING_KEY_PASSWORD_FILE=
+
+function usage()
+{
+	echo "Usage: ./publish [OPTIONS]"
+	echo "Publish packaged Passenger binaries."
+	echo
+	echo "Required options:"
+	echo "  -i DIR     The output directory written to by package script"
+	echo "  -v VERSION Passenger version number"
+	echo "  -S PATH    File containing the package signing key"
+	echo "  -p PATH    File containing the binary build automation file server password"
+	echo "  -a KEY     Amazon S3 access key"
+	echo "  -s KEY     File containing the Amazon S3 secret key"
+	echo
+	echo "Optional options:"
+	echo "  -x PATH    File containing the package signing key password"
+	echo "  -E         Indicate that you are publishing Passenger Enterprise"
+	echo "  -h         Show usage"
+}
+
+function parse_options()
+{
+	local OPTIND=1
+	local opt
+	while getopts "i:v:S:p:a:s:x:Eh" opt; do
+		case "$opt" in
+		i)
+			INPUT_DIR="$OPTARG"
+			;;
+		v)
+			VERSION="$OPTARG"
+			;;
+		S)
+			SIGNING_KEY_FILE="$OPTARG"
+			;;
+		p)
+			FILE_SERVER_PASSWORD_FILE="$OPTARG"
+			;;
+		a)
+			AWS_ACCESS_KEY="$OPTARG"
+			;;
+		s)
+			AWS_SECRET_KEY_FILE="$OPTARG"
+			;;
+		x)
+			SIGNING_KEY_PASSWORD_FILE="$OPTARG"
+			;;
+		E)
+			REPOSITORY_NAME=enterprise
+			S3_BUCKET_NAME=enterprise-NQLVwRlu10n13
+			;;
+		h)
+			usage
+			exit
+			;;
+		*)
+			return 1
+			;;
+		esac
+	done
+
+	if [[ "$INPUT_DIR" = "" ]]; then
+		echo "ERROR: please specify an input directory with -i."
+		exit 1
+	fi
+	if [[ "$SIGNING_KEY_FILE" = "" ]]; then
+		echo "ERROR: please specify a package signing key with -S."
+		exit 1
+	fi
+	if [[ ! -e "$SIGNING_KEY_FILE" ]]; then
+		echo "ERROR: $SIGNING_KEY_FILE does not exist."
+		exit 1
+	fi
+	if [[ "$FILE_SERVER_PASSWORD_FILE" = "" ]]; then
+		echo "ERROR: please specify a file server password file with -p."
+		exit 1
+	fi
+	if [[ ! -e "$FILE_SERVER_PASSWORD_FILE" ]]; then
+		echo "ERROR: $FILE_SERVER_PASSWORD_FILE does not exist."
+		exit 1
+	fi
+	if [[ "$AWS_ACCESS_KEY" = "" ]]; then
+		echo "ERROR: please specify an AWS S3 access key with -a."
+		exit 1
+	fi
+	if [[ "$AWS_SECRET_KEY_FILE" = "" ]]; then
+		echo "ERROR: please specify an AWS S3 secret key file with -s."
+		exit 1
+	fi
+	if [[ ! -e "$AWS_SECRET_KEY_FILE" ]]; then
+		echo "ERROR: $AWS_SECRET_KEY_FILE does not exist."
+		exit 1
+	fi
+
+	if [[ "$SIGNING_KEY_PASSWORD_FILE" != "" && ! -e "$SIGNING_KEY_PASSWORD_FILE" ]]; then
+		echo "ERROR: $SIGNING_KEY_PASSWORD_FILE does not exist."
+		exit 1
+	fi
+}
+
+parse_options "$@"
+
+if tty -s; then
+	TTY_ARGS="-t -i"
+else
+	TTY_ARGS=
+fi
+
+EXTRA_DOCKER_ARGS=()
+INPUT_DIR="`absolute_path \"$INPUT_DIR\"`"
+FILE_SERVER_PASSWORD_FILE="`absolute_path \"$FILE_SERVER_PASSWORD_FILE\"`"
+AWS_SECRET_KEY_FILE="`absolute_path \"$AWS_SECRET_KEY_FILE\"`"
+
+if [[ "$SIGNING_KEY_PASSWORD_FILE" != "" ]]; then
+	DOCKER_ARGS+=(-v "$SIGNING_KEY_PASSWORD_FILE/signing_key_password:ro")
+fi
+
+export WORKDIR=`mktemp -d /tmp/publish.XXXXXXXX`
+function cleanup()
+{
+	run rm -rf "$WORKDIR"
+}
+
+echo "-------- Entering Docker container --------"
+exec docker run $TTY_ARGS --rm \
+	-v "$ROOTDIR:/system:ro" \
+	-v "$INPUT_DIR:/input:ro" \
+	-v "$SIGNING_KEY_FILE:/signing_key:ro" \
+	-v "$FILE_SERVER_PASSWORD_FILE:/file_server_password:ro" \
+	-v "$AWS_SECRET_KEY_FILE:/aws_secret_key:ro" \
+	-e "APP_UID=`/usr/bin/id -u`" \
+	-e "APP_GID=`/usr/bin/id -g`" \
+	-e "REPOSITORY_NAME=$REPOSITORY_NAME" \
+	-e "S3_BUCKET_NAME=$S3_BUCKET_NAME" \
+	-e "VERSION=$VERSION" \
+	-e "AWS_ACCESS_KEY=$AWS_ACCESS_KEY" \
+	"${EXTRA_DOCKER_ARGS[@]}" \
+	phusion/passenger_binary_build_automation_64:$DOCKER_IMAGE_MAJOR_VERSION \
+	/system/linux/support/publish-script-docker-entrypoint.sh

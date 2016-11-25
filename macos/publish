@@ -1,0 +1,122 @@
+#!/bin/bash
+set -e
+ROOTDIR=`dirname "$0"`
+ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+SELFDIR=`dirname "$0"`
+SELFDIR=`cd "$SELFDIR" && pwd`
+source "$ROOTDIR/shared/lib/library.sh"
+
+RUNTIME_DIR=
+INPUT_DIR=
+REPOSITORY_NAME=oss
+S3_BUCKET_NAME=passenger
+VERSION=
+FILE_SERVER_PASSWORD_FILE=
+AWS_ACCESS_KEY=
+AWS_SECRET_KEY_FILE=
+
+function usage()
+{
+	echo "Usage: ./publish [OPTIONS]"
+	echo "Publish packaged Passenger binaries."
+	echo
+	echo "Required options:"
+	echo "  -r DIR     Path to the runtime"
+	echo "  -i DIR     The output directory written to by package script"
+	echo "  -v VERSION Passenger version number"
+	echo "  -p PATH    File containing the binary build automation file server password"
+	echo "  -a KEY     Amazon S3 access key"
+	echo "  -s KEY     File containing the Amazon S3 secret key"
+	echo
+	echo "Optional options:"
+	echo "  -E         Indicate that you are publishing Passenger Enterprise"
+	echo "  -h         Show usage"
+}
+
+function parse_options()
+{
+	local OPTIND=1
+	local opt
+	while getopts "r:i:v:p:a:s:Eh" opt; do
+		case "$opt" in
+		r)
+			RUNTIME_DIR="$OPTARG"
+			;;
+		i)
+			INPUT_DIR="$OPTARG"
+			;;
+		v)
+			VERSION="$OPTARG"
+			;;
+		p)
+			FILE_SERVER_PASSWORD_FILE="$OPTARG"
+			;;
+		a)
+			AWS_ACCESS_KEY="$OPTARG"
+			;;
+		s)
+			AWS_SECRET_KEY_FILE="$OPTARG"
+			;;
+		E)
+			REPOSITORY_NAME=enterprise
+			S3_BUCKET_NAME=enterprise-NQLVwRlu10n13
+			;;
+		h)
+			usage
+			exit
+			;;
+		*)
+			return 1
+			;;
+		esac
+	done
+
+	if [[ "$RUNTIME_DIR" = "" ]]; then
+		echo "ERROR: please specify a runtime directory with -r."
+		exit 1
+	fi
+	if [[ ! -e "$RUNTIME_DIR" ]]; then
+		echo "ERROR: $RUNTIME_DIR does not exist."
+		exit 1
+	fi
+	if [[ "$INPUT_DIR" = "" ]]; then
+		echo "ERROR: please specify an input directory with -i."
+		exit 1
+	fi
+	if [[ "$FILE_SERVER_PASSWORD_FILE" = "" ]]; then
+		echo "ERROR: please specify a file server password file with -p."
+		exit 1
+	fi
+	if [[ "$AWS_ACCESS_KEY" = "" ]]; then
+		echo "ERROR: please specify an AWS S3 access key with -a."
+		exit 1
+	fi
+	if [[ "$AWS_SECRET_KEY_FILE" = "" ]]; then
+		echo "ERROR: please specify an AWS S3 secret key file with -s."
+		exit 1
+	fi
+}
+
+parse_options "$@"
+
+export RUNTIME_DIR="$RUNTIME_DIR"
+source "$SELFDIR/support/reset_environment.sh"
+export PATH="$RUNTIME_DIR/bin:$PATH"
+
+export INPUT_DIR="`absolute_path \"$INPUT_DIR\"`"
+export REPOSITORY_NAME
+export S3_BUCKET_NAME
+export VERSION
+export FILE_SERVER_PASSWORD="`cat "$FILE_SERVER_PASSWORD_FILE"`"
+export AWS_ACCESS_KEY
+export AWS_SECRET_KEY="`cat "$AWS_SECRET_KEY_FILE"`"
+
+export WORKDIR=`mktemp -d /tmp/publish.XXXXXXXX`
+function cleanup()
+{
+	run rm -rf "$WORKDIR"
+}
+
+export GPG_SIGNING_KEY=auto-software-signing@phusion.nl
+export GPG_OPTS=
+"$ROOTDIR/shared/publish/publish.sh"

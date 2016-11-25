@@ -95,6 +95,7 @@ When the above example build is finished, the output directory will contain thes
 Before you can build binaries for macOS, you must ensure that these prerequities are (manually) installed:
 
  * Xcode command-line developer tools.
+ * GPG.
  * [RVM](https://rvm.io).
  * All Ruby versions specified in the `shared/definitions/ruby_versions` file.
 
