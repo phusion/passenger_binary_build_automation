@@ -102,9 +102,17 @@ def activate_library_compilation_environment
   end
 end
 
-def activate_exe_compilation_environment
+def activate_passenger_agent_compilation_environment
   if IN_HOLY_BUILD_BOX
-    "#{ROOT}/linux/support/activate-exe-compilation-environment.sh"
+    "#{ROOT}/linux/support/activate-passenger-agent-compilation-environment.sh"
+  else
+    nil
+  end
+end
+
+def activate_nginx_compilation_environment
+  if IN_HOLY_BUILD_BOX
+    "#{ROOT}/linux/support/activate-nginx-compilation-environment.sh"
   else
     nil
   end

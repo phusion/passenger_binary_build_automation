@@ -15,10 +15,9 @@ task :nginx => ['nginx:source_copy', 'passenger:agent'] do
   end
 
   command =
-    "#{activate_exe_compilation_environment} " \
+    "#{activate_nginx_compilation_environment} " \
     "#{ROOT}/shared/build/configure-nginx.sh " \
     '--prefix=/tmp ' \
-    '--with-cc="ccache cc" ' \
     '--with-cc-opt="-Wno-error" ' \
     '--with-http_ssl_module ' \
     '--with-http_v2_module ' \
@@ -30,7 +29,7 @@ task :nginx => ['nginx:source_copy', 'passenger:agent'] do
     "--add-module=#{shesc $PASSENGER_SOURCE_DIR_COPY}/src/nginx_module || true"
   run(command.strip, chdir: $NGINX_SOURCE_DIR_COPY)
 
-  run("#{activate_exe_compilation_environment}" \
+  run("#{activate_nginx_compilation_environment}" \
     " env CCACHE_BASEDIR=#{shesc $NGINX_SOURCE_DIR_COPY}" \
     " make -C #{shesc $NGINX_SOURCE_DIR_COPY} -j#{CONCURRENCY}".strip)
   run("#{strip_all} #{shesc $NGINX_SOURCE_DIR_COPY}/objs/nginx")
@@ -60,7 +59,7 @@ namespace :passenger do
 
   desc 'Build Passenger agent binary'
   task :agent => :source_copy do
-    command = "#{activate_exe_compilation_environment}" \
+    command = "#{activate_passenger_agent_compilation_environment}" \
       " #{RVM_EXEC} ruby-#{DEFAULT_RUBY_VERSION}" \
       " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
       " drake nginx_without_native_support" \
