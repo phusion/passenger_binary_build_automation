@@ -133,7 +133,7 @@ FILE_SERVER_PASSWORD_FILE="`absolute_path \"$FILE_SERVER_PASSWORD_FILE\"`"
 AWS_SECRET_KEY_FILE="`absolute_path \"$AWS_SECRET_KEY_FILE\"`"
 
 if [[ "$SIGNING_KEY_PASSWORD_FILE" != "" ]]; then
-	DOCKER_ARGS+=(-v "$SIGNING_KEY_PASSWORD_FILE/signing_key_password:ro")
+	EXTRA_DOCKER_ARGS+=(-v "$SIGNING_KEY_PASSWORD_FILE/signing_key_password:ro")
 fi
 
 source "$ROOTDIR/shared/publish/determine_repo_and_bucket.sh"
