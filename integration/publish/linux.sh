@@ -1,4 +1,24 @@
 #!/bin/bash
+# Usage: integration/publish/linux.sh
+# This script is from the "Passenger binaries (release)" Jenkins job. It builds
+# portable binaries for Passenger and Nginx, runs tests against them and publishes
+# them to the binaries file server and to Amazon S3.
+#
+# Required environment variables:
+#
+#   WORKSPACE
+#   ENTERPRISE (true or false)
+#   TESTING (true or false)
+#
+# Optional environment variables:
+#
+#   PASSENGER_ROOT (defaults to $WORKSPACE)
+#   CONCURRENCY
+#
+# Sample invocation in a development environment:
+#
+#   env WORKSPACE=$HOME PASSENGER_ROOT=/passenger ./jenkins/test/test.sh
+
 set -e
 
 ROOTDIR="`dirname \"$0\"`"
@@ -87,7 +107,7 @@ run ./linux/test \
 	-i "$WORKSPACE/output/x86_64" \
 	-I "$WORKSPACE/output/x86_64" \
 	-a x86_64 \
-	-L ~/passenger-enterprise-license \
+	-L ~/passenger-enterprise-license
 
 echo
 echo "---------- Publishing x86 binaries ----------"
