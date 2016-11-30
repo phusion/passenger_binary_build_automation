@@ -8,12 +8,12 @@ source "$ROOTDIR/shared/lib/library.sh"
 
 RUNTIME_DIR=
 INPUT_DIR=
-REPOSITORY_NAME=oss
-S3_BUCKET_NAME=passenger
 VERSION=
 FILE_SERVER_PASSWORD_FILE=
 AWS_ACCESS_KEY=
 AWS_SECRET_KEY_FILE=
+ENTERPRISE=false
+TESTING=true
 
 function usage()
 {
@@ -30,6 +30,7 @@ function usage()
 	echo
 	echo "Optional options:"
 	echo "  -E         Indicate that you are publishing Passenger Enterprise"
+	echo "  -u         Indicate that you are publishing for production (as opposed to testing)"
 	echo "  -h         Show usage"
 }
 
@@ -37,7 +38,7 @@ function parse_options()
 {
 	local OPTIND=1
 	local opt
-	while getopts "r:i:v:p:a:s:Eh" opt; do
+	while getopts "r:i:v:p:a:s:Euh" opt; do
 		case "$opt" in
 		r)
 			RUNTIME_DIR="$OPTARG"
@@ -58,8 +59,10 @@ function parse_options()
 			AWS_SECRET_KEY_FILE="$OPTARG"
 			;;
 		E)
-			REPOSITORY_NAME=enterprise
-			S3_BUCKET_NAME=enterprise-NQLVwRlu10n13
+			ENTERPRISE=true
+			;;
+		u)
+			TESTING=false
 			;;
 		h)
 			usage
@@ -101,15 +104,15 @@ parse_options "$@"
 
 export RUNTIME_DIR="$RUNTIME_DIR"
 source "$SELFDIR/support/reset_environment.sh"
+source "$ROOTDIR/shared/publish/determine_repo_and_bucket.sh"
 export PATH="$RUNTIME_DIR/bin:$PATH"
 
 export INPUT_DIR="`absolute_path \"$INPUT_DIR\"`"
-export REPOSITORY_NAME
-export S3_BUCKET_NAME
 export VERSION
 export FILE_SERVER_PASSWORD="`cat "$FILE_SERVER_PASSWORD_FILE"`"
 export AWS_ACCESS_KEY
 export AWS_SECRET_KEY="`cat "$AWS_SECRET_KEY_FILE"`"
+export TESTING
 
 export WORKDIR=`mktemp -d /tmp/publish.XXXXXXXX`
 function cleanup()

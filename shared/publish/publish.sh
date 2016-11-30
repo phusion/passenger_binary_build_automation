@@ -13,6 +13,7 @@ require_envvar REPOSITORY_NAME "$REPOSITORY_NAME"
 require_envvar S3_BUCKET_NAME "$S3_BUCKET_NAME"
 require_envvar AWS_ACCESS_KEY "$AWS_ACCESS_KEY"
 require_envvar AWS_SECRET_KEY "$AWS_SECRET_KEY"
+require_envvar TESTING "$TESTING"
 
 
 if [[ -e /usr/bin/sw_vers ]]; then
@@ -35,13 +36,23 @@ done
 
 run env GZIP=-1 tar -czf "$WORKDIR/content.tar.gz" -C "$WORKDIR/content" .
 
+CURL_ARGS=()
+if $TESTING; then
+	CURL_ARGS+=(-F overwrite=true)
+fi
 echo "user = \"api:$FILE_SERVER_PASSWORD\"" > "$WORKDIR/curl.cfg"
 run curl --fail -L -K "$WORKDIR/curl.cfg" \
 	-F content=@"$WORKDIR/content.tar.gz" \
 	-F repository="$REPOSITORY_NAME" \
 	-F subdir="$VERSION" \
+	"${CURL_ARGS[@]}" \
 	https://oss-binaries.phusionpassenger.com/binary_build_automation/add
+echo
 
+S3CMD_ARGS=()
+if ! $TESTING; then
+	S3CMD_ARGS+=(--skip-existing)
+fi
 cat >>"$WORKDIR/s3cfg" <<EOF
 access_key = $AWS_ACCESS_KEY
 secret_key = $AWS_SECRET_KEY
@@ -50,10 +61,10 @@ run s3cmd -c "$WORKDIR/s3cfg" \
 	--storage-class=STANDARD_IA \
 	--human-readable-sizes \
 	--follow-symlinks \
-	--skip-existing \
 	--no-delete-removed \
 	--acl-public \
 	--guess-mime-type \
+	"${S3CMD_ARGS[@]}" \
 	sync \
 	"$WORKDIR/content/" \
 	"s3://phusion-passenger/binaries/$S3_BUCKET_NAME/by_release/$VERSION/"

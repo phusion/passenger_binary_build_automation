@@ -8,14 +8,14 @@ DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major
 source "$ROOTDIR/shared/lib/library.sh"
 
 INPUT_DIR=
-REPOSITORY_NAME=oss
-S3_BUCKET_NAME=passenger
 VERSION=
 SIGNING_KEY_FILE=
 FILE_SERVER_PASSWORD_FILE=
 AWS_ACCESS_KEY=
 AWS_SECRET_KEY_FILE=
 SIGNING_KEY_PASSWORD_FILE=
+ENTERPRISE=false
+TESTING=true
 
 function usage()
 {
@@ -33,6 +33,7 @@ function usage()
 	echo "Optional options:"
 	echo "  -x PATH    File containing the package signing key password"
 	echo "  -E         Indicate that you are publishing Passenger Enterprise"
+	echo "  -u         Indicate that you are publishing for production (as opposed to testing)"
 	echo "  -h         Show usage"
 }
 
@@ -40,7 +41,7 @@ function parse_options()
 {
 	local OPTIND=1
 	local opt
-	while getopts "i:v:S:p:a:s:x:Eh" opt; do
+	while getopts "i:v:S:p:a:s:x:Euh" opt; do
 		case "$opt" in
 		i)
 			INPUT_DIR="$OPTARG"
@@ -64,8 +65,10 @@ function parse_options()
 			SIGNING_KEY_PASSWORD_FILE="$OPTARG"
 			;;
 		E)
-			REPOSITORY_NAME=enterprise
-			S3_BUCKET_NAME=enterprise-NQLVwRlu10n13
+			ENTERPRISE=true
+			;;
+		u)
+			TESTING=false
 			;;
 		h)
 			usage
@@ -133,6 +136,8 @@ if [[ "$SIGNING_KEY_PASSWORD_FILE" != "" ]]; then
 	DOCKER_ARGS+=(-v "$SIGNING_KEY_PASSWORD_FILE/signing_key_password:ro")
 fi
 
+source "$ROOTDIR/shared/publish/determine_repo_and_bucket.sh"
+
 export WORKDIR=`mktemp -d /tmp/publish.XXXXXXXX`
 function cleanup()
 {
@@ -148,6 +153,7 @@ exec docker run $TTY_ARGS --rm \
 	-v "$AWS_SECRET_KEY_FILE:/aws_secret_key:ro" \
 	-e "APP_UID=`/usr/bin/id -u`" \
 	-e "APP_GID=`/usr/bin/id -g`" \
+	-e "TESTING=$TESTING" \
 	-e "REPOSITORY_NAME=$REPOSITORY_NAME" \
 	-e "S3_BUCKET_NAME=$S3_BUCKET_NAME" \
 	-e "VERSION=$VERSION" \
