@@ -9,6 +9,7 @@ PASSENGER_DIR=
 UNPACKAGED_INPUT_DIR=
 PACKAGED_INPUT_DIR=
 ARCHITECTURE=
+LICENSE_KEY=
 
 function usage()
 {
@@ -22,6 +23,7 @@ function usage()
 	echo "  -a ARCH    Architecture to test for (x86, x86_64)"
 	echo
 	echo "Optional options:"
+	echo "  -L PATH    Path to Passenger Enterprise license key"
 	echo "  -h         Show usage"
 }
 
@@ -30,7 +32,7 @@ function parse_options()
 	local OPTIND=1
 	local ORIG_ARGV
 	local opt
-	while getopts "p:i:I:a:h" opt; do
+	while getopts "p:i:I:a:L:h" opt; do
 		case "$opt" in
 		p)
 			PASSENGER_DIR="$OPTARG"
@@ -43,6 +45,9 @@ function parse_options()
 			;;
 		a)
 			ARCHITECTURE="$OPTARG"
+			;;
+		L)
+			LICENSE_KEY="$OPTARG"
 			;;
 		h)
 			usage
@@ -89,14 +94,20 @@ function parse_options()
 	if [[ "$ARCHITECTURE" != x86 && "$ARCHITECTURE" != x86_64 ]]; then
 		echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either x86 or x86_64."
 	fi
+	if [[ "$LICENSE_KEY" != "" && ! -e "$LICENSE_KEY" ]]; then
+		echo "ERROR: $LICENSE_KEY does not exist."
+		exit 1
+	fi
 }
 
 parse_options "$@"
 
+DOCKER_EXTRA_ARGS=()
 if tty -s; then
-	TTY_ARGS="-t -i"
-else
-	TTY_ARGS=
+	DOCKER_EXTRA_ARGS+=(-t -i)
+fi
+if [[ "$LICENSE_KEY" != "" ]]; then
+	DOCKER_EXTRA_ARGS+=(-v "$LICENSE_KEY:/etc/passenger-enterprise-license:ro")
 fi
 if [[ "$ARCHITECTURE" = x86 ]]; then
 	DOCKER_IMAGE=phusion/passenger_binary_build_automation_32
@@ -111,12 +122,13 @@ PACKAGED_INPUT_DIR="`absolute_path \"$PACKAGED_INPUT_DIR\"`"
 UNPACKAGED_INPUT_DIR="`absolute_path \"$UNPACKAGED_INPUT_DIR\"`"
 
 echo "-------- Entering Docker container --------"
-exec docker run $TTY_ARGS --rm \
+exec docker run --rm \
 	-v "$ROOTDIR:/system:ro" \
 	-v "$PASSENGER_DIR:/passenger:ro" \
 	-v "$PACKAGED_INPUT_DIR:/packaged:ro" \
 	-v "$UNPACKAGED_INPUT_DIR:/unpackaged:ro" \
 	-e "APP_UID=`/usr/bin/id -u`" \
 	-e "APP_GID=`/usr/bin/id -g`" \
+	"${DOCKER_EXTRA_ARGS[@]}" \
 	$DOCKER_IMAGE:$DOCKER_IMAGE_MAJOR_VERSION \
 	$LINUX32 /system/linux/support/test-script-docker-entrypoint.sh

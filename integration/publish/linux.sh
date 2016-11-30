@@ -27,6 +27,7 @@ REQUIRED_FILES=(
 	~/.passenger_binary_build_automation_file_server_password
 	~/.passenger_binary_build_automation_s3_access_key
 	~/.passenger_binary_build_automation_s3_password
+	~/passenger-enterprise-license
 )
 for F in "${REQUIRED_FILES[@]}"; do
 	if [[ ! -e $F ]]; then
@@ -72,7 +73,8 @@ run ./linux/test \
 	-p "$PASSENGER_ROOT" \
 	-i "$WORKSPACE/output/x86" \
 	-I "$WORKSPACE/output/x86" \
-	-a x86
+	-a x86 \
+	-L ~/passenger-enterprise-license
 
 echo
 echo "---------- Testing x86_64 binaries ----------"
@@ -84,7 +86,8 @@ run ./linux/test \
 	-p "$PASSENGER_ROOT" \
 	-i "$WORKSPACE/output/x86_64" \
 	-I "$WORKSPACE/output/x86_64" \
-	-a x86_64
+	-a x86_64 \
+	-L ~/passenger-enterprise-license \
 
 echo
 echo "---------- Publishing x86 binaries ----------"
