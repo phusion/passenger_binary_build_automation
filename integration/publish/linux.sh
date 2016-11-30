@@ -7,16 +7,17 @@ ROOTDIR="`pwd`"
 source "./shared/lib/library.sh"
 
 require_envvar WORKSPACE "$WORKSPACE"
-require_envvar REPOSITORY "$REPOSITORY"
+require_envvar ENTERPRISE "$ENTERPRISE"
+require_envvar TESTING "$TESTING"
 
 PASSENGER_ROOT="${PASSENGER_ROOT:-$WORKSPACE}"
 CONCURRENCY=${CONCURRENCY:-2}
 
 PUBLISH_ARGS=()
-if [[ "$REPOSITORY" =~ enterprise ]]; then
+if $ENTERPRISE; then
 	PUBLISH_ARGS+=(-E)
 fi
-if ! [[ "$REPOSITORY" =~ testing ]]; then
+if ! $TESTING; then
 	PUBLISH_ARGS+=(-u)
 fi
 
