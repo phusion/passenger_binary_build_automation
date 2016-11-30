@@ -10,7 +10,7 @@ require_envvar WORKSPACE "$WORKSPACE"
 require_envvar ENTERPRISE "$ENTERPRISE"
 require_envvar TESTING "$TESTING"
 
-PASSENGER_ROOT="${PASSENGER_ROOT:-$WORKSPACE}"
+export PASSENGER_ROOT="${PASSENGER_ROOT:-$WORKSPACE}"
 CONCURRENCY=${CONCURRENCY:-2}
 
 PUBLISH_ARGS=()
@@ -24,7 +24,6 @@ fi
 REQUIRED_FILES=(
 	~/auto-software-signing@phusion.nl.asc
 	~/.auto-software-signing@phusion.nl.password
-	~/.passenger_binary_build_automation_file_server_password
 	~/.passenger_binary_build_automation_file_server_password
 	~/.passenger_binary_build_automation_s3_access_key
 	~/.passenger_binary_build_automation_s3_password
