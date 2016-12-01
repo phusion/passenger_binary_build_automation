@@ -12,12 +12,16 @@ Phusion uses this system to build Passenger binaries, immediately following a so
 
  * [Overview](#overview)
    - [Overview of binaries](#overview-of-binaries)
-   - [How the system works: the build environment](#how-the-system-works-the-build-environment)
+   - [How the system works](#how-the-system-works)
  * [Building binaries](#building-binaries)
    - [For Linux](#for-linux)
    - [For macOS](#for-macos)
  * [Maintenance](#maintenance)
+   - [Upgrading Ruby](#upgrading-ruby)
+   - [Upgrading Nginx](#upgrading-nginx)
    - [Upgrading libraries](#upgrading-libraries)
+   - [Updating the Docker container and runtime](#updating-the-docker-container-and-runtime)
+   - [Updating the `passenger_binary_build_automation` version lock in Passenger](#updating-the-passenger_binary_build_automation-version-lock-in-passenger)
  * [Related projects](#related-projects)
 
 ## Overview
@@ -44,13 +48,9 @@ The Nginx version that will be compiled is the version preferred by the Passenge
  * `http_geoip_module`
  * `http_realip_module`
 
-### How the system works: the build environment
+### How the system works
 
-`passenger_binary_build_automation` works by building Passenger and Nginx inside (semi-)controlled build environments.
-
-On Linux, the build environment is a Docker container. The container is based [Holy Build Box](http://phusion.github.io/holy-build-box/) and contains an old glibc as well as a bunch of static libraries. Because Docker fully isolates a container from its host, this build environment is fully controlled: a build always succeeds no matter how the host is set up.
-
-On macOS, the build environment consists of a directory containing select tools and static libraries (the runtime), plus bunch of environment variables that try to make sure the compiler only compiles against our selected static libraries. This is a semi-controlled build environment: building *usually* works, but *may* fail if the host is set up in such a way that it interferes with the build. However we've found in practice that it's good enough.
+Learn more at: [How it works](HOW-IT-WORKS.md)
 
 ## Building binaries
 
@@ -142,21 +142,55 @@ The macOS build script does not build Ruby native extensions because we haven't 
 
 ## Maintenance
 
+### Upgrading Ruby
+
+`passenger_binary_build_automation` builds native extensions for a select number of Ruby versions. If a new version of Ruby has been released then we should re-evaluate which Ruby versions to build extensions for.
+
+The policy is to build native extensions for the latest patchlevel version of all minor Ruby versions that are somewhat widespread in use. For example, as of 1 December 2016, the list is: 1.9.3, 2.0.0, 2.1.9, 2.2.5, 2.3.3. Suppose that Ruby 2.3.4 is released one day later, then we should build against 1.9.3, 2.0.0, 2.1.9, 2.2.5, 2.3.4 (dropping 2.3.3). Suppose a year later, 2.4.0 is released and we believe that 1.9 is no longer in widespread use. Then we can change the list to: 2.0.0, 2.1.9, 2.2.5, 2.3.4, 2.4.0.
+
+The procedure for updating the list of Ruby versions to build against, is as follows:
+
+ 1. Change the file `shared/definitions/ruby_versions` accordingly. One Ruby version number per line.
+ 2. [Update the Docker container and the macOS runtime](#update-container-and-runtime).
+ 3. [Update the `passenger_binary_build_automation` version lock in Passenger](#update-passenger-lock).
+ 4. Either release a new Passenger version; or rebuild binaries against the current Passenger version and republish them through the Phusion Jenkins interface.
+
+### Upgrading Nginx
+
+`passenger_binary_build_automation` does not control which Nginx version to build. `passenger_binary_build_automation` builds the Nginx version set the `PREFERRED_NGINX_VERSION` constant in the Passenger source code. So if you want to upgrade Nginx then change that constant in the Passenger source code.
+
 ### Upgrading libraries
 
 `passenger_binary_build_automation` statically links a number of libraries into the Passenger agent and Nginx. These libraries need to be updated once in a while, e.g. when important bugs or security vulnerabilities have been fixed. The procedure for doing that is as follows.
 
  1. Change the relevant library version numbers in `shared/definitions`.
- 2. Bump the version numbers in `shared/definitions/docker_image_version` and `shared/definitions/docker_image_major_version`.
- 3. Rebuild the Docker container and the macOS runtime:
+ 2. [Update the Docker container and the macOS runtime](#update-container-and-runtime).
+ 3. [Update the `passenger_binary_build_automation` version lock in Passenger](#update-passenger-lock).
+ 4. Either release a new Passenger version; or rebuild binaries against the current Passenger version and republish them through the Phusion Jenkins interface.
+
+<a name="update-container-and-runtime"></a>
+
+### Updating the Docker container and runtime
+
+As described in [How it works](HOW-IT-WORKS.md), `passenger_binary_build_automation` works through a Docker container (Linux) or a runtime environment (macOS). Sometimes you may want to update this container or runtime, e.g. because you want to update libraries and depencies. The procedure for updating the Docker container (rebuilding and republishing it), and for rebuilding the macOS runtime, is as follows:
+
+ 1. Bump the version numbers in `shared/definitions/docker_image_version` and `shared/definitions/docker_image_major_version`.
+ 2. Rebuild the Docker container and the macOS runtime:
 
     - On Linux: run `./linux/setup-docker-image-32` and `./linux/setup-docker-image-64`.
     - On macOS: remove the runtime directory and rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)).
 
  4. On Linux: publish the new Docker container to the Docker Hub: run `./linux/publish-docker-images`
  5. Git commit and push.
- 6. In the Passenger Git repository, update the `packaging/binaries` submodule to this commit.
- 7. Either release a new Passenger version, or rebuild binaries against the current Passenger version and rebpulish them.
+
+<a name="update-passenger-lock"></a>
+
+### Updating the `passenger_binary_build_automation` version lock in Passenger
+
+As described in [How it works](HOW-IT-WORKS.md), the Passenger Git repository locks down to a specific version of `passenger_binary_build_automation` using the Git submodule system. Any changes in `passenger_binary_build_automation` does not take effect until you update the lock inside Passenger by bumping the submodule pointer. The procedure for doing that is as follows:
+
+ 1. In the Passenger Git repository, update the `packaging/binaries` submodule to the `passenger_binary_build_automation` commit you want.
+ 2. Git commit and push Passenger.
 
 ## Related projects
 
