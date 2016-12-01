@@ -25,6 +25,9 @@ cd "$ROOTDIR/../.."
 ROOTDIR="`pwd`"
 source "./shared/lib/library.sh"
 
+require_envvar ENTERPRISE "$ENTERPRISE"
+require_envvar TESTING "$TESTING"
+
 if [[ "$PASSENGER_ROOT" = "" ]]; then
 	PASSENGER_ROOT="$ROOTDIR/../.."
 	export PASSENGER_ROOT="`cd "$ROOTDIR" && pwd`"
