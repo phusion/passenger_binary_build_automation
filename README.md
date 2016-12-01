@@ -117,6 +117,7 @@ Use the `macos/build` script to build binaries for macOS. Here is an example:
 
     $ cd macos
     $ ./build \
+        -r runtime-output \
         -p /path-to-passenger-source \
         -c cache \
         -o output \
@@ -124,6 +125,7 @@ Use the `macos/build` script to build binaries for macOS. Here is an example:
 
 The `build` script expects at least the following arguments:
 
+ * `-r`: path to the directory in which the runtime is stored.
  * `-p`: path to the Passenger source code that you want to build.
  * `-c`: a directory which the script can use for caching data, in order to make subsequent builds faster.
  * `-o`: a directory to store the built binaries in.
