@@ -32,6 +32,7 @@ require_envvar TESTING "$TESTING"
 
 export PASSENGER_ROOT="${PASSENGER_ROOT:-$WORKSPACE}"
 CONCURRENCY=${CONCURRENCY:-2}
+DOCKER_IMAGE_MAJOR_VERSION=$(cat "shared/definitions/docker_image_major_version")
 
 PUBLISH_ARGS=()
 if $ENTERPRISE; then
@@ -58,6 +59,9 @@ done
 
 echo "+ Determining Passenger version number"
 PASSENGER_VERSION="`"$ROOTDIR/shared/publish/determine_version_number.sh"`"
+
+run docker pull phusion/passenger_binary_build_automation_32:$DOCKER_IMAGE_MAJOR_VERSION
+run docker pull phusion/passenger_binary_build_automation_64:$DOCKER_IMAGE_MAJOR_VERSION
 
 run rm -rf "$WORKSPACE/output"/*
 run mkdir -p "$WORKSPACE/cache/x86" "$WORKSPACE/output/x86" \

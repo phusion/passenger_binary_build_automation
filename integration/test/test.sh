@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage: test.sh
+# Usage: integration/test/test.sh
 # This script is from the "Passenger binaries test" Jenkins job. It builds
 # portable binaries for Passenger and Nginx and runs tests against them.
 #
@@ -27,6 +27,7 @@ require_envvar ENTERPRISE "$ENTERPRISE"
 
 PASSENGER_ROOT="${PASSENGER_ROOT:-$WORKSPACE}"
 CONCURRENCY=${CONCURRENCY:-2}
+DOCKER_IMAGE_MAJOR_VERSION=$(cat "shared/definitions/docker_image_major_version")
 
 if [[ ! -e ~/passenger-enterprise-license ]]; then
 	echo "ERROR: ~/passenger-enterprise-license required."
@@ -40,6 +41,9 @@ echo 'import random, time; time.sleep(random.random() * 4)' | python
 run rm -rf "$WORKSPACE/output"/*
 run mkdir -p "$WORKSPACE/cache/x86" "$WORKSPACE/output/x86" \
 	"$WORKSPACE/cache/x86_64" "$WORKSPACE/output/x86_64"
+
+run docker pull phusion/passenger_binary_build_automation_32:$DOCKER_IMAGE_MAJOR_VERSION
+run docker pull phusion/passenger_binary_build_automation_64:$DOCKER_IMAGE_MAJOR_VERSION
 
 echo
 echo "---------- Building x86 binaries ----------"
