@@ -52,10 +52,10 @@ if should_git_copy_input_dir; then
 
 	cd "$OUTPUT_DIR"
 else
-	run "$ROOTDIR/shared/build/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR"
+	run "$ROOTDIR/shared/build/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR" \
+		--exclude config.rb download_cache buildout
 	cd "$OUTPUT_DIR"
 	run env OUTPUT_DIR= rake clean CACHING=false
-	run rm -rf config.rb download_cache
 fi
 
 header "Finalizing source directory"
