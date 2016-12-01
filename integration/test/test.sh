@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: integration/test/test.sh
-# This script is from the "Passenger binaries test" Jenkins job. It builds
+# This script is invoked from the "Passenger binaries test" Jenkins job. It builds
 # portable binaries for Passenger and Nginx and runs tests against them.
 #
 # Required environment variables:
@@ -15,7 +15,7 @@
 #
 # Sample invocation in a development environment:
 #
-#   env WORKSPACE=$HOME PASSENGER_ROOT=/passenger ./jenkins/test/test.sh
+#   env WORKSPACE=$HOME PASSENGER_ROOT=/passenger ./integration/test/test.sh
 
 set -e
 SELFDIR=`dirname "$0"`

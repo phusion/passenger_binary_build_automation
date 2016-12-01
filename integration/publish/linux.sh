@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: integration/publish/linux.sh
-# This script is from the "Passenger binaries (release)" Jenkins job. It builds
+# This script is invoked from the "Passenger binaries (release)" Jenkins job. It builds
 # portable binaries for Passenger and Nginx, runs tests against them and publishes
 # them to the binaries file server and to Amazon S3.
 #
@@ -17,7 +17,7 @@
 #
 # Sample invocation in a development environment:
 #
-#   env WORKSPACE=$HOME PASSENGER_ROOT=/passenger ./jenkins/test/test.sh
+#   env WORKSPACE=$HOME PASSENGER_ROOT=/passenger ./integration/publish/linux.sh
 
 set -e
 

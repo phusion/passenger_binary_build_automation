@@ -10,7 +10,7 @@
 
 `passenger_binary_build_automation` works by building Passenger and Nginx inside (semi-)controlled build environments.
 
-On Linux, the build environment is a Docker container. The container is based [Holy Build Box](http://phusion.github.io/holy-build-box/) and contains an old glibc as well as a bunch of static libraries. Because Docker fully isolates a container from its host, this build environment is fully controlled: a build always succeeds no matter how the host is set up.
+On Linux, the build environment is a Docker container. The container is based on [Holy Build Box](http://phusion.github.io/holy-build-box/) and contains an old glibc as well as a bunch of static libraries. Because Docker fully isolates a container from its host, this build environment is fully controlled: a build always succeeds no matter how the host is set up.
 
 On macOS, the build environment consists of a directory containing select tools and static libraries (the runtime), plus bunch of environment variables that try to make sure the compiler only compiles against our selected static libraries. This is a semi-controlled build environment: building *usually* works, but *may* fail if the host is set up in such a way that it interferes with the build. However we've found in practice that it's good enough.
 
