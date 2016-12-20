@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+COMMON_FLAGS="-DCURL_IS_STATICALLY_LINKED"
+export EXTRA_CFLAGS="$COMMON_FLAGS"
+export EXTRA_CXXFLAGS="$COMMON_FLAGS"
+
+exec "$@"

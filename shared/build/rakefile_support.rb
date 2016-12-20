@@ -106,7 +106,7 @@ def activate_passenger_agent_compilation_environment
   if IN_HOLY_BUILD_BOX
     "#{ROOT}/linux/support/activate-passenger-agent-compilation-environment.sh"
   else
-    nil
+    "#{ROOT}/macos/support/activate-passenger-agent-compilation-environment.sh"
   end
 end
 
