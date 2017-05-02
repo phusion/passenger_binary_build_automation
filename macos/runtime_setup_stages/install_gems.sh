@@ -68,7 +68,7 @@ for RUBY_VERSION in "${RUBY_VERSIONS[@]}"; do
     if run_ruby $RUBY_VERSION ruby -v &>/dev/null; then
         echo "Ruby $RUBY_VERSION: ok"
     else
-        echo "Ruby $RUBY_VERSION: NOT INSTALLED!"
+        echo "Ruby $RUBY_VERSION: NOT INSTALLED! Please install it!"
         ALL_RUBIES_OK=false
     fi
 done
