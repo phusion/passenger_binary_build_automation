@@ -43,6 +43,33 @@ task :nginx => ['nginx:source_copy', 'passenger:agent'] do
     verbose: true)
 end
 
+def agent_command_builder
+  if RVM_EXEC.nil?
+    "#{activate_passenger_agent_compilation_environment}" \
+      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+      " $HOME/.rbenv/versions/#{DEFAULT_RUBY_VERSION}/bin/drake nginx_without_native_support" \
+      " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
+  else
+    "#{activate_passenger_agent_compilation_environment}" \
+      " #{RVM_EXEC} ruby-#{DEFAULT_RUBY_VERSION}" \
+      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+      " drake nginx_without_native_support" \
+      " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
+  end
+end
+
+def library_command_builder
+  if RVM_EXEC.nil?
+    "#{activate_library_compilation_environment}" \
+      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+      " $HOME/.rbenv/versions/#{ruby_version}/bin/drake native_support OUTPUT_DIR=".strip
+  else
+    "#{activate_library_compilation_environment}" \
+      " #{RVM_EXEC} ruby-#{ruby_version}" \
+      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+      " drake native_support OUTPUT_DIR=".strip
+  end
+end
 
 namespace :passenger do
   task :source_copy do
@@ -59,12 +86,7 @@ namespace :passenger do
 
   desc 'Build Passenger agent binary'
   task :agent => :source_copy do
-    command = "#{activate_passenger_agent_compilation_environment}" \
-      " #{RVM_EXEC} ruby-#{DEFAULT_RUBY_VERSION}" \
-      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-      " drake nginx_without_native_support" \
-      " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
-    run(command, chdir: $PASSENGER_SOURCE_DIR_COPY)
+    run(agent_command_builder, chdir: $PASSENGER_SOURCE_DIR_COPY)
 
     run("#{strip_all} buildout/support-binaries/PassengerAgent",
       chdir: $PASSENGER_SOURCE_DIR_COPY)
@@ -94,11 +116,7 @@ if RUBY_PLATFORM !~ /darwin/
     RUBY_VERSIONS.each do |ruby_version|
       desc "Build Ruby #{ruby_version} extension binary"
       task "ruby_extension:#{ruby_version}" => :source_copy do
-        command = "#{activate_library_compilation_environment}" \
-          " #{RVM_EXEC} ruby-#{ruby_version}" \
-          " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-          " drake native_support OUTPUT_DIR=".strip
-        run(command, chdir: $PASSENGER_SOURCE_DIR_COPY)
+        run(library_command_builder, chdir: $PASSENGER_SOURCE_DIR_COPY)
 
         output_file = Dir["#{$PASSENGER_SOURCE_DIR_COPY}" \
           "/buildout/ruby/ruby-#{ruby_version}-*/*.#{libext}"].first

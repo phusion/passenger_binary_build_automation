@@ -5,6 +5,7 @@ source /system/shared/lib/library.sh
 
 RUBY_VERSIONS=(`cat /system/shared/definitions/ruby_versions`)
 LAST_RUBY_VERSION=${RUBY_VERSIONS[${#RUBY_VERSIONS[@]} - 1]}
+export RVM_EXEC=/usr/local/rvm/bin/rvm-exec
 
 export CCACHE_DIR=/cache/ccache
 export CCACHE_COMPRESS=1

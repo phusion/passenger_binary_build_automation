@@ -54,7 +54,7 @@ def set_constants_and_envvars
     set_constant_and_envvar :CONCURRENCY, getenv('CONCURRENCY', '2').to_i
     set_constant_and_envvar :IN_HOLY_BUILD_BOX, getenv('IN_HOLY_BUILD_BOX', 'false') == 'true'
     set_constant_and_envvar :NGINX_DIR, getenv('NGINX_DIR', nil)
-    set_constant_and_envvar :RVM_EXEC, getenv('RVM_EXEC', 'rvm-exec')
+    set_constant_and_envvar :RVM_EXEC, getenv('RVM_EXEC', nil)
   end
 end
 
