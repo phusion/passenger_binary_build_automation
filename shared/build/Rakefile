@@ -47,7 +47,7 @@ def agent_command_builder
   if RVM_EXEC.nil?
     "#{activate_passenger_agent_compilation_environment}" \
       " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-      " $HOME/.rbenv/versions/#{DEFAULT_RUBY_VERSION}/bin/drake nginx_without_native_support" \
+      " RBENV_VERSION=#{DEFAULT_RUBY_VERSION} $HOME/.rbenv/shims/drake nginx_without_native_support" \
       " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
   else
     "#{activate_passenger_agent_compilation_environment}" \
@@ -62,7 +62,7 @@ def library_command_builder
   if RVM_EXEC.nil?
     "#{activate_library_compilation_environment}" \
       " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-      " $HOME/.rbenv/versions/#{ruby_version}/bin/drake native_support OUTPUT_DIR=".strip
+      " RBENV_VERSION=#{ruby_version} $HOME/.rbenv/shims/drake native_support OUTPUT_DIR=".strip
   else
     "#{activate_library_compilation_environment}" \
       " #{RVM_EXEC} ruby-#{ruby_version}" \
