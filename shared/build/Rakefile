@@ -58,7 +58,7 @@ def agent_command_builder
   end
 end
 
-def library_command_builder
+def library_command_builder(ruby_version)
   if RVM_EXEC.nil?
     "#{activate_library_compilation_environment}" \
       " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
@@ -116,7 +116,7 @@ if RUBY_PLATFORM !~ /darwin/
     RUBY_VERSIONS.each do |ruby_version|
       desc "Build Ruby #{ruby_version} extension binary"
       task "ruby_extension:#{ruby_version}" => :source_copy do
-        run(library_command_builder, chdir: $PASSENGER_SOURCE_DIR_COPY)
+        run(library_command_builder(ruby_version), chdir: $PASSENGER_SOURCE_DIR_COPY)
 
         output_file = Dir["#{$PASSENGER_SOURCE_DIR_COPY}" \
           "/buildout/ruby/ruby-#{ruby_version}-*/*.#{libext}"].first
