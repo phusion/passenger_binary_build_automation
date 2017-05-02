@@ -9,7 +9,7 @@ ZLIB_VERSION=$(cat "$ROOTDIR/shared/definitions/zlib_version")
 header "Installing zlib $ZLIB_VERSION"
 download_and_extract zlib-$ZLIB_VERSION.tar.gz \
 	zlib-$ZLIB_VERSION \
-	http://zlib.net/zlib-$ZLIB_VERSION.tar.gz
+	http://zlib.net/fossils/zlib-$ZLIB_VERSION.tar.gz
 run rm -f /tmp/zlib-$ZLIB_VERSION.tar.gz
 run env CFLAGS='-O2 -fvisibility=hidden' ./configure --prefix="$OUTPUT_DIR" --static
 run make -j$CONCURRENCY
