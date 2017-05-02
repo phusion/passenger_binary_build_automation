@@ -170,7 +170,7 @@ The procedure for updating the list of Ruby versions to build against, is as fol
 
 <a name="update-container-and-runtime"></a>
 
-### Updating the Docker container and runtime
+### Updating the Docker container and macOS runtime
 
 As described in [How it works](HOW-IT-WORKS.md), `passenger_binary_build_automation` works through a Docker container (Linux) or a runtime environment (macOS). Sometimes you may want to update this container or runtime, e.g. because you want to update libraries and depencies. The procedure for updating the Docker container (rebuilding and republishing it), and for rebuilding the macOS runtime, is as follows:
 
@@ -178,7 +178,7 @@ As described in [How it works](HOW-IT-WORKS.md), `passenger_binary_build_automat
  2. Rebuild the Docker container and the macOS runtime:
 
     - On Linux: run `./linux/setup-docker-image-32` and `./linux/setup-docker-image-64`.
-    - On macOS: remove the runtime directory and rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)).
+    - On macOS: remove the runtime directory and rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)). During a release the runtime directory is hardcoded to the `~/.passenger_binary_build_automation/` dir.
 
  4. On Linux: publish the new Docker container to the Docker Hub: run `./linux/publish-docker-images`
  5. Git commit and push.
