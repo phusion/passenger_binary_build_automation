@@ -11,7 +11,7 @@ for RUBY_VERSION in "${RUBY_VERSIONS[@]}"; do
 	run /usr/local/rvm/bin/rvm-exec ruby-$RUBY_VERSION gem install bundler drake --no-document
 	run strip --strip-all /usr/local/rvm/rubies/ruby-$RUBY_VERSION*/bin/ruby
 	run strip --strip-debug /usr/local/rvm/rubies/ruby-$RUBY_VERSION*/lib/libruby.so
-	run rm /usr/local/rvm/rubies/ruby-$RUBY_VERSION*/lib/libruby-static.a
+	run rm -f /usr/local/rvm/rubies/ruby-$RUBY_VERSION*/lib/libruby-static.a
 done
 
 echo "+ Setting ruby-$LAST_RUBY_VERSION as default"
