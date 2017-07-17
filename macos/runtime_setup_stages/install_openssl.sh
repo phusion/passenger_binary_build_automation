@@ -10,7 +10,7 @@ header "Installing OpenSSL $OPENSSL_VERSION"
 download_and_extract openssl-$OPENSSL_VERSION.tar.gz \
 	openssl-$OPENSSL_VERSION \
 	https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
-run rm -f /tmp/openssl-$OPENSSL_VERSION.tar.gz
+run rm -f "$WORKDIR/openssl-$OPENSSL_VERSION.tar.gz"
 run ./Configure darwin64-x86_64-cc \
 	--prefix="$OUTPUT_DIR" --openssldir="$OUTPUT_DIR/openssl" \
 	threads zlib no-shared no-sse2 -fvisibility=hidden

@@ -10,7 +10,7 @@ header "Installing PCRE $PCRE_VERSION"
 download_and_extract pcre-$PCRE_VERSION.tar.gz \
 	pcre-$PCRE_VERSION \
 	http://downloads.sourceforge.net/project/pcre/pcre/$PCRE_VERSION/pcre-$PCRE_VERSION.tar.gz
-run rm -f /tmp/pcre-$PCRE_VERSION.tar.gz
+run rm -f "$WORKDIR/pcre-$PCRE_VERSION.tar.gz"
 run ./configure --prefix="$OUTPUT_DIR" --enable-static --disable-shared \
 	CFLAGS='-O2 -fvisibility=hidden'
 run make -j$CONCURRENCY

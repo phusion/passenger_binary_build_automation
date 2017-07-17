@@ -7,10 +7,10 @@ source "$ROOTDIR/shared/lib/library.sh"
 CURL_VERSION=$(cat "$ROOTDIR/shared/definitions/curl_version")
 
 header "Installing libcurl $CURL_VERSION"
-download_and_extract curl-$CURL_VERSION \
+download_and_extract curl-$CURL_VERSION.tar.gz \
 	curl-$CURL_VERSION \
 	http://curl.haxx.se/download/curl-$CURL_VERSION.tar.bz2
-run rm -f /tmp/curl-$CURL_VERSION.tar.gz
+run rm -f "$WORKDIR/curl-$CURL_VERSION.tar.gz"
 run ./configure --prefix="$OUTPUT_DIR" \
 	--disable-shared --disable-debug --enable-optimize --disable-werror \
 	--disable-curldebug --enable-symbol-hiding --disable-ares --disable-manual --disable-ldap --disable-ldaps \

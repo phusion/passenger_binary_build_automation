@@ -10,7 +10,7 @@ header "Installing libcurl $GEOIP_VERSION"
 download_and_extract GeoIP-$GEOIP_VERSION.tar.gz \
 	GeoIP-$GEOIP_VERSION \
 	https://github.com/maxmind/geoip-api-c/releases/download/v$GEOIP_VERSION/GeoIP-$GEOIP_VERSION.tar.gz
-run rm -f /tmp/GeoIP-$GEOIP_VERSION.tar.gz
+run rm -f "$WORKDIR/GeoIP-$GEOIP_VERSION.tar.gz"
 run ./configure --prefix="$OUTPUT_DIR" \
 	--enable-static --disable-shared \
 	CFLAGS='-O2 -fvisibility=hidden'

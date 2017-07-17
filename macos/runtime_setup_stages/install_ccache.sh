@@ -10,7 +10,7 @@ header "Installing ccache $CCACHE_VERSION"
 download_and_extract ccache-$CCACHE_VERSION.tar.gz \
 	ccache-$CCACHE_VERSION \
 	http://samba.org/ftp/ccache/ccache-$CCACHE_VERSION.tar.gz
-run rm -f /tmp/ccache-$CCACHE_VERSION.tar.gz
+run rm -f "$WORKDIR/ccache-$CCACHE_VERSION.tar.gz"
 run ./configure --prefix="$OUTPUT_DIR"
 run make -j$CONCURRENCY
 run make install

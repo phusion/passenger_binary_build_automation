@@ -75,15 +75,22 @@ function download_and_extract()
 	local URL="$3"
 	local regex='\.bz2$'
 
-	if [[ ! -e "/tmp/$BASENAME" ]]; then
-		run rm -f "/tmp/$BASENAME.tmp"
-		run curl --fail -L -o "/tmp/$BASENAME.tmp" "$URL"
-		run mv "/tmp/$BASENAME.tmp" "/tmp/$BASENAME"
+	local DOWNLOAD_DIR
+	if [[ "$WORKDIR" != '' ]]; then
+		DOWNLOAD_DIR="$WORKDIR"
+	else
+		DOWNLOAD_DIR=/tmp
+	fi
+
+	if [[ ! -e "$DOWNLOAD_DIR/$BASENAME" ]]; then
+		run rm -f "$DOWNLOAD_DIR/$BASENAME.tmp"
+		run curl --fail -L -o "$DOWNLOAD_DIR/$BASENAME.tmp" "$URL"
+		run mv "$DOWNLOAD_DIR/$BASENAME.tmp" "$DOWNLOAD_DIR/$BASENAME"
 	fi
 	if [[ "$URL" =~ $regex ]]; then
-		run tar xjf "/tmp/$BASENAME"
+		run tar xjf "$DOWNLOAD_DIR/$BASENAME"
 	else
-		run tar xzf "/tmp/$BASENAME"
+		run tar xzf "$DOWNLOAD_DIR/$BASENAME"
 	fi
 
 	echo "Entering $RUNTIME_DIR/$DIRNAME"
