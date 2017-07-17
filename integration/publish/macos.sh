@@ -47,7 +47,6 @@ RUNTIME_DIR=~/.passenger_binary_build_automation/runtime
 CACHE_DIR=~/.passenger_binary_build_automation/cache
 
 CONCURRENCY=${CONCURRENCY:-2}
-DOCKER_IMAGE_MAJOR_VERSION=$(cat "shared/definitions/docker_image_major_version")
 
 PUBLISH_ARGS=()
 if $ENTERPRISE; then
