@@ -22,10 +22,11 @@ run rm -rf "$OUTPUT_DIR"/*
 function should_git_copy_input_dir()
 {
 	if [[ -e "$INPUT_DIR"/.git ]]; then
-		local SHORTSTAT="$(cd "$INPUT_DIR" && git diff --shortstat 2> /dev/null | tail -n1)"
+		local SHORTSTAT
+		SHORTSTAT="$(cd "$INPUT_DIR" && git diff --shortstat 2> /dev/null | tail -n1)"
 		[[ "$SHORTSTAT" = "" ]]
 	else
-		return 0
+		return 1
 	fi
 }
 
