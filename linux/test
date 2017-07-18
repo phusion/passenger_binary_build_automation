@@ -2,7 +2,7 @@
 set -e
 ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/.." && pwd`
-DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
+DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
 source "$ROOTDIR/shared/lib/library.sh"
 
 PASSENGER_DIR=
@@ -130,5 +130,5 @@ exec docker run --rm \
 	-e "APP_UID=`/usr/bin/id -u`" \
 	-e "APP_GID=`/usr/bin/id -g`" \
 	"${DOCKER_EXTRA_ARGS[@]}" \
-	$DOCKER_IMAGE:$DOCKER_IMAGE_MAJOR_VERSION \
+	$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION \
 	$LINUX32 /system/linux/support/test-script-docker-entrypoint.sh

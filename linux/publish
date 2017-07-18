@@ -4,7 +4,7 @@ ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/.." && pwd`
 SELFDIR=`dirname "$0"`
 SELFDIR=`cd "$SELFDIR" && pwd`
-DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
+DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
 source "$ROOTDIR/shared/lib/library.sh"
 
 INPUT_DIR=
@@ -159,5 +159,5 @@ exec docker run $TTY_ARGS --rm \
 	-e "VERSION=$VERSION" \
 	-e "AWS_ACCESS_KEY=$AWS_ACCESS_KEY" \
 	"${EXTRA_DOCKER_ARGS[@]}" \
-	phusion/passenger_binary_build_automation_64:$DOCKER_IMAGE_MAJOR_VERSION \
+	phusion/passenger_binary_build_automation_64:$DOCKER_IMAGE_VERSION \
 	/system/linux/support/publish-script-docker-entrypoint.sh

@@ -2,7 +2,7 @@
 set -e
 ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/.." && pwd`
-DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
+DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
 source "$ROOTDIR/shared/lib/library.sh"
 
 PASSENGER_DIR=
@@ -161,7 +161,7 @@ if $SHOW_TASKS; then
 		-e "APP_UID=`/usr/bin/id -u`" \
 		-e "APP_GID=`/usr/bin/id -g`" \
 		-e "SHOW_TASKS=true" \
-		$DOCKER_IMAGE:$DOCKER_IMAGE_MAJOR_VERSION \
+		$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION \
 		$LINUX32 /system/linux/support/build-script-docker-entrypoint.sh -T
 else
 	EXTRA_DOCKER_ARGS=()
@@ -187,7 +187,7 @@ else
 		-e "SHOW_TASKS=false" \
 		-e "CONCURRENCY=$CONCURRENCY" \
 		"${EXTRA_DOCKER_ARGS[@]}" \
-		$DOCKER_IMAGE:$DOCKER_IMAGE_MAJOR_VERSION \
+		$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION \
 		$LINUX32 /system/linux/support/build-script-docker-entrypoint.sh \
 		"${ARGV[@]}"
 fi

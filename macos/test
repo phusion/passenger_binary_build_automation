@@ -4,7 +4,6 @@ ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/.." && pwd`
 SELFDIR=`dirname "$0"`
 SELFDIR=`cd "$SELFDIR" && pwd`
-DOCKER_IMAGE_MAJOR_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_major_version")
 source "$ROOTDIR/shared/lib/library.sh"
 
 PASSENGER_DIR=
