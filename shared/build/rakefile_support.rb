@@ -96,7 +96,7 @@ end
 
 def activate_library_compilation_environment
   if IN_HOLY_BUILD_BOX
-    "#{ROOT}/linux/support/activate-library-compilation-environment.sh"
+    "#{shesc ROOT}/linux/support/activate-library-compilation-environment.sh"
   else
     nil
   end
@@ -104,15 +104,15 @@ end
 
 def activate_passenger_agent_compilation_environment
   if IN_HOLY_BUILD_BOX
-    "#{ROOT}/linux/support/activate-passenger-agent-compilation-environment.sh"
+    "#{shesc ROOT}/linux/support/activate-passenger-agent-compilation-environment.sh"
   else
-    "#{ROOT}/macos/support/activate-passenger-agent-compilation-environment.sh"
+    "#{shesc ROOT}/macos/support/activate-passenger-agent-compilation-environment.sh"
   end
 end
 
 def activate_nginx_compilation_environment
   if IN_HOLY_BUILD_BOX
-    "#{ROOT}/linux/support/activate-nginx-compilation-environment.sh"
+    "#{shesc ROOT}/linux/support/activate-nginx-compilation-environment.sh"
   else
     nil
   end
