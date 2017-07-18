@@ -89,6 +89,7 @@ function cleanup()
 
 cd "$WORKDIR"
 
+"$SELFDIR/runtime_setup_stages/version_lockdown.sh"
 if [[ ! -e "$OUTPUT_DIR/bin/ccache" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_ccache.sh"
 fi

@@ -5,6 +5,7 @@ ROOTDIR=`cd "$ROOTDIR/.." && pwd`
 SELFDIR=`dirname "$0"`
 SELFDIR=`cd "$SELFDIR" && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
+MACOS_RUNTIME_VERSION=$(cat "$ROOTDIR/shared/definitions/macos_runtime_version")
 
 RUNTIME_DIR=
 INPUT_DIR=
@@ -113,6 +114,8 @@ export FILE_SERVER_PASSWORD="`cat "$FILE_SERVER_PASSWORD_FILE"`"
 export AWS_ACCESS_KEY
 export AWS_SECRET_KEY="`cat "$AWS_SECRET_KEY_FILE"`"
 export TESTING
+
+check_macos_runtime_compatibility "$RUNTIME_DIR" "$MACOS_RUNTIME_VERSION"
 
 export WORKDIR=`mktemp -d /tmp/publish.XXXXXXXX`
 function cleanup()

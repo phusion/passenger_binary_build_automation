@@ -5,6 +5,7 @@ ROOTDIR=`cd "$ROOTDIR/.." && pwd`
 SELFDIR=`dirname "$0"`
 SELFDIR=`cd "$SELFDIR" && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
+MACOS_RUNTIME_VERSION=$(cat "$ROOTDIR/shared/definitions/macos_runtime_version")
 
 PASSENGER_DIR=
 RUNTIME_DIR=
@@ -107,6 +108,8 @@ export UNPACKAGED_ARTEFACTS_DIR="`absolute_path \"$UNPACKAGED_INPUT_DIR\"`"
 
 export RUNTIME_DIR="$RUNTIME_DIR"
 source "$SELFDIR/support/reset_environment.sh"
+
+check_macos_runtime_compatibility "$RUNTIME_DIR" "$MACOS_RUNTIME_VERSION"
 
 TEMP_DIR=`mktemp -d /tmp/passenger-test.XXXXXXXX`
 function cleanup()

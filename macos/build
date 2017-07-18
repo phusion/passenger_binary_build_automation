@@ -3,6 +3,7 @@ set -e
 ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/.." && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
+MACOS_RUNTIME_VERSION=$(cat "$ROOTDIR/shared/definitions/macos_runtime_version")
 
 PASSENGER_DIR=
 RUNTIME_DIR=
@@ -148,6 +149,8 @@ source "$ROOTDIR/macos/support/reset_environment.sh"
 export PATH="$ROOTDIR/macos/support/bin:$RUNTIME_DIR/bin:$PATH"
 export LDFLAGS="-Wl,-dead_strip"
 export EXTRA_LDFLAGS="$LDFLAGS"
+
+check_macos_runtime_compatibility "$RUNTIME_DIR" "$MACOS_RUNTIME_VERSION"
 
 if tty -s; then
 	TTY_ARGS="-t -i"

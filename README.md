@@ -175,12 +175,16 @@ The procedure for updating the list of Ruby versions to build against, is as fol
 As described in [How it works](HOW-IT-WORKS.md), `passenger_binary_build_automation` works through a Docker container (Linux) or a runtime environment (macOS). Sometimes you may want to update this container or runtime, e.g. because you want to update libraries and depencies. The procedure for updating the Docker container (rebuilding and republishing it), and for rebuilding the macOS runtime, is as follows:
 
  1. Bump the version number in `shared/definitions/docker_image_version`.
- 2. Rebuild the Docker container and the macOS runtime:
+ 2. If you changed anything in the macOS runtime **besides** bumping Ruby version numbers (e.g. you updated OpenSSL or something), then also bump the version number in `shared/definitions/macos_runtime_version`.
+ 3. Rebuild the Docker container. On a Linux machine:
 
-    - On Linux: run `./linux/setup-docker-image-32` and `./linux/setup-docker-image-64`.
-    - On macOS: remove the runtime directory and rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)). During a release the runtime directory is hardcoded to the `~/.passenger_binary_build_automation/` dir.
+     - Run `./linux/setup-docker-image-32`
+     - Run `./linux/setup-docker-image-64`
+     - Publish the new Docker container to the Docker Hub: run `./linux/publish-docker-images`
 
- 4. On Linux: publish the new Docker container to the Docker Hub: run `./linux/publish-docker-images`
+    Docker for Mac has not been tested so it's not recommended at this moment that you run this on macOS.
+
+ 4. If you bumped `shared/definitions/macos_runtime_version`, then remove the runtime directory and rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)). During a release the runtime directory is hardcoded to the `~/.passenger_binary_build_automation/` dir.
  5. Git commit and push.
 
 <a name="update-passenger-lock"></a>

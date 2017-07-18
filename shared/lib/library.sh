@@ -97,6 +97,24 @@ function download_and_extract()
 	pushd "$DIRNAME" >/dev/null
 }
 
+function check_macos_runtime_compatibility()
+{
+	local RUNTIME_DIR="$1"
+	local VERSION="$2"
+
+	if [[ -e "$RUNTIME_DIR/MACOS_RUNTIME_VERSION" ]]; then
+		ACTUAL_VERSION=$(cat "$RUNTIME_DIR/MACOS_RUNTIME_VERSION")
+		if [[ "$VERSION" != "$ACTUAL_VERSION" ]]; then
+			echo "ERROR: $RUNTIME_DIR has version number $ACTUAL_VERSION," \
+				"but version $VERSION expected. Please rebuild the runtime directory."
+			return 1
+		fi
+	else
+		echo "ERROR: $RUNTIME_DIR is unversioned. Please rebuild it."
+		return 1
+	fi
+}
+
 function _cleanup()
 {
 	set +e
