@@ -4,6 +4,8 @@ ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/.." && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
 MACOS_RUNTIME_VERSION=$(cat "$ROOTDIR/shared/definitions/macos_runtime_version")
+RUBY_VERSIONS=(`cat "$ROOTDIR/shared/definitions/ruby_versions"`)
+LAST_RUBY_VERSION=${RUBY_VERSIONS[${#RUBY_VERSIONS[@]} - 1]}
 
 PASSENGER_DIR=
 RUNTIME_DIR=
@@ -147,6 +149,7 @@ export SHOW_TASKS
 
 source "$ROOTDIR/macos/support/reset_environment.sh"
 export PATH="$ROOTDIR/macos/support/bin:$RUNTIME_DIR/bin:$PATH"
+export FORCE_GEM_HOME_AND_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
 export LDFLAGS="-Wl,-dead_strip"
 export EXTRA_LDFLAGS="$LDFLAGS"
 
@@ -167,7 +170,12 @@ else
 fi
 
 if $SHOW_TASKS; then
-	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build/Rakefile" -T
+	exec $RVM_EXEC $LAST_RUBY_VERSION env \
+		BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
+		BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
+		BUNDLE_DISABLE_SHARED_GEMS=true \
+		"$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" exec \
+		drake -f "$ROOTDIR/shared/build/Rakefile" -T
 else
 	export PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
 	export CACHE_DIR="`absolute_path \"$CACHE_DIR\"`"
@@ -180,5 +188,10 @@ else
 	fi
 	export CONCURRENCY
 
-	exec /usr/local/bin/drake -f "$ROOTDIR/shared/build/Rakefile" "${ARGV[@]}"
+	exec $RVM_EXEC $LAST_RUBY_VERSION env \
+		BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
+		BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
+		BUNDLE_DISABLE_SHARED_GEMS=true \
+		"$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" exec \
+		drake -f "$ROOTDIR/shared/build/Rakefile" "${ARGV[@]}"
 fi
