@@ -118,6 +118,21 @@ def activate_nginx_compilation_environment
   end
 end
 
+def agent_command_builder
+  "#{activate_passenger_agent_compilation_environment}" \
+    " #{RVM_EXEC} ruby-#{DEFAULT_RUBY_VERSION}" \
+    " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+    " drake nginx_without_native_support" \
+    " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
+end
+
+def library_command_builder(ruby_version)
+  "#{activate_library_compilation_environment}" \
+    " #{RVM_EXEC} ruby-#{ruby_version}" \
+    " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
+    " drake native_support OUTPUT_DIR=".strip
+end
+
 def nginx_tarball_basename
   "nginx-#{NGINX_VERSION}.tar.gz"
 end

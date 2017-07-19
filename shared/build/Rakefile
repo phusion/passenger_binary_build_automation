@@ -43,34 +43,6 @@ task :nginx => ['nginx:source_copy', 'passenger:agent'] do
     verbose: true)
 end
 
-def agent_command_builder
-  if RVM_EXEC.nil?
-    "#{activate_passenger_agent_compilation_environment}" \
-      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-      " RBENV_VERSION=#{DEFAULT_RUBY_VERSION} $HOME/.rbenv/shims/drake nginx_without_native_support" \
-      " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
-  else
-    "#{activate_passenger_agent_compilation_environment}" \
-      " #{RVM_EXEC} ruby-#{DEFAULT_RUBY_VERSION}" \
-      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-      " drake nginx_without_native_support" \
-      " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
-  end
-end
-
-def library_command_builder(ruby_version)
-  if RVM_EXEC.nil?
-    "#{activate_library_compilation_environment}" \
-      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-      " RBENV_VERSION=#{ruby_version} $HOME/.rbenv/shims/drake native_support OUTPUT_DIR=".strip
-  else
-    "#{activate_library_compilation_environment}" \
-      " #{RVM_EXEC} ruby-#{ruby_version}" \
-      " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
-      " drake native_support OUTPUT_DIR=".strip
-  end
-end
-
 namespace :passenger do
   task :source_copy do
     $PASSENGER_SOURCE_DIR_COPY = Dir.mktmpdir
