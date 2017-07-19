@@ -40,6 +40,9 @@ def initialize_rakefile!
   STDOUT.sync = true
   STDERR.sync = true
   ENV.delete('BUNDLER_ORIG_PATH')
+  if path = ENV['FORCE_GEM_HOME_AND_PATH']
+    ENV['GEM_HOME'] = ENV['GEM_PATH'] = path
+  end
   set_constants_and_envvars
   load_passenger
 end
