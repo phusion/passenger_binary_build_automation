@@ -21,44 +21,24 @@ if [[ -e /usr/local/rvm/bin/rvm-exec ]]; then
 elif [[ -e $HOME/.rvm/bin/rvm-exec ]]; then
 	RVM_EXEC=$HOME/.rvm/bin/rvm-exec
 	RVM_GEMS_DIR=$HOME/.rvm/gems
-elif [[ -e $HOME/.rbenv/shims/ruby ]]; then
-	RBENV_SHIM_DIR=$HOME/.rbenv/shims
 else
-	echo "*** ERROR: you must have RVM or rbenv installed"
+	echo "*** ERROR: you must have RVM installed"
 	exit 1
 fi
 
 function run_ruby() {
-	if [[ -z ${RVM_EXEC+x} ]]; then
-		# RVM_EXEC unset, use RBENV_SHIM_DIR
-		export RBENV_VERSION=$1
-		shift
-		COMMAND=$1
-		shift
-		$RBENV_SHIM_DIR/$COMMAND "$@"
-	else
-		# RVM_EXEC is set, use it
-		VERSION=$1
-		shift
-		COMMAND=$1
-		shift
-		$RVM_EXEC "ruby-$VERSION" $COMMAND "$@"
-	fi
+	VERSION=$1
+	shift
+	COMMAND=$1
+	shift
+	$RVM_EXEC "ruby-$VERSION" $COMMAND "$@"
 }
 
 function check_gem() {
-	if [[ -z ${RVM_EXEC+x} ]]; then
-		if [[ -f $HOME/.rbenv/versions/$1/bin/$2 ]]; then
-			return 0
-		else
-			return 1
-		fi
+	if [[ -f $RVM_GEMS_DIR/ruby-$1/bin/$2 ]]; then
+		return 0
 	else
-		if [[ -f $RVM_GEMS_DIR/ruby-$1/bin/$2 ]]; then
-			return 0
-		else
-			return 1
-		fi
+		return 1
 	fi
 }
 
