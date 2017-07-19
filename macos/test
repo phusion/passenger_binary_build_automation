@@ -6,6 +6,8 @@ SELFDIR=`dirname "$0"`
 SELFDIR=`cd "$SELFDIR" && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
 MACOS_RUNTIME_VERSION=$(cat "$ROOTDIR/shared/definitions/macos_runtime_version")
+RUBY_VERSIONS=(`cat "$ROOTDIR/shared/definitions/ruby_versions"`)
+LAST_RUBY_VERSION=${RUBY_VERSIONS[${#RUBY_VERSIONS[@]} - 1]}
 
 PASSENGER_DIR=
 RUNTIME_DIR=
@@ -110,6 +112,7 @@ export RUNTIME_DIR="$RUNTIME_DIR"
 source "$SELFDIR/support/reset_environment.sh"
 
 check_macos_runtime_compatibility "$RUNTIME_DIR" "$MACOS_RUNTIME_VERSION"
+source "$ROOTDIR/macos/support/detect_rvm.sh"
 
 TEMP_DIR=`mktemp -d /tmp/passenger-test.XXXXXXXX`
 function cleanup()
@@ -118,9 +121,16 @@ function cleanup()
 }
 
 export PASSENGER_ROOT="$TEMP_DIR/passenger"
-run "$ROOTDIR/shared/build/copy-passenger-source-dir.sh" "$PASSENGER_DIR" "$PASSENGER_ROOT"
+run $RVM_EXEC $LAST_RUBY_VERSION env \
+	GEM_HOME="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
+	GEM_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
+	"$ROOTDIR/shared/build/copy-passenger-source-dir.sh" \
+	"$PASSENGER_DIR" "$PASSENGER_ROOT"
 
 header "Running integration tests"
-run env BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
-	/usr/local/bin/bundle exec \
-	/usr/local/bin/rspec --tty -c -f d "$ROOTDIR/shared/test/integration_test.rb" "${ARGV[@]}"
+run $RVM_EXEC $LAST_RUBY_VERSION env \
+	BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
+	BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
+	BUNDLE_DISABLE_SHARED_GEMS=true \
+	"$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" exec \
+	rspec --tty -c -f d "$ROOTDIR/shared/test/integration_test.rb" "${ARGV[@]}"
