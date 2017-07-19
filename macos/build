@@ -162,7 +162,7 @@ if [[ -e /usr/local/rvm/bin/rvm-exec ]]; then
 elif [[ -e $HOME/.rvm/bin/rvm-exec ]]; then
 	export RVM_EXEC=$HOME/.rvm/bin/rvm-exec
 elif [[ -e $HOME/.rbenv/shims/ruby ]]; then
-    	export RBENV_SHIM_DIR=$HOME/.rbenv/shims
+		export RBENV_SHIM_DIR=$HOME/.rbenv/shims
 else
 	echo "*** ERROR: you must have RVM or rbenv installed"
 	exit 1

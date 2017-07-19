@@ -11,7 +11,59 @@ indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true
 
+[*.sh]
+indent_style = tab
+trim_trailing_whitespace = true
+
 [Rakefile]
 indent_style = space
 indent_size = 2
+trim_trailing_whitespace = true
+
+[linux/build]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[linux/package]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[linux/publish]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[linux/publish-docker-images]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[linux/setup-docker-image-32]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[linux/setup-docker-image-64]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[linux/test]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[macos/build]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[macos/package]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[macos/publish]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[macos/setup-runtime]
+indent_style = tab
+trim_trailing_whitespace = true
+
+[macos/test]
+indent_style = tab
 trim_trailing_whitespace = true
