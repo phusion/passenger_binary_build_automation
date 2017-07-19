@@ -83,6 +83,11 @@ describe 'Downloaded Passenger binaries' do
     @temp_dir = Dir.mktmpdir
     File.open("#{PhusionPassenger.resources_dir}/release.txt", 'w').close
 
+    # Prevent concurrent usage of ~/.passenger
+    lock_path = File.expand_path("~/#{PhusionPassenger::USER_NAMESPACE_DIRNAME}.lock")
+    @lock = File.open(lock_path, 'w')
+    @lock.flock(File::LOCK_EX)
+
     @user_dir = File.expand_path("~/#{PhusionPassenger::USER_NAMESPACE_DIRNAME}")
     if File.exist?("#{@user_dir}.old")
       raise "#{@user_dir} exists. Please fix this first."
@@ -95,6 +100,8 @@ describe 'Downloaded Passenger binaries' do
   end
 
   after :each do
+    @lock.close if @lock
+
     File.unlink("#{PhusionPassenger.resources_dir}/release.txt")
 
     FileUtils.rm_rf(@user_dir)
