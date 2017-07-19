@@ -11,6 +11,7 @@ files = Dir.glob("#{FROM}/*", File::FNM_DOTMATCH)
 files.delete("#{FROM}/.")
 files.delete("#{FROM}/..")
 files.delete("#{FROM}/.git")
+files.delete("#{FROM}/.bundle")
 files.delete("#{FROM}/.vagrant")
 
 if defined?(EXCLUSIONS)
