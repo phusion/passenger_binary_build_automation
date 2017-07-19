@@ -154,19 +154,12 @@ export LDFLAGS="-Wl,-dead_strip"
 export EXTRA_LDFLAGS="$LDFLAGS"
 
 check_macos_runtime_compatibility "$RUNTIME_DIR" "$MACOS_RUNTIME_VERSION"
+source "$ROOTDIR/macos/support/detect_rvm.sh"
 
 if tty -s; then
 	TTY_ARGS="-t -i"
 else
 	TTY_ARGS=
-fi
-if [[ -e /usr/local/rvm/bin/rvm-exec ]]; then
-	export RVM_EXEC=/usr/local/rvm/bin/rvm-exec
-elif [[ -e $HOME/.rvm/bin/rvm-exec ]]; then
-	export RVM_EXEC=$HOME/.rvm/bin/rvm-exec
-else
-	echo "*** ERROR: you must have RVM installed"
-	exit 1
 fi
 
 if $SHOW_TASKS; then
