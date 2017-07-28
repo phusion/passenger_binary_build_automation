@@ -73,6 +73,8 @@ NGINX_VERSION=`/bin/ls -1 "$INPUT_DIR"/support-binaries/nginx-* | sed 's/.*-//'`
 run mkdir -p "$OUTPUT_DIR"
 run tar -czf "$OUTPUT_DIR/agent-$ARCHITECTURE-linux.tar.gz" \
 	-C "$INPUT_DIR/support-binaries" PassengerAgent
+run tar -czf "$OUTPUT_DIR/agent-$ARCHITECTURE-linux.dbg.tar.gz" \
+	-C "$INPUT_DIR/support-binaries" PassengerAgent.dbg
 run tar -czf "$OUTPUT_DIR/nginx-$NGINX_VERSION-$ARCHITECTURE-linux.tar.gz" \
 	-C "$INPUT_DIR/support-binaries" "nginx-$NGINX_VERSION"
 

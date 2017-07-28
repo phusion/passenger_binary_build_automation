@@ -60,6 +60,11 @@ namespace :passenger do
   task :agent => :source_copy do
     run(agent_command_builder, chdir: $PASSENGER_SOURCE_DIR_COPY)
 
+    if IN_HOLY_BUILD_BOX
+      run('objcopy --only-keep-debug buildout/support-binaries/PassengerAgent' \
+        ' buildout/support-binaries/PassengerAgent.dbg',
+        chdir: $PASSENGER_SOURCE_DIR_COPY)
+    end
     run("#{strip_all} buildout/support-binaries/PassengerAgent",
       chdir: $PASSENGER_SOURCE_DIR_COPY)
     run('libcheck buildout/support-binaries/PassengerAgent',
@@ -67,11 +72,18 @@ namespace :passenger do
     if IN_HOLY_BUILD_BOX
       run('hardening-check -b buildout/support-binaries/PassengerAgent',
         chdir: $PASSENGER_SOURCE_DIR_COPY)
+      run('objcopy --add-gnu-debuglink=PassengerAgent.dbg PassengerAgent',
+        chdir: "#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries")
     end
 
     mkdir_p("#{OUTPUT_DIR}/support-binaries", verbose: true)
     cp("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent",
       "#{OUTPUT_DIR}/support-binaries", verbose: true)
+
+    if IN_HOLY_BUILD_BOX
+      cp("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent.dbg",
+        "#{OUTPUT_DIR}/support-binaries", verbose: true)
+    end
   end
 end
 
