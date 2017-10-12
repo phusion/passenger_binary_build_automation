@@ -100,10 +100,6 @@ describe 'Downloaded Passenger binaries' do
   end
 
   after :each do
-    @lock.close if @lock
-
-    File.unlink("#{PhusionPassenger.resources_dir}/release.txt")
-
     FileUtils.rm_rf(@user_dir)
     if File.exist?("#{@user_dir}.old")
       FileUtils.mv("#{@user_dir}.old", @user_dir)
@@ -112,6 +108,10 @@ describe 'Downloaded Passenger binaries' do
     FileUtils.rm_rf('download_cache')
 
     FileUtils.remove_entry_secure(@temp_dir)
+
+    @lock.close if @lock
+
+    File.unlink("#{PhusionPassenger.resources_dir}/release.txt")
   end
 
   let(:nginx_version) { PhusionPassenger::PREFERRED_NGINX_VERSION }
