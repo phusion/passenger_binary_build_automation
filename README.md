@@ -182,9 +182,7 @@ As described in [How it works](HOW-IT-WORKS.md), `passenger_binary_build_automat
      - Run `./linux/setup-docker-image-64`
      - Publish the new Docker container to the Docker Hub: run `./linux/publish-docker-images`
 
-    Docker for Mac has not been tested so it's not recommended at this moment that you run this on macOS.
-
- 4. If you bumped `shared/definitions/macos_runtime_version`, then remove the runtime directory and rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)). During a release the runtime directory is hardcoded to the `~/.passenger_binary_build_automation/` dir.
+ 4. If you bumped `shared/definitions/macos_runtime_version`, then locally rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)). During a release the runtime directory is hardcoded to the `/data/jenkins/cache/Passenger-Release-Process/generic-macos-binaries/passenger{,-enterprise}/` dirs on the macOS CI.
  5. Git commit and push.
 
 <a name="update-passenger-lock"></a>
