@@ -10,9 +10,15 @@
 
 `passenger_binary_build_automation` works by building Passenger and Nginx inside (semi-)controlled build environments.
 
+### Linux: a Docker container
+
 On Linux, the build environment is a Docker container. The container is based on [Holy Build Box](http://phusion.github.io/holy-build-box/) and contains an old glibc as well as a bunch of static libraries. Because Docker fully isolates a container from its host, this build environment is fully controlled: a build always succeeds no matter how the host is set up.
 
+### macOS: a directory and bunch of env vars
+
 On macOS, the build environment consists of a directory containing select tools and static libraries (the runtime), plus bunch of environment variables that try to make sure the compiler only compiles against our selected static libraries. This is a semi-controlled build environment: building *usually* works, but *may* fail if the host is set up in such a way that it interferes with the build. However we've found in practice that it's good enough.
+
+The runtime directory may be located at any arbitrary location on the filesystem. Its path is passed to the invocation of various scripts such `macos/setup-runtime` and `macos/build`. So during local development, the path is entirely chosen by the developer. During the Passenger release process CI job, the runtime is located on the macOS CI server, at `/data/jenkins/cache/Passenger-Release-Process/generic-macos-binaries/{passenger,passenger-enterprise}/runtime`.
 
 ## The building process
 
