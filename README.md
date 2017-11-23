@@ -100,7 +100,7 @@ Before you can build binaries for macOS, you must ensure that these prerequities
  * Xcode command-line developer tools.
  * GPG.
  * [RVM](https://rvm.io).
-   - Not using RVM, and instead using rbenv or something? For the sake of simplicity, `passenger_binary_build_automation` only supports RVM. We recommend that you create a new account on your Mac that uses RVM only, and to development `passenger_binary_build_automation` on that account.
+   - Not using RVM, and instead using rbenv or something? For the sake of simplicity, `passenger_binary_build_automation` only supports RVM. We recommend that you create a new account on your Mac that uses RVM only, and to develop `passenger_binary_build_automation` on that account.
  * All Ruby versions specified in the `shared/definitions/ruby_versions` file.
 
 Once these prerequisites are installed, you must build a **runtime** using the `macos/setup-runtime` script. A runtime is a directory containing further tools and libraries that `passenger_binary_build_automation` needs for building binaries (see also [How it works](HOW-IT-WORKS.md) section "The build environment"). The runtime needs to be setup the first time you use `passenger_binary_build_automation`, every time the list of libraries that we link into Passenger changes, and every time Nginx changes.
