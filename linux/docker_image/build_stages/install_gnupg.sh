@@ -67,7 +67,8 @@ run sed -i 's/#define IN_DELETE_SELF/#define IN_EXCL_UNLINK 0x04000000\n#define 
 cd /tmp
 download_and_extract gnupg-$GNUPG_VERSION.tar.bz2 gnupg-$GNUPG_VERSION \
 	https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-$GNUPG_VERSION.tar.bz2
+export LIBS=-lrt
 run ./configure --prefix=/hbb --with-pinentry-pgm=/hbb/bin/pinentry
 run make -j2
 run make install-strip
-run ln -s /hbb/bin/gpg2 /hbb/bin/gpg
+run ln -s /hbb/bin/gpg /hbb/bin/gpg2
