@@ -44,7 +44,7 @@ export GPG_TTY=/dev/tty
 echo "+ Importing GPG key"
 setuser builder gpg --batch -q --import /signing_key
 
-export GPG_SIGNING_KEY=`setuser builder gpg --list-secret-keys | grep '^sec' | awk '{ print $2 }' | sed 's/.*\///' | head -n 1`
+export GPG_SIGNING_KEY=`setuser builder gpg --list-secret-keys --keyid-format short | grep '^sec' | awk '{ print $2 }' | sed 's/.*\///' | head -n 1`
 echo "+ Signing key ID: $GPG_SIGNING_KEY"
 
 run_exec setuser builder /system/shared/publish/publish.sh
