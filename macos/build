@@ -1,10 +1,12 @@
 #!/bin/bash
 set -e
-ROOTDIR=`dirname "$0"`
-ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+ROOTDIR=$(dirname "$0")
+ROOTDIR=$(cd "$ROOTDIR/.." && pwd)
+# shellcheck source=../shared/lib/library.sh
 source "$ROOTDIR/shared/lib/library.sh"
 MACOS_RUNTIME_VERSION=$(cat "$ROOTDIR/shared/definitions/macos_runtime_version")
-RUBY_VERSIONS=(`cat "$ROOTDIR/shared/definitions/ruby_versions"`)
+# shellcheck disable=SC2207
+RUBY_VERSIONS=( $(cat "$ROOTDIR/shared/definitions/ruby_versions") )
 LAST_RUBY_VERSION=${RUBY_VERSIONS[${#RUBY_VERSIONS[@]} - 1]}
 
 PASSENGER_DIR=
@@ -144,9 +146,11 @@ function parse_options()
 }
 
 parse_options "$@"
-export RUNTIME_DIR="`absolute_path \"$RUNTIME_DIR\"`"
+RUNTIME_DIR=$(absolute_path "$RUNTIME_DIR")
+export RUNTIME_DIR
 export SHOW_TASKS
 
+# shellcheck source=support/reset_environment.sh
 source "$ROOTDIR/macos/support/reset_environment.sh"
 export PATH="$ROOTDIR/macos/support/bin:$RUNTIME_DIR/bin:$PATH"
 export FORCE_GEM_HOME_AND_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
@@ -154,13 +158,8 @@ export LDFLAGS="-Wl,-dead_strip"
 export EXTRA_LDFLAGS="$LDFLAGS"
 
 check_macos_runtime_compatibility "$RUNTIME_DIR" "$MACOS_RUNTIME_VERSION"
+# shellcheck source=support/detect_rvm.sh
 source "$ROOTDIR/macos/support/detect_rvm.sh"
-
-if tty -s; then
-	TTY_ARGS="-t -i"
-else
-	TTY_ARGS=
-fi
 
 if $SHOW_TASKS; then
 	exec $RVM_EXEC $LAST_RUBY_VERSION env \
@@ -170,11 +169,15 @@ if $SHOW_TASKS; then
 		"$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" exec \
 		drake -f "$ROOTDIR/shared/build/Rakefile" -T
 else
-	export PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
-	export CACHE_DIR="`absolute_path \"$CACHE_DIR\"`"
-	export OUTPUT_DIR="`absolute_path \"$OUTPUT_DIR\"`"
+	PASSENGER_DIR=$(absolute_path "$PASSENGER_DIR")
+	CACHE_DIR=$(absolute_path "$CACHE_DIR")
+	OUTPUT_DIR=$(absolute_path "$OUTPUT_DIR")
+	export PASSENGER_DIR
+	export CACHE_DIR
+	export OUTPUT_DIR
 	if [[ "$NGINX_DIR" != "" ]]; then
-		export NGINX_DIR="`absolute_path \"$NGINX_DIR\"`"
+		NGINX_DIR=$(absolute_path "$NGINX_DIR")
+		export NGINX_DIR
 	fi
 	if [[ "$NGINX_VERSION" != "" ]]; then
 		export NGINX_VERSION

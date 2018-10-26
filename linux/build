@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
-ROOTDIR=`dirname "$0"`
-ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+ROOTDIR=$(dirname "$0")
+ROOTDIR=$(cd "$ROOTDIR/.." && pwd)
 DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
+# shellcheck source=../shared/lib/library.sh
 source "$ROOTDIR/shared/lib/library.sh"
 
 PASSENGER_DIR=
@@ -149,27 +150,27 @@ else
 fi
 if [[ "$ARCHITECTURE" = x86 ]]; then
 	DOCKER_IMAGE=phusion/passenger_binary_build_automation_32
-	LINUX32=linux32
+	LINUX32=(linux32)
 else
 	DOCKER_IMAGE=phusion/passenger_binary_build_automation_64
-	LINUX32=
+	LINUX32=()
 fi
 
 if $SHOW_TASKS; then
 	exec docker run $TTY_ARGS --rm \
 		-v "$ROOTDIR:/system:ro" \
-		-e "APP_UID=`/usr/bin/id -u`" \
-		-e "APP_GID=`/usr/bin/id -g`" \
+		-e "APP_UID=$(/usr/bin/id -u)" \
+		-e "APP_GID=$(/usr/bin/id -g)" \
 		-e "SHOW_TASKS=true" \
-		$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION \
-		$LINUX32 /system/linux/support/build-script-docker-entrypoint.sh -T
+		"$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION" \
+		"${LINUX32[@]}" /system/linux/support/build-script-docker-entrypoint.sh -T
 else
 	EXTRA_DOCKER_ARGS=()
-	PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
-	CACHE_DIR="`absolute_path \"$CACHE_DIR\"`"
-	OUTPUT_DIR="`absolute_path \"$OUTPUT_DIR\"`"
+	PASSENGER_DIR=$(absolute_path "$PASSENGER_DIR")
+	CACHE_DIR=$(absolute_path "$CACHE_DIR")
+	OUTPUT_DIR=$(absolute_path "$OUTPUT_DIR")
 	if [[ "$NGINX_DIR" != "" ]]; then
-		NGINX_DIR="`absolute_path \"$NGINX_DIR\"`"
+		NGINX_DIR=$(absolute_path "$NGINX_DIR")
 		EXTRA_DOCKER_ARGS+=(-v "$NGINX_DIR:/nginx:ro")
 		if [[ "$NGINX_VERSION" != "" ]]; then
 			EXTRA_DOCKER_ARGS+=(-e "NGINX_VERSION=$NGINX_VERSION")
@@ -182,12 +183,12 @@ else
 		-v "$PASSENGER_DIR:/passenger:ro" \
 		-v "$CACHE_DIR:/cache" \
 		-v "$OUTPUT_DIR:/output" \
-		-e "APP_UID=`/usr/bin/id -u`" \
-		-e "APP_GID=`/usr/bin/id -g`" \
+		-e "APP_UID=$(/usr/bin/id -u)" \
+		-e "APP_GID=$(/usr/bin/id -g)" \
 		-e "SHOW_TASKS=false" \
 		-e "CONCURRENCY=$CONCURRENCY" \
 		"${EXTRA_DOCKER_ARGS[@]}" \
-		$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION \
-		$LINUX32 /system/linux/support/build-script-docker-entrypoint.sh \
+		"$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION" \
+		"${LINUX32[@]}" /system/linux/support/build-script-docker-entrypoint.sh \
 		"${ARGV[@]}"
 fi

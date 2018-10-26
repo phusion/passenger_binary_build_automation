@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
-ROOTDIR=`dirname "$0"`
-ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+ROOTDIR=$(dirname "$0")
+ROOTDIR=$(cd "$ROOTDIR/.." && pwd)
 DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
+# shellcheck source=../shared/lib/library.sh
 source "$ROOTDIR/shared/lib/library.sh"
 
 set -x

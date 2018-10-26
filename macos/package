@@ -1,10 +1,12 @@
 #!/bin/bash
 set -e
-ROOTDIR=`dirname "$0"`
-ROOTDIR=`cd "$ROOTDIR/.." && pwd`
+ROOTDIR=$(dirname "$0")
+ROOTDIR=$(cd "$ROOTDIR/.." && pwd)
+# shellcheck source=../shared/lib/library.sh
 source "$ROOTDIR/shared/lib/library.sh"
-DEFAULT_MACOS_VERSION=`cat "$ROOTDIR/shared/definitions/macosx_deployment_target"`
-MACOS_VERSIONS=(`cat "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets"`)
+DEFAULT_MACOS_VERSION=$(cat "$ROOTDIR/shared/definitions/macosx_deployment_target")
+# shellcheck disable=SC2207
+MACOS_VERSIONS=( $(cat "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets") )
 
 INPUT_DIR=
 OUTPUT_DIR=
@@ -58,10 +60,10 @@ parse_options "$@"
 set -o pipefail
 export GZIP=--best
 
-INPUT_DIR="`absolute_path \"$INPUT_DIR\"`"
-OUTPUT_DIR="`absolute_path \"$OUTPUT_DIR\"`"
+INPUT_DIR=$(absolute_path "$INPUT_DIR")
+OUTPUT_DIR=$(absolute_path "$OUTPUT_DIR")
 
-NGINX_VERSION=`/bin/ls -1 "$INPUT_DIR"/support-binaries/nginx-* | sed 's/.*-//'`
+NGINX_VERSION=$(/bin/ls -1 "$INPUT_DIR"/support-binaries/nginx-* | sed 's/.*-//')
 
 run mkdir -p "$OUTPUT_DIR"
 
