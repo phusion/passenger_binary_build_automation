@@ -9,6 +9,9 @@ cd /tmp
 run_yum_install expat-devel gettext
 download_and_extract git-$GIT_VERSION.tar.gz git-$GIT_VERSION \
 	https://github.com/git/git/archive/v$GIT_VERSION.tar.gz
+export NEEDS_LIBICONV=YesPlease
+export ICONVDIR=/hbb
+export NO_R_TO_GCC_LINKER=YesPlease
 run make -j2 prefix=/hbb install
 run rm -rf /hbb/lib/perl5/site_perl/*/Git*
 

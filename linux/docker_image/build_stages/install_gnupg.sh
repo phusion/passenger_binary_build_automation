@@ -8,6 +8,7 @@ LIBKSBA_VERSION=`cat /pbba_build/shared/definitions/libksba_version`
 LIBASSUAN_VERSION=`cat /pbba_build/shared/definitions/libassuan_version`
 NPTH_VERSION=`cat /pbba_build/shared/definitions/npth_version`
 PINENTRY_VERSION=`cat /pbba_build/shared/definitions/pinentry_version`
+LIBICONV_VERSION=`cat /pbba_build/shared/definitions/libiconv_version`
 GNUPG_VERSION=`cat /pbba_build/shared/definitions/gnupg_version`
 
 header "Installing libgpg-error"
@@ -54,10 +55,19 @@ header "Installing pinentry"
 cd /tmp
 download_and_extract pinentry-$PINENTRY_VERSION.tar.bz2 pinentry-$PINENTRY_VERSION \
 	https://www.gnupg.org/ftp/gcrypt/pinentry/pinentry-$PINENTRY_VERSION.tar.bz2
+export LIBS=-ltinfo
 run ./configure --prefix=/hbb \
 	--enable-pinentry-curses \
 	--enable-pinentry-tty \
 	--disable-pinentry-qt5
+run make -j2
+run make install-strip
+
+header "Installing libiconv"
+cd /tmp
+download_and_extract libiconv-$LIBICONV_VERSION.tar.gz libiconv-$LIBICONV_VERSION \
+	https://ftp.gnu.org/gnu/libiconv/libiconv-$LIBICONV_VERSION.tar.gz
+run ./configure --prefix=/hbb
 run make -j2
 run make install-strip
 
@@ -68,7 +78,7 @@ cd /tmp
 download_and_extract gnupg-$GNUPG_VERSION.tar.bz2 gnupg-$GNUPG_VERSION \
 	https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-$GNUPG_VERSION.tar.bz2
 export LIBS=-lrt
-run ./configure --prefix=/hbb --with-pinentry-pgm=/hbb/bin/pinentry
+run ./configure --prefix=/hbb --with-pinentry-pgm=/hbb/bin/pinentry --with-libiconv-prefix=/hbb
 run make -j2
 run make install-strip
 run ln -s /hbb/bin/gpg /hbb/bin/gpg2

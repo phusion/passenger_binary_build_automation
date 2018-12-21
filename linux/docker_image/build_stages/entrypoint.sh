@@ -3,6 +3,7 @@ set -e
 SELFDIR=`dirname "$0"`
 SELFDIR=`cd "$SELFDIR" && pwd`
 
+touch /var/lib/rpm/*
 "$SELFDIR"/essentials.sh
 "$SELFDIR"/install_gnupg.sh
 "$SELFDIR"/install_git.sh
