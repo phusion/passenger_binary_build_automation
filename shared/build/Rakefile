@@ -105,7 +105,6 @@ if RUBY_PLATFORM !~ /darwin/
         output_file = Dir["#{$PASSENGER_SOURCE_DIR_COPY}" \
           "/buildout/ruby/ruby-#{ruby_version}-*/*.#{libext}"].first
         run("#{strip_debug} #{shesc output_file}")
-        run("readelf -d #{shesc output_file}")
         run("env LIBCHECK_ALLOW=libruby libcheck #{shesc output_file}")
         # We don't run hardening-check here because the Passenger
         # build system does not yet modify the mkmf Makefile
