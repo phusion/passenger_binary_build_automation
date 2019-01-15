@@ -18,7 +18,7 @@ run ./configure --prefix="$OUTPUT_DIR" \
 	--disable-imaps --disable-pop3 --disable-pop3s --without-librtmp --disable-smtp --disable-smtps \
 	--disable-telnet --disable-tftp --disable-smb --disable-versioned-symbols \
 	--without-libmetalink --without-libidn --without-libssh2 --without-libmetalink --without-nghttp2 \
-	--with-ssl
+	--with-darwinssl
 run make -j$CONCURRENCY
 run make install-strip
 run rm -f "$OUTPUT_DIR/bin/curl"
