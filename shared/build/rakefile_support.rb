@@ -149,7 +149,7 @@ def nginx_tarball_basename
 end
 
 def nginx_tarball_url
-  "http://nginx.org/download/#{nginx_tarball_basename}"
+  "https://nginx.org/download/#{nginx_tarball_basename}"
 end
 
 def download(url, dir)
