@@ -188,11 +188,13 @@ As described in [How it works](HOW-IT-WORKS.md), `passenger_binary_build_automat
      - Run `./linux/setup-docker-image-64`
      - Publish the new Docker container to the Docker Hub: run `./linux/publish-docker-images`
 
- 4. If you bumped `shared/definitions/macos_runtime_version`, then (locally) rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)) to see whether it works.
+ 4. If you changed the ruby versions at all, then you need to update the [versions in the ansible playbook for the passenger ci cluster](https://gitlab.phusion.nl/provisioning/ansible_playbooks/blob/master/playbooks/passenger-ci-cluster/vars/macos-slave.yml), and then deploy to production: `./run production --ask-vault-pass -l macos-slave-vm`.
+ 5. If you bumped `shared/definitions/macos_runtime_version`, then (locally) rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)) to see whether it works.
+
 
     Note: there is no need to manually rebuild the runtime (or to manually remove the runtime) on the Passenger CI server. The CI job will automatically build a new runtime whenever it detects that `macos_runtime_version` has changed. This is because the runtime directory on the CI server contains the runtime version in its path. See also [Where is the runtime directory? (macOS)](#where-is-the-runtime-directory-macos).
 
- 5. Git commit and push.
+ 6. Git commit and push.
 
 <a name="update-passenger-lock"></a>
 
