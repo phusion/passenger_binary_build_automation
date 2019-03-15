@@ -81,13 +81,14 @@ More command line options are available. Run `./build -h` to learn more. You can
 
 When the above example build is finished, the output directory will contain these files:
 
-    ruby-extensions/ruby-1.9.3-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.3.2-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.0.0-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.1.9-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.2.5-x86-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.1.10-x86-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.2.10-x86-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.3.8-x86-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.4.5-x86-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.5.5-x86-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.6.2-x86-linux/passenger_native_support.so
     support-binaries/PassengerAgent
-    support-binaries/nginx-1.10.1
+    support-binaries/nginx-1.15.8
 
 ### For macOS
 
@@ -139,7 +140,7 @@ More command line options are available. Run `./build -h` to learn more. You can
 
 When the above example build is finished, the output directory will contain these files:
 
-    support-binaries/nginx-1.10.1
+    support-binaries/nginx-1.15.8
     support-binaries/PassengerAgent
 
 The macOS build script does not build Ruby native extensions because we haven't yet figured out a way to do that in a portable manner.
@@ -150,7 +151,7 @@ The macOS build script does not build Ruby native extensions because we haven't 
 
 `passenger_binary_build_automation` builds native extensions for a select number of Ruby versions. If a new version of Ruby has been released then we should re-evaluate which Ruby versions to build extensions for.
 
-The policy is to build native extensions for the latest patchlevel version of all minor Ruby versions that are somewhat widespread in use. For example, as of 1 December 2016, the list is: 1.9.3, 2.0.0, 2.1.9, 2.2.5, 2.3.3. Suppose that Ruby 2.3.4 is released one day later, then we should build against 1.9.3, 2.0.0, 2.1.9, 2.2.5, 2.3.4 (dropping 2.3.3). Suppose a year later, 2.4.0 is released and we believe that 1.9 is no longer in widespread use. Then we can change the list to: 2.0.0, 2.1.9, 2.2.5, 2.3.4, 2.4.0.
+The policy is to build native extensions for the latest patchlevel version of all minor Ruby versions that are somewhat widespread in use. For example, as of 15 Mar 2019, the list is: 2.1.10, 2.2.10, 2.3.8, 2.4.5, 2.5.5, 2.6.2. Suppose that Ruby 2.5.6 is released one day later (just look what happened with 2.5.5), then we should build against 2.1.10, 2.2.10, 2.3.8, 2.4.5, 2.5.6 (dropping 2.5.5), and 2.6.2. Suppose a year later, 2.7.0 is released and we believe that 2.1 is no longer in widespread use. Then we can change the list to: 2.2.10, 2.3.8, 2.4.5, 2.5.5, 2.6.2, 2.7.0.
 
 The procedure for updating the list of Ruby versions to build against, is as follows:
 
