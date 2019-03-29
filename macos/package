@@ -70,6 +70,8 @@ run mkdir -p "$OUTPUT_DIR"
 header "Packaging PassengerAgent and Nginx"
 run tar -czf "$OUTPUT_DIR/agent-x86_64-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
 	-C "$INPUT_DIR/support-binaries" PassengerAgent
+run tar -czf "$OUTPUT_DIR/agent-x86_64-macosx-$DEFAULT_MACOS_VERSION.dSYM.tar.gz" \
+	-C "$INPUT_DIR/support-binaries" PassengerAgent.dSYM
 run tar -czf "$OUTPUT_DIR/nginx-$NGINX_VERSION-x86_64-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
 	-C "$INPUT_DIR/support-binaries" "nginx-$NGINX_VERSION"
 
@@ -78,6 +80,12 @@ for MACOS_VERSION in "${MACOS_VERSIONS[@]}"; do
 	LINKNAME="$OUTPUT_DIR/agent-x86_64-macosx-$MACOS_VERSION.tar.gz"
 	if [[ -h "$LINKNAME" || ! -e "$LINKNAME" ]]; then
 		run ln -sf "agent-x86_64-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
+			"$LINKNAME"
+	fi
+
+	LINKNAME="$OUTPUT_DIR/agent-x86_64-macosx-$MACOS_VERSION.dSYM.tar.gz"
+	if [[ -h "$LINKNAME" || ! -e "$LINKNAME" ]]; then
+		run ln -sf "agent-x86_64-macosx-$DEFAULT_MACOS_VERSION.dSYM.tar.gz" \
 			"$LINKNAME"
 	fi
 

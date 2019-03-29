@@ -64,6 +64,10 @@ namespace :passenger do
       run('objcopy --only-keep-debug buildout/support-binaries/PassengerAgent' \
         ' buildout/support-binaries/PassengerAgent.dbg',
         chdir: $PASSENGER_SOURCE_DIR_COPY)
+    else
+      run('dsymutil buildout/support-binaries/PassengerAgent' \
+        ' buildout/support-binaries/PassengerAgent.dSYM',
+        chdir: $PASSENGER_SOURCE_DIR_COPY)
     end
     run("#{strip_all} buildout/support-binaries/PassengerAgent",
       chdir: $PASSENGER_SOURCE_DIR_COPY)
@@ -82,6 +86,9 @@ namespace :passenger do
 
     if IN_HOLY_BUILD_BOX
       cp("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent.dbg",
+        "#{OUTPUT_DIR}/support-binaries", verbose: true)
+    else
+      cp("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent.dSYM",
         "#{OUTPUT_DIR}/support-binaries", verbose: true)
     end
   end
