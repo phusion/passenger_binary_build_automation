@@ -65,8 +65,7 @@ namespace :passenger do
         ' buildout/support-binaries/PassengerAgent.dbg',
         chdir: $PASSENGER_SOURCE_DIR_COPY)
     else
-      run('dsymutil buildout/support-binaries/PassengerAgent' \
-        ' buildout/support-binaries/PassengerAgent.dSYM',
+      run('dsymutil buildout/support-binaries/PassengerAgent',
         chdir: $PASSENGER_SOURCE_DIR_COPY)
     end
     run("#{strip_all} buildout/support-binaries/PassengerAgent",
