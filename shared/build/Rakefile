@@ -87,7 +87,7 @@ namespace :passenger do
       cp("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent.dbg",
         "#{OUTPUT_DIR}/support-binaries", verbose: true)
     else
-      cp("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent.dSYM",
+      cp_r("#{$PASSENGER_SOURCE_DIR_COPY}/buildout/support-binaries/PassengerAgent.dSYM",
         "#{OUTPUT_DIR}/support-binaries", verbose: true)
     end
   end
