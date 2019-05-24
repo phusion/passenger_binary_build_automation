@@ -169,7 +169,7 @@ The procedure for updating the list of Ruby versions to build against, is as fol
 
 `passenger_binary_build_automation` statically links a number of libraries into the Passenger agent and Nginx. These libraries need to be updated once in a while, e.g. when important bugs or security vulnerabilities have been fixed. The procedure for doing that is as follows.
 
- 1. Change the relevant library version numbers in `shared/definitions`.
+ 1. Change the relevant library version numbers in `shared/definitions` (there's a handy script at `./update.sh`).
  2. [Update the Docker container and the macOS runtime](#update-container-and-runtime).
  3. Build the binaries locally to test whether everything works as expected.
  4. [Update the `passenger_binary_build_automation` version lock in Passenger to the current `passenger_binary_build_automation` commit](#update-passenger-lock).
