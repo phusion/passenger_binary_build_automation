@@ -16,7 +16,7 @@ run ./configure --prefix="$OUTPUT_DIR" \
 	--disable-curldebug --enable-symbol-hiding --disable-ares --disable-manual --disable-ldap --disable-ldaps \
 	--disable-rtsp --disable-dict --disable-ftp --disable-ftps --disable-gopher --disable-imap \
 	--disable-imaps --disable-pop3 --disable-pop3s --without-librtmp --disable-smtp --disable-smtps \
-	--disable-telnet --disable-tftp --disable-smb --disable-versioned-symbols --disable-file \
+	--disable-telnet --disable-tftp --disable-smb --disable-versioned-symbols \
 	--without-libmetalink --without-libidn --without-libssh2 --without-libmetalink --without-nghttp2 \
 	--with-darwinss --without-ca-bundle --without-ca-path
 run make -j$CONCURRENCY
