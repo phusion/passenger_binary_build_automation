@@ -10,7 +10,7 @@ export CXXFLAGS="$STATICLIB_CXXFLAGS"
 header "Installing PCRE"
 cd /tmp
 download_and_extract pcre-$PCRE_VERSION.tar.gz pcre-$PCRE_VERSION \
-	https://downloads.sourceforge.net/project/pcre/pcre/$PCRE_VERSION/pcre-$PCRE_VERSION.tar.gz
+	https://ftp.pcre.org/pub/pcre/pcre-${PCRE_VERSION}.tar.gz
 run ./configure --prefix=/hbb_exe_gc_hardened --enable-static --disable-shared
 run make -j2
 run make install-strip
