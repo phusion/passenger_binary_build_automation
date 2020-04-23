@@ -38,11 +38,9 @@ if ! $ALL_RUBIES_OK; then
 fi
 
 header "Installing gem bundle"
-if [[ ! -e "$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" ]]; then
-	echo "+ Installing Bundler into $RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
-	run_ruby "$LAST_RUBY_VERSION" gem install bundler --install-dir "$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" --no-document
-	run_ruby "$LAST_RUBY_VERSION" gem install bundler -v $(fgrep -A1 'BUNDLED WITH' "$ROOTDIR/shared/Gemfile.lock" | tail -n 1) --install-dir "$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" --no-document
-fi
+echo "+ Installing Bundler version from Gemfile.lock"
+run_ruby "$LAST_RUBY_VERSION" gem install bundler -v $(fgrep -A1 'BUNDLED WITH' "$ROOTDIR/shared/Gemfile.lock" | tail -n 1) --no-document
+
 # Copy over the Gemfile to prevent creating a .bundle directory in shared/.
 run cp "$ROOTDIR/shared/Gemfile" "$ROOTDIR/shared/Gemfile.lock" "$WORKDIR/"
 echo "+ Installing gem bundle into $RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
