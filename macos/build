@@ -166,7 +166,7 @@ if $SHOW_TASKS; then
 		BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
 		BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
 		BUNDLE_DISABLE_SHARED_GEMS=true \
-		"$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" exec \
+		"bundle" exec \
 		drake -f "$ROOTDIR/shared/build/Rakefile" -T
 else
 	PASSENGER_DIR=$(absolute_path "$PASSENGER_DIR")
@@ -188,6 +188,6 @@ else
 		BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
 		BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
 		BUNDLE_DISABLE_SHARED_GEMS=true \
-		"$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" exec \
+		"bundle" exec \
 		drake -f "$ROOTDIR/shared/build/Rakefile" "${ARGV[@]}"
 fi

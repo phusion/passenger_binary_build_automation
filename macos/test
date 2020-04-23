@@ -133,5 +133,5 @@ run $RVM_EXEC $LAST_RUBY_VERSION env \
 	BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
 	BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
 	BUNDLE_DISABLE_SHARED_GEMS=true \
-	"$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" exec \
+	"bundle" exec \
 	rspec --tty -c -f d "$ROOTDIR/shared/test/integration_test.rb" "${ARGV[@]}"
