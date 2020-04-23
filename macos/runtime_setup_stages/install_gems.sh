@@ -47,4 +47,4 @@ echo "+ Installing gem bundle into $RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
 run_ruby "$LAST_RUBY_VERSION" \
 	env BUNDLE_GEMFILE="$WORKDIR/Gemfile" \
 	BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
-	"$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin/bundle" install -j2
+	bundle install -j2
