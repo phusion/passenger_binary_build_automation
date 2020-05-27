@@ -15,7 +15,7 @@ getLatest() {
 
 getLatestTag() {
   PAGES=$(curl -H "Authorization: token $TOKEN" -I --silent "https://api.github.com/repos/$1/tags" | fgrep 'Link:' | awk -F, '{print $2}' | sed -Ee 's/.*<(.*)>.*/\1/g' | awk -F= '{print $2}')
-  for PAGE in $(seq 1 ${PAGES:-1}); do curl -H "Authorization: token $TOKEN" --silent "https://api.github.com/repos/$1/tags?page=$PAGE"; done | ruby -rjson -e 'puts JSON.parse(STDIN.read.gsub(/\][\n]*\[/,",")).map{|e|e["name"]}.reject{|e|["rc","gitgui","fips","levitte","-engine-","beta","ssleay","master","before","after","pre","post","rsaref"].any?{|s|e.downcase.include?(s)}}.map{|s|s.delete_prefix("v").delete_prefix("OpenSSL_").gsub("_",".")}.sort_by{|a,b| a.split(".").map{|s|s.to_i(36)} }.reject{|s|s.start_with?("1.1.")}.last'
+  for PAGE in $(seq 1 ${PAGES:-1}); do curl -H "Authorization: token $TOKEN" --silent "https://api.github.com/repos/$1/tags?page=$PAGE"; done | ruby -rjson -e 'puts JSON.parse(STDIN.read.gsub(/\][\n]*\[/,",")).map{|e|e["name"]}.reject{|e|["rc","gitgui","fips","levitte","-engine-","beta","ssleay","master","before","after","pre","post","rsaref","alpha"].any?{|s|e.downcase.include?(s)}}.map{|s|s.delete_prefix("v").delete_prefix("OpenSSL_").gsub("_",".")}.sort_by{|a,b| a.split(".").map{|s|s.to_i(36)} }.reject{|s|s.start_with?("1.1.")}.last'
 }
 
 echo starting ccache…
