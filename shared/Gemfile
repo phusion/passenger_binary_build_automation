@@ -6,5 +6,5 @@ gem 'drake'
 gem 'rspec'
 
 # Needed by Passenger
-gem 'rack', '< 2.0' # Rack 2.0+ does not work with Ruby 2.0, which is default on OS X
+gem 'rack', '< 3.0' # Rack 2.0+ does not work with Ruby 2.0, which is default on OS X
 gem 'bluecloth'
