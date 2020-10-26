@@ -90,6 +90,9 @@ function cleanup()
 cd "$WORKDIR"
 
 "$SELFDIR/runtime_setup_stages/version_lockdown.sh"
+if [[ ! -e "$OUTPUT_DIR/bin/cmake" ]]; then
+	"$SELFDIR/runtime_setup_stages/install_cmake.sh"
+fi
 if [[ ! -e "$OUTPUT_DIR/bin/ccache" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_ccache.sh"
 fi
@@ -98,6 +101,9 @@ if [[ ! -e "$OUTPUT_DIR/bin/pkg-config" ]]; then
 fi
 if [[ ! -e "$OUTPUT_DIR/lib/libz.a" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_zlib.sh"
+fi
+if [[ ! -e "$OUTPUT_DIR/lib/libzstd.a" ]]; then
+	"$SELFDIR/runtime_setup_stages/install_zstd.sh"
 fi
 if [[ ! -e "$OUTPUT_DIR/bin/openssl" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_openssl.sh"

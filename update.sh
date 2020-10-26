@@ -10,14 +10,16 @@ write_version() {
 }
 
 getLatest() {
-  curl -H "Authorization: token $TOKEN" --silent "https://api.github.com/repos/$1/releases/latest" | ruby -rjson -e 'puts JSON.parse(STDIN.read)["name"].delete_prefix("v")'
+  curl -H "Authorization: token $TOKEN" --silent "https://api.github.com/repos/$1/releases/latest" | ruby -rjson -e 'puts JSON.parse(STDIN.read)["tag_name"].delete_prefix("v").gsub("_",".").delete_prefix("curl-")'
 }
 
 getLatestTag() {
   PAGES=$(curl -H "Authorization: token $TOKEN" -I --silent "https://api.github.com/repos/$1/tags" | fgrep 'Link:' | awk -F, '{print $2}' | sed -Ee 's/.*<(.*)>.*/\1/g' | awk -F= '{print $2}')
-  for PAGE in $(seq 1 ${PAGES:-1}); do curl -H "Authorization: token $TOKEN" --silent "https://api.github.com/repos/$1/tags?page=$PAGE"; done | ruby -rjson -e 'puts JSON.parse(STDIN.read.gsub(/\][\n]*\[/,",")).map{|e|e["name"]}.reject{|e|["rc","gitgui","fips","levitte","-engine-","beta","ssleay","master","before","after","pre","post","rsaref","alpha","1000"].any?{|s|e.downcase.include?(s)}}.map{|s|s.delete_prefix("v").delete_prefix("OpenSSL_").gsub("_",".")}.sort_by{|a,b| a.split(".").map{|s|s.to_i(36)} }.reject{|s|s.start_with?("1.1.")}.last'
+  for PAGE in $(seq 1 ${PAGES:-1}); do curl -H "Authorization: token $TOKEN" --silent "https://api.github.com/repos/$1/tags?page=$PAGE"; done | ruby -rjson -e 'puts JSON.parse(STDIN.read.gsub(/\][\n]*\[/,",")).map{|e|e["name"]}.reject{|e|["rc","gitgui","fips","levitte","-engine-","beta","ssleay","master","before","after","pre","post","rsaref","alpha","1000"].any?{|s|e.downcase.include?(s)}}.map{|s|s.delete_prefix("v").delete_prefix("OpenSSL_").gsub("_",".")}' | sort -V | tail -1
 }
 
+echo starting cmake…
+getLatest Kitware/CMake > $ROOTDIR/shared/definitions/cmake_version
 echo starting ccache…
 getLatest ccache/ccache > $ROOTDIR/shared/definitions/ccache_version
 echo starting curl…
@@ -26,9 +28,11 @@ echo starting geoip…
 getLatest maxmind/geoip-api-c > $ROOTDIR/shared/definitions/geoip_version
 echo starting s3cmd…
 getLatest s3tools/s3cmd > $ROOTDIR/shared/definitions/s3cmd_version
-
+echo starting zstd…
+getLatest facebook/zstd > $ROOTDIR/shared/definitions/zstd_version
 echo starting rubygems…
-getLatestTag rubygems/rubygems > $ROOTDIR/shared/definitions/rubygems_version
+getLatest rubygems/rubygems > $ROOTDIR/shared/definitions/rubygems_version
+
 echo starting git…
 getLatestTag git/git > $ROOTDIR/shared/definitions/git_version
 echo starting zlib…
