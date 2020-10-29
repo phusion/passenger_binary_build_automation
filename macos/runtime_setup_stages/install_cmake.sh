@@ -4,6 +4,8 @@ ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/../.." && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
 
+export CXX=c++
+
 CMAKE_VERSION=$(cat "$ROOTDIR/shared/definitions/cmake_version")
 
 header "Installing cmake $CMAKE_VERSION"
