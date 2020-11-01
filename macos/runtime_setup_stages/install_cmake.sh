@@ -4,7 +4,8 @@ ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/../.." && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
 
-export CXX=c++
+# the macos/support/bin/c++ script incorrectly uses cc instead of c++ here
+export CXX=/usr/bin/c++
 export CXXFLAGS="-std=c++11"
 
 CMAKE_VERSION=$(cat "$ROOTDIR/shared/definitions/cmake_version")
