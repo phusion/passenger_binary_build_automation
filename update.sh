@@ -19,7 +19,7 @@ getLatestTag() {
 }
 
 echo starting cmake…
-getLatest Kitware/CMake > $ROOTDIR/shared/definitions/cmake_version
+getLatestTag Kitware/CMake > $ROOTDIR/shared/definitions/cmake_version
 echo starting ccache…
 getLatest ccache/ccache > $ROOTDIR/shared/definitions/ccache_version
 echo starting curl…
@@ -31,7 +31,7 @@ getLatest s3tools/s3cmd > $ROOTDIR/shared/definitions/s3cmd_version
 echo starting zstd…
 getLatest facebook/zstd > $ROOTDIR/shared/definitions/zstd_version
 echo starting rubygems…
-getLatest rubygems/rubygems > $ROOTDIR/shared/definitions/rubygems_version
+getLatestTag rubygems/rubygems > $ROOTDIR/shared/definitions/rubygems_version
 
 echo starting git…
 getLatestTag git/git > $ROOTDIR/shared/definitions/git_version
@@ -44,7 +44,7 @@ echo starting pkg-config…
 curl --silent "https://gitlab.freedesktop.org/api/v4/projects/953/repository/tags" | ruby -rjson -e 'puts JSON.parse(STDIN.read).first["name"].split("-").last' > $ROOTDIR/shared/definitions/pkg_config_version
 
 echo 'starting gnupg & associated…'
-curl --silent "https://www.gnupg.org/download/index.html" | ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("#text-1-1 > table > tbody > tr > td:nth-child(-n+2)").map{|e|e.text}.each_slice(2).reject{|elts| elts.first.include?(" ") }.map{|elts|elts.join(" ")}' | tee >(fgrep GnuPG | awk '{print "gnupg_version",$2}' | write_version) >(fgrep Libassuan | awk '{print "libassuan_version",$2}' | write_version) >(fgrep Libgcrypt | awk '{print "libgcrypt_version",$2}' | write_version) >(fgrep Libgpg-error | awk '{print "libgpg_error_version",$2}' | write_version) >(fgrep Libksba | awk '{print "libksba_version",$2}' | write_version) >(fgrep nPth | awk '{print "npth_version",$2}' | write_version) >(fgrep Pinentry | awk '{print "pinentry_version",$2}' | write_version) >/dev/null
+curl --silent "https://www.gnupg.org/download/index.html" | ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("#text-1-1 > table > tbody > tr > td:nth-child(-n+2)").map{|e|e.text}.each_slice(2).reject{|elts| elts.first.include?(" ") && elts.first != "GnuPG (LTS)" }.map{|elts|elts.join(" ").gsub(" (LTS)","")}' | tee >(fgrep GnuPG | awk '{print "gnupg_version",$2}' | write_version) >(fgrep Libassuan | awk '{print "libassuan_version",$2}' | write_version) >(fgrep Libgcrypt | awk '{print "libgcrypt_version",$2}' | write_version) >(fgrep Libgpg-error | awk '{print "libgpg_error_version",$2}' | write_version) >(fgrep Libksba | awk '{print "libksba_version",$2}' | write_version) >(fgrep nPth | awk '{print "npth_version",$2}' | write_version) >(fgrep Pinentry | awk '{print "pinentry_version",$2}' | write_version) >/dev/null
 
 echo starting ruby versions…
 curl --silent "https://www.ruby-lang.org/en/downloads/releases/" | ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("table.release-list > tr > td:first-child").map{|e|e.text}.reject{|e|e.include?("-")}.sort.map{|e|e.split[1]}.chunk{|e|e.split(".")[0..1].join(".").to_f}.select{|major,minors|major > 2.2}.map{|major,minors|major.to_s + "." + minors.map{|e|e.split(".").last.to_i}.sort.last.to_s}' > $ROOTDIR/shared/definitions/ruby_versions
