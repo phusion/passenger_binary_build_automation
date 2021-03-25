@@ -6,6 +6,7 @@ SELFDIR=`cd "$SELFDIR" && pwd`
 touch /var/lib/rpm/*
 "$SELFDIR"/essentials.sh
 "$SELFDIR"/install_gnupg.sh
+"$SELFDIR"/install_libcurl.sh
 "$SELFDIR"/install_git.sh
 "$SELFDIR"/install_s3cmd.sh
 "$SELFDIR"/install_pcre.sh
