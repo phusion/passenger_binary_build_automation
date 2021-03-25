@@ -189,7 +189,7 @@ As described in [How it works](HOW-IT-WORKS.md), `passenger_binary_build_automat
      - Run `./linux/setup-docker-image-64`
      - Publish the new Docker container to the Docker Hub: run `./linux/publish-docker-images`
 
- 4. If you changed the ruby versions at all, then you need to update the [versions in the ansible playbook for the passenger ci cluster](https://gitlab.phusion.nl/provisioning/ansible_playbooks/blob/master/playbooks/passenger-ci-cluster/vars/macos-slave.yml), and then deploy to production: `./run production --ask-vault-pass -l macos-slave-vm`.
+ 4. If you changed the ruby versions at all, then you need to update the [versions in the ansible playbook for the passenger ci cluster](https://gitlab.phusion.nl/provisioning/ansible_playbooks/blob/master/playbooks/passenger-ci-cluster/vars/macos-slave.yml), and then deploy to production: `./run production --ask-vault-pass -l macos_slave_vm`.
  5. If you bumped `shared/definitions/macos_runtime_version`, then (locally) rebuild the runtime (see [Building binaries / For macOS / Preparation](#preparation-macos)) to see whether it works.
 
 
