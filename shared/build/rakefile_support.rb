@@ -126,7 +126,7 @@ def agent_command_builder
     " #{RVM_EXEC} ruby-#{DEFAULT_RUBY_VERSION}" \
     " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
     " #{forced_gem_home_and_path_envs}" \
-    " drake nginx_without_native_support" \
+    " rake nginx_without_native_support" \
     " -j #{CONCURRENCY} OPTIMIZE=true OUTPUT_DIR=".strip
 end
 
@@ -135,7 +135,7 @@ def library_command_builder(ruby_version)
     " #{RVM_EXEC} ruby-#{ruby_version}" \
     " env NOEXEC_DISABLE=1 CCACHE_BASEDIR=#{shesc $PASSENGER_SOURCE_DIR_COPY}" \
     " #{forced_gem_home_and_path_envs}" \
-    " drake native_support OUTPUT_DIR=".strip
+    " rake native_support OUTPUT_DIR=".strip
 end
 
 def forced_gem_home_and_path_envs

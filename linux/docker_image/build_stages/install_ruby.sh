@@ -9,7 +9,7 @@ RUBYGEMS_VERSION=$(cat /pbba_build/shared/definitions/rubygems_version)
 for RUBY_VERSION in "${RUBY_VERSIONS[@]}"; do
 	header "Installing Ruby $RUBY_VERSION"
 	run /usr/local/rvm/bin/rvm install ruby-$RUBY_VERSION --rubygems $RUBYGEMS_VERSION || { tail -n +1 /usr/local/rvm/log/*_ruby-"$RUBY_VERSION"*/*.log && false; };
-	run /usr/local/rvm/bin/rvm-exec ruby-$RUBY_VERSION gem install drake --no-document
+	run /usr/local/rvm/bin/rvm-exec ruby-$RUBY_VERSION gem install rake --no-document
 	run /usr/local/rvm/bin/rvm-exec ruby-$RUBY_VERSION gem install bundler -v 1.17 --no-document
 	run strip --strip-all /usr/local/rvm/rubies/ruby-$RUBY_VERSION*/bin/ruby
 	run strip --strip-debug /usr/local/rvm/rubies/ruby-$RUBY_VERSION*/lib/libruby.so

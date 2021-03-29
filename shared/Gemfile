@@ -2,7 +2,7 @@ source 'https://rubygems.org/'
 
 # Needed by our own tooling
 gem 'paint'
-gem 'drake'
+gem 'rake'
 gem 'rspec'
 
 # Needed by Passenger

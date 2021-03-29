@@ -36,5 +36,5 @@ else
 
 	run_exec setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
-		drake -f /system/shared/build/Rakefile "$@"
+		rake -f /system/shared/build/Rakefile "$@"
 fi

@@ -167,7 +167,7 @@ if $SHOW_TASKS; then
 		BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
 		BUNDLE_DISABLE_SHARED_GEMS=true \
 		"bundle" exec \
-		drake -f "$ROOTDIR/shared/build/Rakefile" -T
+		rake -f "$ROOTDIR/shared/build/Rakefile" -T
 else
 	PASSENGER_DIR=$(absolute_path "$PASSENGER_DIR")
 	CACHE_DIR=$(absolute_path "$CACHE_DIR")
@@ -189,5 +189,5 @@ else
 		BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
 		BUNDLE_DISABLE_SHARED_GEMS=true \
 		"bundle" exec \
-		drake -f "$ROOTDIR/shared/build/Rakefile" "${ARGV[@]}"
+		rake -f "$ROOTDIR/shared/build/Rakefile" "${ARGV[@]}"
 fi
