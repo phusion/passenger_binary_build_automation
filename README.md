@@ -74,19 +74,19 @@ The `build` script expects at least the following arguments:
  * `-p`: path to the Passenger source code that you want to build.
  * `-c`: a directory which the script can use for caching data, in order to make subsequent builds faster.
  * `-o`: a directory to store the built binaries in.
- * `-a`: the architecture to build for. Either `x86` or `x86_64`.
+ * `-a`: the architecture to build for: `x86_64`.
  * And finally, a list of things that the script should build (_tasks_). In this example we specified two tasks, `passenger` and `nginx`. The passenger task builds the Passenger agent and all Ruby extensions, while the nginx task builds Nginx.
 
 More command line options are available. Run `./build -h` to learn more. You can also run `./build -T` to learn which tasks are available.
 
 When the above example build is finished, the output directory will contain these files:
 
-    ruby-extensions/ruby-2.1.10-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.2.10-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.3.8-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.4.5-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.5.5-x86-linux/passenger_native_support.so
-    ruby-extensions/ruby-2.6.2-x86-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.1.10-x86_64-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.2.10-x86_64-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.3.8-x86_64-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.4.5-x86_64-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.5.5-x86_64-linux/passenger_native_support.so
+    ruby-extensions/ruby-2.6.2-x86_64-linux/passenger_native_support.so
     support-binaries/PassengerAgent
     support-binaries/nginx-1.15.8
 
@@ -185,7 +185,6 @@ As described in [How it works](HOW-IT-WORKS.md), `passenger_binary_build_automat
  2. If you changed anything in the macOS runtime **besides** bumping Ruby version numbers (e.g. you updated OpenSSL or something), then also bump the version number in `shared/definitions/macos_runtime_version`.
  3. Rebuild the Docker container. On a Linux machine:
 
-     - Run `./linux/setup-docker-image-32`
      - Run `./linux/setup-docker-image-64`
      - Publish the new Docker container to the Docker Hub: run `./linux/publish-docker-images`
 

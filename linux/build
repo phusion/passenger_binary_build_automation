@@ -26,7 +26,7 @@ function usage()
 	echo "  -p DIR     Path to Passenger source directory"
 	echo "  -c DIR     Path to cache directory"
 	echo "  -o DIR     Path in which to store build products"
-	echo "  -a ARCH    Architecture to build for (x86, x86_64)"
+	echo "  -a ARCH    Architecture to build for (x86_64)"
 	echo
 	echo "Optional options:"
 	echo "  -n DIR     Path to Nginx source directory"
@@ -125,8 +125,8 @@ function parse_options()
 			echo "ERROR: please specify an architecture with -a."
 			exit 1
 		fi
-		if [[ "$ARCHITECTURE" != x86 && "$ARCHITECTURE" != x86_64 ]]; then
-			echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either x86 or x86_64."
+		if [[ "$ARCHITECTURE" != x86_64 ]]; then
+			echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify x86_64."
 		fi
 		if [[ "$NGINX_DIR" != "" ]]; then
 			if [[ ! -e "$NGINX_DIR" ]]; then
@@ -148,12 +148,8 @@ if tty -s; then
 else
 	TTY_ARGS=
 fi
-if [[ "$ARCHITECTURE" = x86 ]]; then
-	DOCKER_IMAGE=phusion/passenger_binary_build_automation_32
-	LINUX32=(linux32)
-else
+if [[ "$ARCHITECTURE" = x86_64 ]]; then
 	DOCKER_IMAGE=phusion/passenger_binary_build_automation_64
-	LINUX32=()
 fi
 
 if $SHOW_TASKS; then
@@ -163,7 +159,7 @@ if $SHOW_TASKS; then
 		-e "APP_GID=$(/usr/bin/id -g)" \
 		-e "SHOW_TASKS=true" \
 		"$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION" \
-		"${LINUX32[@]}" /system/linux/support/build-script-docker-entrypoint.sh -T
+		/system/linux/support/build-script-docker-entrypoint.sh -T
 else
 	EXTRA_DOCKER_ARGS=()
 	PASSENGER_DIR=$(absolute_path "$PASSENGER_DIR")
@@ -189,6 +185,6 @@ else
 		-e "CONCURRENCY=$CONCURRENCY" \
 		"${EXTRA_DOCKER_ARGS[@]}" \
 		"$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION" \
-		"${LINUX32[@]}" /system/linux/support/build-script-docker-entrypoint.sh \
+		/system/linux/support/build-script-docker-entrypoint.sh \
 		"${ARGV[@]}"
 fi

@@ -38,18 +38,7 @@ fi
 echo 'import random, time; time.sleep(random.random() * 4)' | python
 
 run rm -rf "$WORKSPACE/output"/*
-run mkdir -p "$WORKSPACE/cache/x86" "$WORKSPACE/output/x86" \
-	"$WORKSPACE/cache/x86_64" "$WORKSPACE/output/x86_64"
-
-echo
-echo "---------- Building x86 binaries ----------"
-run ./linux/build \
-	-p "$PASSENGER_ROOT" \
-	-c "$WORKSPACE/cache/x86" \
-	-o "$WORKSPACE/output/x86" \
-	-a x86 \
-	-j "$CONCURRENCY" \
-	passenger nginx
+run mkdir -p "$WORKSPACE/cache/x86_64" "$WORKSPACE/output/x86_64"
 
 echo
 echo "---------- Building x86_64 binaries ----------"
@@ -60,19 +49,6 @@ run ./linux/build \
 	-a x86_64 \
 	-j "$CONCURRENCY" \
 	passenger nginx
-
-echo
-echo "---------- Testing x86 binaries ----------"
-run ./linux/package \
-	-i "$WORKSPACE/output/x86" \
-	-o "$WORKSPACE/output/x86" \
-	-a x86
-run ./linux/test \
-	-p "$PASSENGER_ROOT" \
-	-i "$WORKSPACE/output/x86" \
-	-I "$WORKSPACE/output/x86" \
-	-a x86 \
-	-L ~/passenger-enterprise-license
 
 echo
 echo "---------- Testing x86_64 binaries ----------"

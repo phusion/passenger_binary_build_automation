@@ -1,3 +1,0 @@
-FROM phusion/holy-build-box-32:2.2.0
-ADD . /pbba_build
-RUN linux32 /pbba_build/linux/docker_image/build_stages/entrypoint.sh

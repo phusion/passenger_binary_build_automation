@@ -20,7 +20,7 @@ function usage()
 	echo "  -p DIR     Path to Passenger source directory"
 	echo "  -i DIR     Path to directory containing unpackaged build products"
 	echo "  -I DIR     Path to directory containing packaged build products"
-	echo "  -a ARCH    Architecture to test for (x86, x86_64)"
+	echo "  -a ARCH    Architecture to test for (x86_64)"
 	echo
 	echo "Optional options:"
 	echo "  -L PATH    Path to Passenger Enterprise license key"
@@ -91,8 +91,8 @@ function parse_options()
 		echo "ERROR: please specify an architecture with -a."
 		exit 1
 	fi
-	if [[ "$ARCHITECTURE" != x86 && "$ARCHITECTURE" != x86_64 ]]; then
-		echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either x86 or x86_64."
+	if [[ "$ARCHITECTURE" != x86_64 ]]; then
+		echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify x86_64."
 	fi
 	if [[ "$LICENSE_KEY" != "" && ! -e "$LICENSE_KEY" ]]; then
 		echo "ERROR: $LICENSE_KEY does not exist."
@@ -109,12 +109,8 @@ fi
 if [[ "$LICENSE_KEY" != "" ]]; then
 	DOCKER_EXTRA_ARGS+=(-v "$LICENSE_KEY:/etc/passenger-enterprise-license:ro")
 fi
-if [[ "$ARCHITECTURE" = x86 ]]; then
-	DOCKER_IMAGE=phusion/passenger_binary_build_automation_32
-	LINUX32=linux32
-else
+if [[ "$ARCHITECTURE" = x86_64 ]]; then
 	DOCKER_IMAGE=phusion/passenger_binary_build_automation_64
-	LINUX32=
 fi
 
 PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
@@ -131,4 +127,4 @@ exec docker run --rm \
 	-e "APP_GID=`/usr/bin/id -g`" \
 	"${DOCKER_EXTRA_ARGS[@]}" \
 	$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION \
-	$LINUX32 /system/linux/support/test-script-docker-entrypoint.sh
+	/system/linux/support/test-script-docker-entrypoint.sh
