@@ -164,7 +164,7 @@ describe 'Downloaded Passenger binaries' do
       end
 
       begin
-        open("http://127.0.0.1:#{passenger_port}/") do |f|
+        URI.open("http://127.0.0.1:#{passenger_port}/") do |f|
           expect(f.read).to eq('ok')
         end
       rescue
