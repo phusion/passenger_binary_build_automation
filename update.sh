@@ -83,12 +83,6 @@ if [ ${RESTRICT:-pkg-config} = "pkg-config" ]; then
 else
 	echo skipping pkg-config…
 fi
-if [ ${RESTRICT:-gnupg} = "gnupg" ]; then
-	echo 'starting gnupg & associated…'
-	curl --silent "https://www.gnupg.org/download/index.html" | ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("#text-1-1 > table > tbody > tr > td:nth-child(-n+2)").map{|e|e.text}.each_slice(2).reject{|elts| elts.first.include?(" ") && elts.first != "GnuPG (LTS)" }.map{|elts|elts.join(" ").gsub(" (LTS)","")}' | tee >(fgrep GnuPG | awk '{print "gnupg_version",$2}' | write_version) >(fgrep Libassuan | awk '{print "libassuan_version",$2}' | write_version) >(fgrep Libgcrypt | awk '{print "libgcrypt_version",$2}' | write_version) >(fgrep Libgpg-error | awk '{print "libgpg_error_version",$2}' | write_version) >(fgrep Libksba | awk '{print "libksba_version",$2}' | write_version) >(fgrep nPth | awk '{print "npth_version",$2}' | write_version) >(fgrep Pinentry | awk '{print "pinentry_version",$2}' | write_version) >/dev/null
-else
-	echo skipping gnupg…
-fi
 if [ ${RESTRICT:-ruby} = "ruby" ]; then
 	echo starting ruby versions…
 	curl --silent "https://www.ruby-lang.org/en/downloads/releases/" | ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("table.release-list > tr > td:first-child").map{|e|e.text}.reject{|e|e.include?("-")}.sort.map{|e|e.split[1]}.chunk{|e|e.split(".")[0..1].join(".").to_f}.select{|major,minors|major > 2.2}.map{|major,minors|major.to_s + "." + minors.map{|e|e.split(".").last.to_i}.sort.last.to_s}' > $ROOTDIR/shared/definitions/ruby_versions
