@@ -67,7 +67,8 @@ function download_and_extract()
 	local BASENAME="$1"
 	local DIRNAME="$2"
 	local URL="$3"
-	local regex='\.bz2$'
+	local bz2_regex='\.bz2$'
+	local xz_regex='\.xz$'
 
 	local DOWNLOAD_DIR
 	if [[ "$WORKDIR" != '' ]]; then
@@ -81,8 +82,10 @@ function download_and_extract()
 		run curl --fail -L -o "$DOWNLOAD_DIR/$BASENAME.tmp" "$URL"
 		run mv "$DOWNLOAD_DIR/$BASENAME.tmp" "$DOWNLOAD_DIR/$BASENAME"
 	fi
-	if [[ "$URL" =~ $regex ]]; then
+	if [[ "$URL" =~ $bz2_regex ]]; then
 		run tar xjf "$DOWNLOAD_DIR/$BASENAME"
+	elif [[ "$URL" =~ $xz_regex ]]; then
+		run tar xJf "$DOWNLOAD_DIR/$BASENAME"
 	else
 		run tar xzf "$DOWNLOAD_DIR/$BASENAME"
 	fi
