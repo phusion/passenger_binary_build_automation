@@ -15,7 +15,7 @@ TAB=`perl -e 'print "\t"'`
 ERROR=false
 STANDARD_LIBS="(@executable_path/|/usr/lib/libobjc|/usr/lib/libSystem|/usr/lib/libutil|/usr/lib/libz"
 STANDARD_LIBS="$STANDARD_LIBS|/usr/lib/libiconv|/usr/lib/libstdc\+\+|/usr/lib/libc\+\+)\."
-STANDARD_LIBS="($STANDARD_LIBS|CoreFoundation\.framework|CoreServices\.framework|Security\.framework)"
+STANDARD_LIBS="($STANDARD_LIBS|CoreFoundation\.framework|CoreServices\.framework|Security\.framework|Foundation\.framework|SystemConfiguration\.framework)"
 
 for F in "$@"; do
 	EXTRA_LIBS=`otool -L $F | tail -n +2 | sed "s/^${TAB}//" | sed "s/ (.*//" | grep_without_fail -vE "$STANDARD_LIBS"`
