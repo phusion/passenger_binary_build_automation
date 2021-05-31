@@ -19,7 +19,7 @@ fi
 function run_ruby() {
 	VERSION=$1
 	shift
-	"$RVM_EXEC" "ruby-$VERSION" "$@"
+	run "$RVM_EXEC" "ruby-$VERSION" --verbose "$@"
 }
 
 header "Checking Ruby versions"
