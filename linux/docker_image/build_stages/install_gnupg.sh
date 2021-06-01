@@ -8,6 +8,7 @@ LIBKSBA_VERSION=`cat /pbba_build/shared/definitions/libksba_version`
 LIBASSUAN_VERSION=`cat /pbba_build/shared/definitions/libassuan_version`
 NPTH_VERSION=`cat /pbba_build/shared/definitions/npth_version`
 PINENTRY_VERSION=`cat /pbba_build/shared/definitions/pinentry_version`
+NTBTLS_VERSION=`cat /pbba_build/shared/definitions/ntbtls_version`
 LIBICONV_VERSION=`cat /pbba_build/shared/definitions/libiconv_version`
 GNUPG_VERSION=`cat /pbba_build/shared/definitions/gnupg_version`
 
@@ -60,6 +61,14 @@ run ./configure --prefix=/hbb \
 	--enable-pinentry-curses \
 	--enable-pinentry-tty \
 	--disable-pinentry-qt5
+run make -j2
+run make install-strip
+
+header "Installing ntbTLS"
+cd /tmp
+download_and_extract ntbtls-$NTBTLS_VERSION.tar.bz2 ntbtls-$NTBTLS_VERSION \
+	https://gnupg.org/ftp/gcrypt/ntbtls/ntbtls-$NTBTLS_VERSION.tar.bz2
+run ./configure --prefix=/hbb
 run make -j2
 run make install-strip
 
