@@ -16,6 +16,6 @@ run ./configure --prefix="/hbb" \
     --disable-rtsp --disable-dict --disable-ftp --disable-ftps --disable-gopher --disable-imap \
     --disable-imaps --disable-pop3 --disable-pop3s --without-librtmp --disable-smtp --disable-smtps \
     --disable-telnet --disable-tftp --disable-smb --disable-versioned-symbols --with-openssl \
-    --without-libmetalink --without-libidn2 --without-libssh2 --without-libmetalink --without-nghttp2
+    --without-libidn2 --without-libssh2 --without-nghttp2
 run make -j2
 run make install-strip
