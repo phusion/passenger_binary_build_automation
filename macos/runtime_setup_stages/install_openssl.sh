@@ -12,6 +12,7 @@ download_and_extract openssl-$OPENSSL_VERSION.tar.gz \
 	https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
 run rm -f "$WORKDIR/openssl-$OPENSSL_VERSION.tar.gz"
 run ./Configure darwin64-x86_64-cc \
+	-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include \
 	--prefix="$OUTPUT_DIR" --openssldir="$OUTPUT_DIR/openssl" \
 	threads zlib no-shared no-sse2 -fvisibility=hidden
 # For some reason the -j1 is explicitly required. If this script was invoked
