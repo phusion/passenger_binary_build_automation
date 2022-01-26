@@ -9,7 +9,7 @@ PCRE_VERSION=$(cat "$ROOTDIR/shared/definitions/pcre_version")
 header "Installing PCRE $PCRE_VERSION"
 download_and_extract pcre-$PCRE_VERSION.tar.gz \
 	pcre-$PCRE_VERSION \
-	https://ftp.pcre.org/pub/pcre/pcre-${PCRE_VERSION}.tar.gz
+	https://sourceforge.net/projects/pcre/files/pcre/${PCRE_VERSION}/pcre-${PCRE_VERSION}.tar.gz/download
 run rm -f "$WORKDIR/pcre-$PCRE_VERSION.tar.gz"
 run ./configure --prefix="$OUTPUT_DIR" --enable-static --disable-shared \
 	CFLAGS='-O2 -fvisibility=hidden'
