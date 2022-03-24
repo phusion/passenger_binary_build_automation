@@ -12,19 +12,9 @@ download_and_extract openssl-$OPENSSL_VERSION.tar.gz \
 	https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
 run rm -f "$WORKDIR/openssl-$OPENSSL_VERSION.tar.gz"
 
-# Once 1.1.1m comes out remove this patching: https://github.com/openssl/openssl/issues/16407
-# and the` -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -Wno-nullability-completeness` line
-if [ "$OPENSSL_VERSION" != "1.1.1l" ]; then
-	header "remove patching from macos install openssl formula: macos/runtime_setup_stages/install_openssl.sh"
-	exit 1
-else
-curl -sSL -o 1.patch https://patch-diff.githubusercontent.com/raw/openssl/openssl/pull/16409.patch
-curl -sSL -o 2.patch https://patch-diff.githubusercontent.com/raw/openssl/openssl/pull/16587.patch
-patch -N -F0 -p1 < 1.patch && rm 1.patch
-patch -N -F0 -p1 < 2.patch && rm 2.patch
-fi
 run ./Configure darwin64-x86_64-cc \
-	-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -Wno-nullability-completeness \
+	-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include \
+	-Wno-nullability-completeness \
 	--prefix="$OUTPUT_DIR" --openssldir="$OUTPUT_DIR/openssl" \
 	threads zlib no-shared no-sse2 -fvisibility=hidden
 # For some reason the -j1 is explicitly required. If this script was invoked
