@@ -2,6 +2,13 @@
 set -e
 set -o pipefail
 
+if getent group 998; then
+	groupdel -f $(getent group 998 | cut -d: -f1)
+fi
+if getent passwd 999; then
+	userdel $(getent passwd 999 | cut -d: -f1)
+fi
+
 if [[ "$APP_UID" -lt 1024 ]]; then
 	if awk -F: '{ print $3 }' < /etc/passwd | grep -q "^${APP_UID}$"; then
 		echo "ERROR: you can only run this script with a user whose UID is at least 1024, or whose UID does not already exist in the Docker container. Current UID: $APP_UID"
