@@ -1,3 +1,3 @@
 #!/bin/bash
 set -e
-exec /hbb/bin/python /hbb/s3cmd/s3cmd "$@"
+exec /usr/bin/env python /hbb/s3cmd/s3cmd "$@"
