@@ -41,9 +41,8 @@ fi
 export GPG_OPTS='--batch --trust-model always --passphrase-file /signing_key_password'
 
 echo "+ Ensuring GPG works in a non-TTY environment"
-setuser builder touch ~builder/.gnupg/gpg.conf
 echo no-tty >> ~builder/.gnupg/gpg.conf
-echo pinentry-mode loopback >> ~builder/.gnupg/gpg.conf
+# echo pinentry-mode loopback >> ~builder/.gnupg/gpg.conf
 
 echo "+ Importing GPG key"
 setuser builder gpg --batch -q --import /signing_key
