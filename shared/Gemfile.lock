@@ -4,7 +4,7 @@ GEM
     bluecloth (2.2.0)
     diff-lcs (1.2.5)
     paint (1.0.1)
-    rack (2.1.4)
+    rack (2.1.4.1)
     rake (13.0.6)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
