@@ -12,7 +12,7 @@ download_and_extract openssl-$OPENSSL_VERSION.tar.gz \
 	https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
 run rm -f "$WORKDIR/openssl-$OPENSSL_VERSION.tar.gz"
 
-run ./Configure darwin64-x86_64-cc \
+run ./Configure "darwin64-$(uname -m)-cc" \
 	-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include \
 	-Wno-nullability-completeness \
 	--prefix="$OUTPUT_DIR" --openssldir="$OUTPUT_DIR/openssl" \

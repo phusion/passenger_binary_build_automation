@@ -59,36 +59,38 @@ done
 echo "+ Determining Passenger version number"
 PASSENGER_VERSION="`"$ROOTDIR/shared/publish/determine_version_number.sh"`"
 
-run rm -rf "$WORKSPACE/output"/*
-run mkdir -p "$WORKSPACE/cache/x86_64" "$WORKSPACE/output/x86_64"
+run rm -rf "$WORKSPACE/output"
+
+for ARCH in arm64 amd64; do
+run mkdir -p "$WORKSPACE/cache/$ARCH" "$WORKSPACE/output/$ARCH"
 
 echo
-echo "---------- Building x86_64 binaries ----------"
+echo "---------- Building $ARCH binaries ----------"
 run ./linux/build \
 	-p "$PASSENGER_ROOT" \
-	-c "$WORKSPACE/cache/x86_64" \
-	-o "$WORKSPACE/output/x86_64" \
-	-a x86_64 \
+	-c "$WORKSPACE/cache/$ARCH" \
+	-o "$WORKSPACE/output/$ARCH" \
+	-a $ARCH \
 	-j "$CONCURRENCY" \
 	passenger nginx
 
 echo
-echo "---------- Testing x86_64 binaries ----------"
+echo "---------- Testing $ARCH binaries ----------"
 run ./linux/package \
-	-i "$WORKSPACE/output/x86_64" \
-	-o "$WORKSPACE/output/x86_64" \
-	-a x86_64
+	-i "$WORKSPACE/output/$ARCH" \
+	-o "$WORKSPACE/output/$ARCH" \
+	-a $ARCH
 run ./linux/test \
 	-p "$PASSENGER_ROOT" \
-	-i "$WORKSPACE/output/x86_64" \
-	-I "$WORKSPACE/output/x86_64" \
-	-a x86_64 \
+	-i "$WORKSPACE/output/$ARCH" \
+	-I "$WORKSPACE/output/$ARCH" \
+	-a $ARCH \
 	-L ~/passenger-enterprise-license
 
 echo
-echo "---------- Publishing x86_64 binaries ----------"
+echo "---------- Publishing $ARCH binaries ----------"
 run ./linux/publish \
-	-i "$WORKSPACE/output/x86_64" \
+	-i "$WORKSPACE/output/$ARCH" \
 	-v "$PASSENGER_VERSION" \
 	-S ~/auto-software-signing@phusion.nl.asc \
 	-x ~/.auto-software-signing@phusion.nl.password \
@@ -96,3 +98,4 @@ run ./linux/publish \
 	-a `cat ~/.passenger_binary_build_automation_s3_access_key` \
 	-s ~/.passenger_binary_build_automation_s3_password \
 	"${PUBLISH_ARGS[@]}"
+done

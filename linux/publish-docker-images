@@ -6,4 +6,16 @@ DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
 # shellcheck source=../shared/lib/library.sh
 source "$ROOTDIR/shared/lib/library.sh"
 
-run docker push "phusion/passenger_binary_build_automation_64:$DOCKER_IMAGE_VERSION"
+BUILDBOX_NAME="phusion/passenger_binary_build_automation"
+
+for ARCH in amd64 arm64; do
+run docker tag "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH" "$BUILDBOX_NAME:latest-$ARCH"
+run docker push "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH"
+run docker push "$BUILDBOX_NAME:latest-$ARCH"
+done
+
+docker manifest create "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION" "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-amd64" "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-arm64"
+docker manifest create "$BUILDBOX_NAME:latest"                "$BUILDBOX_NAME:latest-amd64"                "$BUILDBOX_NAME:latest-arm64"
+
+docker manifest push "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION"
+docker manifest push "$BUILDBOX_NAME:latest"

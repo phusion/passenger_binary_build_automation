@@ -11,7 +11,7 @@ download_and_extract openssl-$OPENSSL_VERSION.tar.gz \
 		     openssl-$OPENSSL_VERSION \
 		     https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz
 
-run ./Configure linux-x86_64 \
+run ./Configure "linux-$(uname -m)" \
     --prefix="/hbb" --openssldir="/hbb/openssl" \
     threads zlib no-shared no-sse2 -fvisibility=hidden
 

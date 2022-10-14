@@ -37,28 +37,31 @@ fi
 # that may be triggered if multiple containers are shut down at the same time.
 echo 'import random, time; time.sleep(random.random() * 4)' | python
 
-run rm -rf "$WORKSPACE/output"/*
-run mkdir -p "$WORKSPACE/cache/x86_64" "$WORKSPACE/output/x86_64"
+run rm -rf "$WORKSPACE/output"
+
+for ARCH in arm64 amd64; do
+run mkdir -p "$WORKSPACE/cache/arm64" "$WORKSPACE/output/arm64"
 
 echo
-echo "---------- Building x86_64 binaries ----------"
+echo "---------- Building $ARCH binaries ----------"
 run ./linux/build \
 	-p "$PASSENGER_ROOT" \
-	-c "$WORKSPACE/cache/x86_64" \
-	-o "$WORKSPACE/output/x86_64" \
-	-a x86_64 \
+	-c "$WORKSPACE/cache/$ARCH" \
+	-o "$WORKSPACE/output/$ARCH" \
+	-a "$ARCH" \
 	-j "$CONCURRENCY" \
 	passenger nginx
 
 echo
-echo "---------- Testing x86_64 binaries ----------"
+echo "---------- Testing $ARCH binaries ----------"
 run ./linux/package \
-	-i "$WORKSPACE/output/x86_64" \
-	-o "$WORKSPACE/output/x86_64" \
-	-a x86_64
+	-i "$WORKSPACE/output/$ARCH" \
+	-o "$WORKSPACE/output/$ARCH" \
+	-a "$ARCH"
 run ./linux/test \
 	-p "$PASSENGER_ROOT" \
-	-i "$WORKSPACE/output/x86_64" \
-	-I "$WORKSPACE/output/x86_64" \
-	-a x86_64 \
+	-i "$WORKSPACE/output/$ARCH" \
+	-I "$WORKSPACE/output/$ARCH" \
+	-a "$ARCH" \
 	-L ~/passenger-enterprise-license
+done

@@ -162,5 +162,5 @@ exec docker run $TTY_ARGS --rm \
 	-e "VERSION=$VERSION" \
 	-e "AWS_ACCESS_KEY=$AWS_ACCESS_KEY" \
 	"${EXTRA_DOCKER_ARGS[@]}" \
-	"phusion/passenger_binary_build_automation_64:$DOCKER_IMAGE_VERSION" \
+	"phusion/passenger_binary_build_automation:$DOCKER_IMAGE_VERSION" \
 	/system/linux/support/publish-script-docker-entrypoint.sh
