@@ -150,7 +150,7 @@ else
 fi
 
 if [[ "$ARCHITECTURE" == x86_64 ]]; then
-	ARCHITECTURE=arm64
+	ARCHITECTURE=amd64
 fi
 
 DOCKER_IMAGE=phusion/passenger_binary_build_automation
