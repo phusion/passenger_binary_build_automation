@@ -11,6 +11,7 @@ touch /var/lib/rpm/*
 "$SELFDIR"/install_git.sh
 "$SELFDIR"/install_s3cmd.sh
 "$SELFDIR"/install_pcre.sh
+"$SELFDIR"/install_pcre2.sh
 "$SELFDIR"/install_geoip.sh
 "$SELFDIR"/install_rvm.sh
 "$SELFDIR"/install_ruby.sh

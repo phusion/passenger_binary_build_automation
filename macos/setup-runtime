@@ -117,6 +117,9 @@ fi
 if [[ ! -e "$OUTPUT_DIR/lib/libpcre.a" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_pcre.sh"
 fi
+if [[ ! -e "$OUTPUT_DIR/lib/libpcre2.a" ]]; then
+	"$SELFDIR/runtime_setup_stages/install_pcre2.sh"
+fi
 if [[ ! -e "$OUTPUT_DIR/bin/s3cmd" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_s3cmd.sh"
 fi
