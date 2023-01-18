@@ -3,10 +3,9 @@ source 'https://rubygems.org/'
 # Needed by our own tooling
 gem 'paint'
 gem 'rake'
-gem 'rspec'
+gem 'rspec', '~> 3.0.0'
 
 # Needed by Passenger
 gem 'rack', '< 3.0' # Rack 2.0+ does not work with Ruby 2.0, which is default on OS X
-gem 'bluecloth'
 
 gem "webrick", "~> 1.7"
