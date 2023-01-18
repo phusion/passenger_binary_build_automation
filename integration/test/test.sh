@@ -39,7 +39,8 @@ echo 'import random, time; time.sleep(random.random() * 4)' | python
 
 run rm -rf "$WORKSPACE/output"
 
-for ARCH in arm64 x86_64; do
+#for ARCH in arm64 x86_64; do
+for ARCH in x86_64; do
 run mkdir -p "$WORKSPACE/cache/$ARCH" "$WORKSPACE/output/$ARCH"
 
 echo

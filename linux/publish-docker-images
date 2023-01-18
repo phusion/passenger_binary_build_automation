@@ -8,15 +8,18 @@ source "$ROOTDIR/shared/lib/library.sh"
 
 BUILDBOX_NAME="phusion/passenger_binary_build_automation"
 
-for ARCH in amd64 arm64; do
+#for ARCH in amd64 arm64; do
+for ARCH in amd64; do
 run docker tag "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH" "$BUILDBOX_NAME:latest-$ARCH"
 run docker push "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH"
 run docker push "$BUILDBOX_NAME:latest-$ARCH"
 done
 
 run docker manifest rm "$BUILDBOX_NAME:latest" || true
-run docker manifest create "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION" "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-amd64" "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-arm64"
-run docker manifest create "$BUILDBOX_NAME:latest"                "$BUILDBOX_NAME:latest-amd64"                "$BUILDBOX_NAME:latest-arm64"
+#run docker manifest create "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION" "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-amd64" "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-arm64"
+run docker manifest create "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION" "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-amd64"
+#run docker manifest create "$BUILDBOX_NAME:latest"                "$BUILDBOX_NAME:latest-amd64"                "$BUILDBOX_NAME:latest-arm64"
+run docker manifest create "$BUILDBOX_NAME:latest"                "$BUILDBOX_NAME:latest-amd64"
 
 run docker manifest push "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION"
 run docker manifest push --purge "$BUILDBOX_NAME:latest"

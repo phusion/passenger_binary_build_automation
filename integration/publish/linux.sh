@@ -61,7 +61,8 @@ PASSENGER_VERSION="`"$ROOTDIR/shared/publish/determine_version_number.sh"`"
 
 run rm -rf "$WORKSPACE/output"
 
-for ARCH in arm64 x86_64; do
+#for ARCH in arm64 x86_64; do
+for ARCH in x86_64; do
 run mkdir -p "$WORKSPACE/cache/$ARCH" "$WORKSPACE/output/$ARCH"
 
 echo
