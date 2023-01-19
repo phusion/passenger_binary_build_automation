@@ -191,6 +191,10 @@ describe 'Downloaded Passenger binaries' do
             ' ruby src/helper-scripts/download_binaries/extconf.rb' \
             ' --abort-on-error')
           expect(Dir['download_cache/*']).not_to be_empty
+        rescue
+          p Dir["#{PACKAGED_ARTEFACTS_DIR}/*"]
+          p Dir["#{@temp_dir}/server_root/#{PhusionPassenger::VERSION_STRING}/*"]
+          raise
         ensure
           File.unlink('Makefile') rescue nil
           server.stop
