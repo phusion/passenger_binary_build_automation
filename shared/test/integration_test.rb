@@ -210,7 +210,7 @@ describe 'Downloaded Passenger binaries' do
         result = system("env BINARIES_URL_ROOT=#{url_root}" \
           ' ruby src/helper-scripts/download_binaries/extconf.rb' \
           ' --abort-on-error')
-        expect(result).to be_false
+        expect(result).to be_falsey
       ensure
         File.unlink('Makefile') rescue nil
         server.stop
