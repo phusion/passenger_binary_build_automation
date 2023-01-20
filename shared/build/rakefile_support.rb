@@ -140,7 +140,7 @@ end
 
 def forced_gem_home_and_path_envs
   if path = ENV['FORCE_GEM_HOME_AND_PATH']
-    "GEM_HOME=#{shesc path} GEM_PATH=#{shesc path}"
+    "GEM_HOME=#{shesc path.split(":").first} GEM_PATH=#{shesc path}"
   end
 end
 

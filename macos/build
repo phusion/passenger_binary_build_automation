@@ -153,7 +153,7 @@ export SHOW_TASKS
 # shellcheck source=support/reset_environment.sh
 source "$ROOTDIR/macos/support/reset_environment.sh"
 export PATH="$ROOTDIR/macos/support/bin:$RUNTIME_DIR/bin:$PATH"
-export FORCE_GEM_HOME_AND_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
+export FORCE_GEM_HOME_AND_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION:$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/ruby/$LAST_RUBY_VERSION/gems"
 export LDFLAGS="-Wl,-dead_strip"
 export EXTRA_LDFLAGS="$LDFLAGS"
 
