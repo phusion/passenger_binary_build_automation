@@ -135,6 +135,9 @@ run $RVM_EXEC $LAST_RUBY_VERSION env \
 
 header "Running integration tests"
 run $RVM_EXEC $LAST_RUBY_VERSION env \
+	GEM_HOME="$GEM_HOME" \
+	GEM_PATH="$GEM_HOME" \
+	PATH="$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH" \
 	BUNDLE_PATH="$GEM_HOME" \
 	BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
 	BUNDLE_DISABLE_SHARED_GEMS=true \
