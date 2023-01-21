@@ -103,7 +103,7 @@ function check_macos_runtime_compatibility()
 		ACTUAL_VERSION=$(cat "$RUNTIME_DIR/MACOS_RUNTIME_VERSION")
 		if [[ "$VERSION" != "$ACTUAL_VERSION" ]]; then
 			echo "ERROR: $RUNTIME_DIR has version number $ACTUAL_VERSION," \
-				"but version $VERSION expected. Please rebuild the runtime directory."
+			     "but version $VERSION expected. Please rebuild the runtime directory."
 			return 1
 		fi
 	else
@@ -124,6 +124,10 @@ function _cleanup()
 	if [[ $(type -t cleanup) == function ]]; then
 		cleanup
 	fi
+}
+
+function vergte() {
+	test "$1" = "$(echo -e "$1\n$2" | sort -rV | head -n1)"
 }
 
 trap _cleanup EXIT

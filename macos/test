@@ -120,17 +120,22 @@ function cleanup()
 	rm -rf "$TEMP_DIR"
 }
 
+GEM_HOME="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
+if vergte $LAST_RUBY_VERSION '3.2.0' ; then
+GEM_HOME="$GEM_HOME/ruby/$LAST_RUBY_VERSION"
+fi
+
 export PASSENGER_ROOT="$TEMP_DIR/passenger"
 run $RVM_EXEC $LAST_RUBY_VERSION env \
-	GEM_HOME="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
-	GEM_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION:$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/ruby/$LAST_RUBY_VERSION" \
-	PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/bin:$RUNTIME_DIR/gems/$LAST_RUBY_VERSION/ruby/$LAST_RUBY_VERSION/bin:$PATH" \
+	GEM_HOME="$GEM_HOME" \
+	GEM_PATH="$GEM_HOME" \
+	PATH="$GEM_HOME/bin:$PATH" \
 	"$ROOTDIR/shared/build/copy-passenger-source-dir.sh" \
 	"$PASSENGER_DIR" "$PASSENGER_ROOT"
 
 header "Running integration tests"
 run $RVM_EXEC $LAST_RUBY_VERSION env \
-	BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
+	BUNDLE_PATH="$GEM_HOME" \
 	BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
 	BUNDLE_DISABLE_SHARED_GEMS=true \
 	"bundle" exec \
