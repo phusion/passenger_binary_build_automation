@@ -121,7 +121,7 @@ function cleanup()
 }
 
 GEM_HOME="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
-if vergte $LAST_RUBY_VERSION '3.2.0' ; then
+if vergte "$LAST_RUBY_VERSION" '3.2.0' ; then
 GEM_HOME="$GEM_HOME/ruby/$LAST_RUBY_VERSION"
 fi
 
@@ -129,7 +129,7 @@ export PASSENGER_ROOT="$TEMP_DIR/passenger"
 run $RVM_EXEC $LAST_RUBY_VERSION env \
 	GEM_HOME="$GEM_HOME" \
 	GEM_PATH="$GEM_HOME" \
-	PATH="$GEM_HOME/bin:$PATH" \
+	PATH="$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH" \
 	"$ROOTDIR/shared/build/copy-passenger-source-dir.sh" \
 	"$PASSENGER_DIR" "$PASSENGER_ROOT"
 
