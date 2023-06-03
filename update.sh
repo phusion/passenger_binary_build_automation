@@ -102,7 +102,7 @@ else
 fi
 if [ ${RESTRICT:-ruby} = "ruby" ]; then
 	echo starting ruby versions…
-	export OLDEST_RUBY=2.4
+	export OLDEST_RUBY=2.6
 	curl --silent "https://www.ruby-lang.org/en/downloads/releases/" | ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("table.release-list > tr > td:first-child").map{|e|e.text}.reject{|e|e.include?("-")}.sort.map{|e|e.split[1]}.chunk{|e|e.split(".")[0..1].join(".").to_f}.select{|major,minors|major >= ENV["OLDEST_RUBY"].to_f}.map{|major,minors|major.to_s + "." + minors.map{|e|e.split(".").last.to_i}.sort.last.to_s}' > $ROOTDIR/shared/definitions/ruby_versions
 else
 	echo skipping ruby…
