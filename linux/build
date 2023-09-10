@@ -26,7 +26,7 @@ function usage()
 	echo "  -p DIR     Path to Passenger source directory"
 	echo "  -c DIR     Path to cache directory"
 	echo "  -o DIR     Path in which to store build products"
-	echo "  -a ARCH    Architecture to build for (arm64, x86_64)"
+	echo "  -a ARCH    Architecture to build for (aarch64, x86_64)"
 	echo
 	echo "Optional options:"
 	echo "  -n DIR     Path to Nginx source directory"
@@ -125,8 +125,8 @@ function parse_options()
 			echo "ERROR: please specify an architecture with -a."
 			exit 1
 		fi
-		if [[ "$ARCHITECTURE" != arm64 && "$ARCHITECTURE" != x86_64 ]]; then
-			echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either arm64 or x86_64."
+		if [[ "$ARCHITECTURE" != aarch64 && "$ARCHITECTURE" != x86_64 ]]; then
+			echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either aarch64 or x86_64."
 		fi
 		if [[ "$NGINX_DIR" != "" ]]; then
 			if [[ ! -e "$NGINX_DIR" ]]; then

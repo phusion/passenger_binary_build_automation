@@ -74,7 +74,7 @@ The `build` script expects at least the following arguments:
  * `-p`: path to the Passenger source code that you want to build.
  * `-c`: a directory which the script can use for caching data, in order to make subsequent builds faster.
  * `-o`: a directory to store the built binaries in.
- * `-a`: the architecture to build for. Either `arm64` or `x86_64`.
+ * `-a`: the architecture to build for. Either `aarch64` or `x86_64`.
  * And finally, a list of things that the script should build (_tasks_). In this example we specified two tasks, `passenger` and `nginx`. The passenger task builds the Passenger agent and all Ruby extensions, while the nginx task builds Nginx.
 
 More command line options are available. Run `./build -h` to learn more. You can also run `./build -T` to learn which tasks are available.

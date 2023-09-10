@@ -15,7 +15,7 @@ function usage()
 	echo
 	echo "Required options:"
 	echo "  -i DIR     The output directory written to by build script"
-	echo "  -a ARCH    Architecture of the build (x86_64, arm64)"
+	echo "  -a ARCH    Architecture of the build (x86_64, aarch64)"
 	echo "  -o DIR     Path in which to store output products"
 	echo
 	echo "Optional options:"
