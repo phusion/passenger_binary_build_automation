@@ -20,7 +20,7 @@ function usage()
 	echo "  -p DIR     Path to Passenger source directory"
 	echo "  -i DIR     Path to directory containing unpackaged build products"
 	echo "  -I DIR     Path to directory containing packaged build products"
-	echo "  -a ARCH    Architecture to test for (x86_64,arm64)"
+	echo "  -a ARCH    Architecture to test for (x86_64,aarch64)"
 	echo
 	echo "Optional options:"
 	echo "  -L PATH    Path to Passenger Enterprise license key"
@@ -91,8 +91,8 @@ function parse_options()
 		echo "ERROR: please specify an architecture with -a."
 		exit 1
 	fi
-	if [[ "$ARCHITECTURE" != arm64 && "$ARCHITECTURE" != x86_64 ]]; then
-		echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either arm64 or x86_64."
+	if [[ "$ARCHITECTURE" != aarch64 && "$ARCHITECTURE" != x86_64 ]]; then
+		echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either aarch64 or x86_64."
 	fi
 	if [[ "$LICENSE_KEY" != "" && ! -e "$LICENSE_KEY" ]]; then
 		echo "ERROR: $LICENSE_KEY does not exist."
@@ -111,6 +111,8 @@ if [[ "$LICENSE_KEY" != "" ]]; then
 fi
 if [[ "$ARCHITECTURE" = x86_64 ]]; then
 	ARCHITECTURE=amd64
+elif [[ "$ARCHITECTURE" = aarch64 ]]; then
+	ARCHITECTURE=arm64
 fi
 DOCKER_IMAGE=phusion/passenger_binary_build_automation
 
