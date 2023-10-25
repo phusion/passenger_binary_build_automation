@@ -21,14 +21,17 @@
 
 set -e
 
-ROOTDIR="`dirname \"$0\"`"
+ROOTDIR="$(dirname "$0")"
 cd "$ROOTDIR/../.."
-ROOTDIR="`pwd`"
+ROOTDIR="$(pwd)"
+
+# shellcheck source=../../shared/lib/library.sh
 source "./shared/lib/library.sh"
 
 require_envvar WORKSPACE "$WORKSPACE"
 require_envvar ENTERPRISE "$ENTERPRISE"
 require_envvar TESTING "$TESTING"
+require_envvar ARCH "$ARCH"
 
 export PASSENGER_ROOT="${PASSENGER_ROOT:-$WORKSPACE}"
 CONCURRENCY=${CONCURRENCY:-2}
@@ -57,12 +60,10 @@ for F in "${REQUIRED_FILES[@]}"; do
 done
 
 echo "+ Determining Passenger version number"
-PASSENGER_VERSION="`"$ROOTDIR/shared/publish/determine_version_number.sh"`"
+PASSENGER_VERSION="$("$ROOTDIR/shared/publish/determine_version_number.sh")"
 
 run rm -rf "$WORKSPACE/output"
 
-#for ARCH in arm64 x86_64; do
-for ARCH in x86_64; do
 run mkdir -p "$WORKSPACE/cache/$ARCH" "$WORKSPACE/output/$ARCH"
 
 echo
@@ -96,7 +97,6 @@ run ./linux/publish \
 	-S ~/auto-software-signing@phusion.nl.asc \
 	-x ~/.auto-software-signing@phusion.nl.password \
 	-p ~/.passenger_binary_build_automation_file_server_password \
-	-a `cat ~/.passenger_binary_build_automation_s3_access_key` \
+	-a "$(cat ~/.passenger_binary_build_automation_s3_access_key)" \
 	-s ~/.passenger_binary_build_automation_s3_password \
 	"${PUBLISH_ARGS[@]}"
-done

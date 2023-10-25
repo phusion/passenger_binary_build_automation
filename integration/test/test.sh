@@ -18,12 +18,15 @@
 #   env WORKSPACE=$HOME PASSENGER_ROOT=/passenger ./integration/test/test.sh
 
 set -e
-SELFDIR=`dirname "$0"`
+SELFDIR="$(dirname "$0")"
 cd "$SELFDIR/../.."
+
+# shellcheck source=../../shared/lib/library.sh
 source "./shared/lib/library.sh"
 
 require_envvar WORKSPACE "$WORKSPACE"
 require_envvar ENTERPRISE "$ENTERPRISE"
+require_envvar ARCH "$ARCH"
 
 PASSENGER_ROOT="${PASSENGER_ROOT:-$WORKSPACE}"
 CONCURRENCY=${CONCURRENCY:-2}
@@ -39,8 +42,6 @@ echo 'import random, time; time.sleep(random.random() * 4)' | python
 
 run rm -rf "$WORKSPACE/output"
 
-#for ARCH in arm64 x86_64; do
-for ARCH in x86_64; do
 run mkdir -p "$WORKSPACE/cache/$ARCH" "$WORKSPACE/output/$ARCH"
 
 echo
@@ -65,4 +66,3 @@ run ./linux/test \
 	-I "$WORKSPACE/output/$ARCH" \
 	-a "$ARCH" \
 	-L ~/passenger-enterprise-license
-done
