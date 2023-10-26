@@ -272,7 +272,7 @@ Finally, update and run the release process:
 
 During local development, the path is entirely chosen by the developer.
 
-During the Passenger release process CI job, the runtime is located on the macOS CI server at `/data/jenkins/cache/Passenger-Release-Process/generic-macos-binaries/{passenger,passenger-enterprise}/runtime-$MACOS_RUNTIME_VERSION`. This location is passed to the `passenger_binary_build_automation` scripts in the `passenger-release` project, as follows:
+During the Passenger release process CI job, the runtime is located on the macOS CI server at `/opt/data/jenkins/cache/Passenger-Release-Process/generic-macos-binaries/{passenger,passenger-enterprise}/runtime-$MACOS_RUNTIME_VERSION`. This location is passed to the `passenger_binary_build_automation` scripts in the `passenger-release` project, as follows:
 
  * `stages/build-artifacts/build-generic-macos-binaries/jenkinsfile_helper.groovy` sets a `CACHE_DIR` environment variable.
  * `jenkinsfile_helper.groovy` calls `./stages/build-artifacts/build-generic-macos-binaries/{initialize.sh,build.sh}`
