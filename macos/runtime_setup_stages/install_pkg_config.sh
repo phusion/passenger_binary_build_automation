@@ -11,6 +11,6 @@ download_and_extract pkg-config-$PKG_CONFIG_VERSION.tar.gz \
 	pkg-config-$PKG_CONFIG_VERSION \
 	https://pkg-config.freedesktop.org/releases/pkg-config-$PKG_CONFIG_VERSION.tar.gz
 run rm -f "$WORKDIR/pkg-config-$PKG_CONFIG_VERSION.tar.gz"
-run ./configure --prefix="$OUTPUT_DIR" --with-internal-glib
+run ./configure --prefix="$OUTPUT_DIR" --with-internal-glib || ( cat config.log && false )
 run make -j$CONCURRENCY
 run make install-strip
