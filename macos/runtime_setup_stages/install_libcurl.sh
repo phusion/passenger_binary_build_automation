@@ -12,9 +12,17 @@ download_and_extract "curl-$CURL_VERSION.tar.gz" \
 		     "https://curl.haxx.se/download/curl-$CURL_VERSION.tar.gz"
 
 if (curl-config --configure | grep -Fqe libressl); then
-	TLS_LIB="--with-openssl --with-ca-bundle=/etc/ssl/cert.pem --with-ca-path=/etc/ssl/certs/"
+	TLS_LIB=(
+		--with-openssl
+		--with-ca-bundle=/etc/ssl/cert.pem
+		--with-ca-path=/etc/ssl/certs/
+	)
 else
-	TLS_LIB="--with-secure-transport --without-ca-bundle --without-ca-path"
+	TLS_LIB=(
+		--with-secure-transport
+		--without-ca-bundle
+		--without-ca-path
+	)
 fi
 
 FLAGS=(
@@ -52,8 +60,8 @@ FLAGS=(
 
 echo "+ rm -f $WORKDIR/curl-$CURL_VERSION.tar.gz"
 rm -f "$WORKDIR/curl-$CURL_VERSION.tar.gz"
-echo "+ ./configure --prefix=$OUTPUT_DIR ${FLAGS[*]} ${TLS_LIB}"
-./configure --prefix="$OUTPUT_DIR" "${FLAGS[@]}" "${TLS_LIB}"
+echo "+ ./configure --prefix=$OUTPUT_DIR ${FLAGS[*]} ${TLS_LIB[*]}"
+./configure --prefix="$OUTPUT_DIR" "${FLAGS[@]}" "${TLS_LIB[@]}"
 make -j"$CONCURRENCY"
 make install-strip
 rm -f "$OUTPUT_DIR/bin/curl"
