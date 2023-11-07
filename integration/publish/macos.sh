@@ -20,17 +20,17 @@
 
 set -e
 
-ROOTDIR="`dirname \"$0\"`"
+ROOTDIR="$(dirname "$0")"
 cd "$ROOTDIR/../.."
-ROOTDIR="`pwd`"
+ROOTDIR="$(pwd)"
 source "./shared/lib/library.sh"
 
 require_envvar ENTERPRISE "$ENTERPRISE"
 require_envvar TESTING "$TESTING"
 
 if [[ "$PASSENGER_ROOT" = "" ]]; then
-	PASSENGER_ROOT="$ROOTDIR/../.."
-	export PASSENGER_ROOT="`cd "$ROOTDIR" && pwd`"
+	PASSENGER_ROOT="$(cd "$ROOTDIR" && pwd)"
+	export PASSENGER_ROOT
 	if [[ ! -e "$PASSENGER_ROOT/Rakefile" ]]; then
 		echo "ERROR: passenger_binary_build_automation is not located inside a Passenger Git submodule"
 		exit 1
@@ -70,21 +70,25 @@ for F in "${REQUIRED_FILES[@]}"; do
 done
 
 echo "+ Determining Passenger version number"
-PASSENGER_VERSION="`"$ROOTDIR/shared/publish/determine_version_number.sh"`"
+PASSENGER_VERSION="$("$ROOTDIR/shared/publish/determine_version_number.sh")"
 
-run rm -rf "$WORKDIR"
-run mkdir -p "$WORKDIR" "$WORKDIR/output" "$CACHE_DIR" "$RUNTIME_DIR"
+echo "+ rm -rf $WORKDIR"
+rm -rf "$WORKDIR"
+echo "+ mkdir -p $WORKDIR $WORKDIR/output $CACHE_DIR $RUNTIME_DIR"
+mkdir -p "$WORKDIR" "$WORKDIR/output" "$CACHE_DIR" "$RUNTIME_DIR"
 
 echo
 echo "---------- Building runtime ----------"
-run ./macos/setup-runtime \
+echo "+ ./macos/setup-runtime -c $CACHE_DIR -o $RUNTIME_DIR -j $CONCURRENCY"
+./macos/setup-runtime \
 	-c "$CACHE_DIR" \
 	-o "$RUNTIME_DIR" \
 	-j "$CONCURRENCY"
 
 echo
 echo "---------- Building binaries ----------"
-run ./macos/build \
+echo "+ ./macos/build -p $PASSENGER_ROOT -r $RUNTIME_DIR -c $CACHE_DIR -o $WORKDIR/output -j $CONCURRENCY passenger nginx"
+./macos/build \
 	-p "$PASSENGER_ROOT" \
 	-r "$RUNTIME_DIR" \
 	-c "$CACHE_DIR" \
@@ -94,10 +98,12 @@ run ./macos/build \
 
 echo
 echo "---------- Testing binaries ----------"
-run ./macos/package \
+echo "+ ./macos/package -i $WORKDIR/output -o $WORKDIR/output"
+./macos/package \
 	-i "$WORKDIR/output" \
 	-o "$WORKDIR/output"
-run ./macos/test \
+echo "+ ./macos/test -p $PASSENGER_ROOT -r $RUNTIME_DIR -i $WORKDIR/output -I $WORKDIR/output"
+./macos/test \
 	-p "$PASSENGER_ROOT" \
 	-r "$RUNTIME_DIR" \
 	-i "$WORKDIR/output" \
@@ -105,11 +111,12 @@ run ./macos/test \
 
 echo
 echo "---------- Publishing binaries ----------"
-run ./macos/publish \
+echo "+ ./macos/publish -r $RUNTIME_DIR -i $WORKDIR/output -v $PASSENGER_VERSION -p ~/.passenger_binary_build_automation_file_server_password -a $(cat ~/.passenger_binary_build_automation_s3_access_key) -s ~/.passenger_binary_build_automation_s3_password ${PUBLISH_ARGS[*]}"
+./macos/publish \
 	-r "$RUNTIME_DIR" \
 	-i "$WORKDIR/output" \
 	-v "$PASSENGER_VERSION" \
 	-p ~/.passenger_binary_build_automation_file_server_password \
-	-a `cat ~/.passenger_binary_build_automation_s3_access_key` \
+	-a "$(cat ~/.passenger_binary_build_automation_s3_access_key)" \
 	-s ~/.passenger_binary_build_automation_s3_password \
 	"${PUBLISH_ARGS[@]}"

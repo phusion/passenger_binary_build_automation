@@ -3,8 +3,8 @@
 # Copies a Passenger source directory to a different place.
 
 set -e
-ROOTDIR=`dirname "$0"`
-ROOTDIR=`cd "$ROOTDIR/../.." && pwd`
+ROOTDIR=$(dirname "$0")
+ROOTDIR=$(cd "$ROOTDIR/../.." && pwd)
 source "$ROOTDIR/shared/lib/library.sh"
 shopt -s dotglob
 
@@ -17,7 +17,8 @@ header "Creating Passenger source directory copy"
 # The input directory may be mounted read-only. So we copy it to
 # a temporary directory which is writable.
 
-run rm -rf "$OUTPUT_DIR"/*
+echo "+ rm -rf $OUTPUT_DIR/*"
+rm -rf "${OUTPUT_DIR:?}"/*
 
 function should_git_copy_input_dir()
 {
@@ -31,14 +32,15 @@ function should_git_copy_input_dir()
 }
 
 if should_git_copy_input_dir; then
-	run mkdir -p "$OUTPUT_DIR"
+	echo "+mkdir -p $OUTPUT_DIR"
+	mkdir -p "$OUTPUT_DIR"
 	echo "+ cd $INPUT_DIR"
 	cd "$INPUT_DIR"
 	echo "+ Git copying to $OUTPUT_DIR"
 	(
 		set -o pipefail
 		git archive --format=tar HEAD | tar -C "$OUTPUT_DIR" -x
-		submodules=`git submodule status | awk '{ print $2 }'`
+		submodules=$(git submodule status | awk '{ print $2 }')
 		for submodule in $submodules; do
 			echo "+ Git copying submodule $submodule"
 			pushd "$submodule" >/dev/null
@@ -53,10 +55,12 @@ if should_git_copy_input_dir; then
 
 	cd "$OUTPUT_DIR"
 else
-	run "$ROOTDIR/shared/build/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR" \
+	echo "+ $ROOTDIR/shared/build/copy-dir.rb $INPUT_DIR $OUTPUT_DIR --exclude config.rb download_cache buildout"
+	"$ROOTDIR/shared/build/copy-dir.rb" "$INPUT_DIR" "$OUTPUT_DIR" \
 		--exclude config.rb download_cache buildout
 	cd "$OUTPUT_DIR"
-	run env OUTPUT_DIR= NOEXEC_DISABLE=1 rake clean CACHING=false
+	echo "+ env OUTPUT_DIR= NOEXEC_DISABLE=1 rake clean CACHING=false"
+	env OUTPUT_DIR= NOEXEC_DISABLE=1 rake clean CACHING=false
 fi
 
 header "Finalizing source directory"

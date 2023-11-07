@@ -39,12 +39,16 @@ fi
 
 header "Installing gem bundle"
 echo "+ Installing Bundler version from Gemfile.lock"
-run_ruby "$LAST_RUBY_VERSION" gem install bundler -v $(fgrep -A1 'BUNDLED WITH' "$ROOTDIR/shared/Gemfile.lock" | tail -n 1) --no-document
+BUNDLER_VERSION="$(grep -F -A1 'BUNDLED WITH' "$ROOTDIR/shared/Gemfile.lock" | tail -n 1)"
+echo "+ run_ruby $LAST_RUBY_VERSION gem install bundler -v $BUNDLER_VERSION --no-document"
+run_ruby "$LAST_RUBY_VERSION" gem install bundler -v "$BUNDLER_VERSION" --no-document
 
 # Copy over the Gemfile to prevent creating a .bundle directory in shared/.
-run cp "$ROOTDIR/shared/Gemfile" "$ROOTDIR/shared/Gemfile.lock" "$WORKDIR/"
+echo "+ cp $ROOTDIR/shared/Gemfile $ROOTDIR/shared/Gemfile.lock $WORKDIR/"
+cp "$ROOTDIR/shared/Gemfile" "$ROOTDIR/shared/Gemfile.lock" "$WORKDIR/"
 echo "+ Installing gem bundle into $RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
-run_ruby "$LAST_RUBY_VERSION" \
+echo "+ $RVM_EXEC ruby-$LAST_RUBY_VERSION env BUNDLE_GEMFILE=$WORKDIR/Gemfile BUNDLE_PATH=$RUNTIME_DIR/gems/$LAST_RUBY_VERSION bundle install -j2"
+"$RVM_EXEC" "ruby-$LAST_RUBY_VERSION" \
 	env BUNDLE_GEMFILE="$WORKDIR/Gemfile" \
 	BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
 	bundle install -j2

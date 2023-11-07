@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -e
-ROOTDIR=`dirname "$0"`
-ROOTDIR=`cd "$ROOTDIR/../.." && pwd`
+ROOTDIR=$(dirname "$0")
+ROOTDIR=$(cd "$ROOTDIR/../.." && pwd)
 source "$ROOTDIR/shared/lib/library.sh"
 
 require_envvar WORKDIR "$WORKDIR"
@@ -23,25 +23,29 @@ else
 	GPG=gpg
 fi
 
-
-run mkdir "$WORKDIR/content"
+echo "+ mkdir $WORKDIR/content"
+mkdir "$WORKDIR/content"
 
 FILES=("$INPUT_DIR"/*.gz)
 for FILE in "${FILES[@]}"; do
-	BASENAME="`basename "$FILE"`"
-	run cp "$FILE" "$WORKDIR/content/"
-	run $GPG $GPG_OPTS --armor --local-user $GPG_SIGNING_KEY --detach-sign \
+	BASENAME="$(basename "$FILE")"
+	echo "+ cp $FILE $WORKDIR/content/"
+	cp "$FILE" "$WORKDIR/content/"
+	echo "+ $GPG $GPG_OPTS --armor --local-user $GPG_SIGNING_KEY --detach-sign $WORKDIR/content/$BASENAME"
+	$GPG "$GPG_OPTS" --armor --local-user "$GPG_SIGNING_KEY" --detach-sign \
 		"$WORKDIR/content/$BASENAME"
 done
 
-run env GZIP=-1 tar -czf "$WORKDIR/content.tar.gz" -C "$WORKDIR/content" .
+echo "+ env GZIP=-1 tar -czf $WORKDIR/content.tar.gz -C $WORKDIR/content ."
+env GZIP=-1 tar -czf "$WORKDIR/content.tar.gz" -C "$WORKDIR/content" .
 
 CURL_ARGS=()
 if $TESTING; then
 	CURL_ARGS+=(-F overwrite=true)
 fi
 echo "user = \"api:$FILE_SERVER_PASSWORD\"" > "$WORKDIR/curl.cfg"
-run curl --fail -L -K "$WORKDIR/curl.cfg" \
+echo "+ curl --fail -L -K $WORKDIR/curl.cfg -F content=@$WORKDIR/content.tar.gz -F repository=$REPOSITORY_NAME -F subdir=$VERSION ${CURL_ARGS[*]} https://oss-binaries.phusionpassenger.com/binary_build_automation/add"
+curl --fail -L -K "$WORKDIR/curl.cfg" \
 	-F content=@"$WORKDIR/content.tar.gz" \
 	-F repository="$REPOSITORY_NAME" \
 	-F subdir="$VERSION" \
@@ -57,7 +61,8 @@ cat >>"$WORKDIR/s3cfg" <<EOF
 access_key = $AWS_ACCESS_KEY
 secret_key = $AWS_SECRET_KEY
 EOF
-run s3cmd -c "$WORKDIR/s3cfg" \
+echo "+ s3cmd -c $WORKDIR/s3cfg	--storage-class=STANDARD_IA --human-readable-sizes --follow-symlinks --no-delete-removed --acl-public --guess-mime-type	${S3CMD_ARGS[*]} sync $WORKDIR/content/	s3://phusion-passenger/binaries/$S3_BUCKET_NAME/by_release/$VERSION/"
+s3cmd -c "$WORKDIR/s3cfg" \
 	--storage-class=STANDARD_IA \
 	--human-readable-sizes \
 	--follow-symlinks \

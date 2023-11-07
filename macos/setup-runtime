@@ -84,7 +84,8 @@ fi
 export WORKDIR=`mktemp -d /tmp/pbba.XXXXXX`
 function cleanup()
 {
-	run rm -rf "$WORKDIR"
+	echo "+ rm -rf $WORKDIR"
+	rm -rf "$WORKDIR"
 }
 
 cd "$WORKDIR"

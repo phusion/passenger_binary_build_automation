@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
-ROOTDIR=`dirname "$0"`
-ROOTDIR=`cd "$ROOTDIR/.." && pwd`
-SELFDIR=`dirname "$0"`
-SELFDIR=`cd "$SELFDIR" && pwd`
+ROOTDIR=$(dirname "$0")
+ROOTDIR=$(cd "$ROOTDIR/.." && pwd)
+SELFDIR=$(dirname "$0")
+SELFDIR=$(cd "$SELFDIR" && pwd)
 source "$ROOTDIR/shared/lib/library.sh"
 MACOS_RUNTIME_VERSION=$(cat "$ROOTDIR/shared/definitions/macos_runtime_version")
-RUBY_VERSIONS=(`cat "$ROOTDIR/shared/definitions/ruby_versions"`)
+RUBY_VERSIONS=($(cat "$ROOTDIR/shared/definitions/ruby_versions"))
 LAST_RUBY_VERSION=${RUBY_VERSIONS[${#RUBY_VERSIONS[@]} - 1]}
 
 PASSENGER_DIR=
@@ -98,15 +98,11 @@ function parse_options()
 
 parse_options "$@"
 
-if tty -s; then
-	TTY_ARGS="-t -i"
-else
-	TTY_ARGS=
-fi
-
-PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
-export PACKAGED_ARTEFACTS_DIR="`absolute_path \"$PACKAGED_INPUT_DIR\"`"
-export UNPACKAGED_ARTEFACTS_DIR="`absolute_path \"$UNPACKAGED_INPUT_DIR\"`"
+PASSENGER_DIR="$(absolute_path "$PASSENGER_DIR")"
+PACKAGED_ARTEFACTS_DIR="$(absolute_path "$PACKAGED_INPUT_DIR")"
+export PACKAGED_ARTEFACTS_DIR
+UNPACKAGED_ARTEFACTS_DIR="$(absolute_path "$UNPACKAGED_INPUT_DIR")"
+export UNPACKAGED_ARTEFACTS_DIR
 
 export RUNTIME_DIR="$RUNTIME_DIR"
 source "$SELFDIR/support/reset_environment.sh"
@@ -114,7 +110,7 @@ source "$SELFDIR/support/reset_environment.sh"
 check_macos_runtime_compatibility "$RUNTIME_DIR" "$MACOS_RUNTIME_VERSION"
 source "$ROOTDIR/macos/support/detect_rvm.sh"
 
-TEMP_DIR=`mktemp -d /tmp/passenger-test.XXXXXXXX`
+TEMP_DIR=$(mktemp -d /tmp/passenger-test.XXXXXXXX)
 function cleanup()
 {
 	rm -rf "$TEMP_DIR"
@@ -126,7 +122,8 @@ GEM_HOME="$GEM_HOME/ruby/${LAST_RUBY_VERSION%.[0-9]}.0"
 fi
 
 export PASSENGER_ROOT="$TEMP_DIR/passenger"
-run $RVM_EXEC $LAST_RUBY_VERSION env \
+echo "+ $RVM_EXEC $LAST_RUBY_VERSION env GEM_HOME=$GEM_HOME GEM_PATH=$GEM_HOME PATH=$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH $ROOTDIR/shared/build/copy-passenger-source-dir.sh $PASSENGER_DIR $PASSENGER_ROOT"
+$RVM_EXEC "$LAST_RUBY_VERSION" env \
 	GEM_HOME="$GEM_HOME" \
 	GEM_PATH="$GEM_HOME" \
 	PATH="$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH" \
@@ -134,7 +131,8 @@ run $RVM_EXEC $LAST_RUBY_VERSION env \
 	"$PASSENGER_DIR" "$PASSENGER_ROOT"
 
 header "Running integration tests"
-run $RVM_EXEC $LAST_RUBY_VERSION env \
+echo "+ $RVM_EXEC $LAST_RUBY_VERSION env BUNDLE_PATH=$RUNTIME_DIR/gems/$LAST_RUBY_VERSION BUNDLE_GEMFILE=$ROOTDIR/shared/Gemfile BUNDLE_DISABLE_SHARED_GEMS=true bundle exec rspec --tty -c -f d $ROOTDIR/shared/test/integration_test.rb ${ARGV[*]}"
+$RVM_EXEC "$LAST_RUBY_VERSION" env \
 	BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
 	BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
 	BUNDLE_DISABLE_SHARED_GEMS=true \

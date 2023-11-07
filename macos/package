@@ -65,35 +65,39 @@ OUTPUT_DIR=$(absolute_path "$OUTPUT_DIR")
 
 NGINX_VERSION=$(/bin/ls -1 "$INPUT_DIR"/support-binaries/nginx-* | sed 's/.*-//')
 
-run mkdir -p "$OUTPUT_DIR"
+echo "+ mkdir -p $OUTPUT_DIR"
+mkdir -p "$OUTPUT_DIR"
 
 ARCH="$(uname -m)"
 
 header "Packaging PassengerAgent and Nginx"
-run tar -czf "$OUTPUT_DIR/agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
+echo "+ tar -czf $OUTPUT_DIR/agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz -C $INPUT_DIR/support-binaries PassengerAgent"
+tar -czf "$OUTPUT_DIR/agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
 	-C "$INPUT_DIR/support-binaries" PassengerAgent
-run tar -czf "$OUTPUT_DIR/agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.dSYM.tar.gz" \
+echo "+ tar -czf $OUTPUT_DIR/agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.dSYM.tar.gz -C $INPUT_DIR/support-binaries PassengerAgent.dSYM"
+tar -czf "$OUTPUT_DIR/agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.dSYM.tar.gz" \
 	-C "$INPUT_DIR/support-binaries" PassengerAgent.dSYM
-run tar -czf "$OUTPUT_DIR/nginx-$NGINX_VERSION-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
+echo "+ tar -czf $OUTPUT_DIR/nginx-$NGINX_VERSION-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz -C $INPUT_DIR/support-binaries nginx-$NGINX_VERSION"
+tar -czf "$OUTPUT_DIR/nginx-$NGINX_VERSION-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
 	-C "$INPUT_DIR/support-binaries" "nginx-$NGINX_VERSION"
 
 header "Creating compatibility symlinks for PassengerAgent and Nginx"
 for MACOS_VERSION in "${MACOS_VERSIONS[@]}"; do
 	LINKNAME="$OUTPUT_DIR/agent-${ARCH}-macosx-$MACOS_VERSION.tar.gz"
 	if [[ -h "$LINKNAME" || ! -e "$LINKNAME" ]]; then
-		run ln -sf "agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
-			"$LINKNAME"
+		echo "+ ln -sf agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz $LINKNAME"
+		ln -sf "agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz" "$LINKNAME"
 	fi
 
 	LINKNAME="$OUTPUT_DIR/agent-${ARCH}-macosx-$MACOS_VERSION.dSYM.tar.gz"
 	if [[ -h "$LINKNAME" || ! -e "$LINKNAME" ]]; then
-		run ln -sf "agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.dSYM.tar.gz" \
-			"$LINKNAME"
+		echo "+ ln -sf agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.dSYM.tar.gz $LINKNAME"
+		ln -sf "agent-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.dSYM.tar.gz" "$LINKNAME"
 	fi
 
 	LINKNAME="$OUTPUT_DIR/nginx-$NGINX_VERSION-${ARCH}-macosx-$MACOS_VERSION.tar.gz"
 	if [[ -h "$LINKNAME" || ! -e "$LINKNAME" ]]; then
-		run ln -sf "nginx-$NGINX_VERSION-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz" \
-			"$LINKNAME"
+		echo "+ ln -sf nginx-$NGINX_VERSION-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz $LINKNAME"
+		ln -sf "nginx-$NGINX_VERSION-${ARCH}-macosx-$DEFAULT_MACOS_VERSION.tar.gz" "$LINKNAME"
 	fi
 done

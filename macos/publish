@@ -127,7 +127,8 @@ WORKDIR=$(mktemp -d /tmp/publish.XXXXXXXX)
 export WORKDIR
 function cleanup()
 {
-	run rm -rf "$WORKDIR"
+	echo "+ rm -rf $WORKDIR"
+	rm -rf "$WORKDIR"
 }
 
 export GPG_SIGNING_KEY=auto-software-signing@phusion.nl
