@@ -31,9 +31,8 @@ for FILE in "${FILES[@]}"; do
 	BASENAME="$(basename "$FILE")"
 	echo "+ cp $FILE $WORKDIR/content/"
 	cp "$FILE" "$WORKDIR/content/"
-	echo "+ $GPG $GPG_OPTS --armor --local-user $GPG_SIGNING_KEY --detach-sign $WORKDIR/content/$BASENAME"
-	$GPG "$GPG_OPTS" --armor --local-user "$GPG_SIGNING_KEY" --detach-sign \
-		"$WORKDIR/content/$BASENAME"
+	echo "+ $GPG ${GPG_OPTS[*]} --armor --local-user $GPG_SIGNING_KEY --detach-sign $WORKDIR/content/$BASENAME"
+	$GPG "${GPG_OPTS[@]}" --armor --local-user "$GPG_SIGNING_KEY" --detach-sign "$WORKDIR/content/$BASENAME"
 done
 
 echo "+ env GZIP=-1 tar -czf $WORKDIR/content.tar.gz -C $WORKDIR/content ."
