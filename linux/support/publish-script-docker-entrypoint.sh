@@ -38,7 +38,7 @@ if [[ ! -e /signing_key_password ]]; then
 	run cat /signing_key_password
 fi
 
-export GPG_OPTS=('--batch' '--trust-model' 'always' '--passphrase-file' '/signing_key_password')
+export GPG_OPTS="--batch --trust-model always --passphrase-file /signing_key_password"
 
 echo "+ Ensuring GPG works in a non-TTY environment"
 echo no-tty >> ~builder/.gnupg/gpg.conf
