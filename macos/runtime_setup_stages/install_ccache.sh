@@ -4,5 +4,17 @@ ROOTDIR=`dirname "$0"`
 ROOTDIR=`cd "$ROOTDIR/../.." && pwd`
 source "$ROOTDIR/shared/lib/library.sh"
 
-/usr/bin/env -P /usr/local/bin:/opt/homebrew/bin brew install ccache
-ln -s "$(/usr/bin/env -P /usr/local/bin:/opt/homebrew/bin brew --prefix ccache)/bin/ccache" "$OUTPUT_DIR/bin/ccache"
+# the macos/support/bin/c++ script incorrectly uses cc instead of c++ here
+export CXX=/usr/bin/c++
+
+CCACHE_VERSION=$(cat "$ROOTDIR/shared/definitions/ccache_version")
+
+header "Installing ccache $CCACHE_VERSION"
+download_and_extract ccache-$CCACHE_VERSION.tar.gz \
+	ccache-$CCACHE_VERSION \
+	https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz
+run rm -f "$WORKDIR/ccache-$CCACHE_VERSION.tar.gz"
+run cmake -DREDIS_STORAGE_BACKEND=OFF -DCMAKE_INSTALL_PREFIX="$OUTPUT_DIR" .
+run make -j$CONCURRENCY
+run make install
+run strip "$OUTPUT_DIR/bin/ccache"
