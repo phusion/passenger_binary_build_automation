@@ -127,7 +127,7 @@ function _cleanup()
 }
 
 function vergte() {
-	test "$1" = "$(echo -e "$1\n$2" | sort -rV | head -n1)"
+	echo -e "$1\n$2" | sort -rCV
 }
 
 trap _cleanup EXIT
