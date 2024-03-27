@@ -13,7 +13,7 @@ download_and_extract "pkg-config-$PKG_CONFIG_VERSION.tar.gz" \
 echo "+ rm -f $WORKDIR/pkg-config-$PKG_CONFIG_VERSION.tar.gz"
 rm -f "$WORKDIR/pkg-config-$PKG_CONFIG_VERSION.tar.gz"
 echo "+ ./configure --prefix=$OUTPUT_DIR --with-internal-glib || ( cat config.log && false )"
-./configure --prefix="$OUTPUT_DIR" --with-internal-glib || ( cat config.log && false )
+CFLAGS="-Wno-int-conversion" CXXFLAGS="-Wno-int-conversion" ./configure --prefix="$OUTPUT_DIR" --with-internal-glib || ( cat config.log && false )
 echo "+ make -j$CONCURRENCY"
 make -j"$CONCURRENCY"
 echo "+ make install-strip"
