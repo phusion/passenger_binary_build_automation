@@ -109,6 +109,9 @@ fi
 if [[ ! -e "$OUTPUT_DIR/bin/openssl" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_openssl.sh"
 fi
+if [[ ! -e "$OUTPUT_DIR/lib/libpsl.a" ]]; then
+	"$SELFDIR/runtime_setup_stages/install_libpsl.sh"
+fi
 if [[ ! -e "$OUTPUT_DIR/lib/libcurl.a" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_libcurl.sh"
 fi

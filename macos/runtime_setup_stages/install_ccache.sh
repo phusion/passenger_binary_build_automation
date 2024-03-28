@@ -14,7 +14,8 @@ download_and_extract ccache-$CCACHE_VERSION.tar.gz \
 	ccache-$CCACHE_VERSION \
 	https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz
 run rm -f "$WORKDIR/ccache-$CCACHE_VERSION.tar.gz"
-run cmake -DREDIS_STORAGE_BACKEND=OFF -DCMAKE_INSTALL_PREFIX="$OUTPUT_DIR" .
-run make -j$CONCURRENCY
-run make install
+export MACOSX_DEPLOYMENT_TARGET=10.15
+run cmake -DREDIS_STORAGE_BACKEND=OFF -DCMAKE_INSTALL_PREFIX="$OUTPUT_DIR" -S . -B build
+run cmake --build build
+run cmake --install build
 run strip "$OUTPUT_DIR/bin/ccache"
