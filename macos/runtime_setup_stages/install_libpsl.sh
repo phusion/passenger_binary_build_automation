@@ -12,6 +12,6 @@ download_and_extract libpsl-$LIBPSL_VERSION.tar.gz \
 		     https://github.com/rockdaboot/libpsl/releases/download/${LIBPSL_VERSION}/libpsl-${LIBPSL_VERSION}.tar.gz
 
 run rm -f "$WORKDIR/libpsl-$LIBPSL_VERSION.tar.gz"
-run ./configure --prefix="$OUTPUT_DIR"
+run ./configure --prefix="$OUTPUT_DIR" --disable-shared
 run make "-j$CONCURRENCY"
 run make install
