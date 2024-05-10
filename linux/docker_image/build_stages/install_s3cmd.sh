@@ -13,4 +13,4 @@ run mkdir -p /hbb/s3cmd
 run cp -pR * /hbb/s3cmd/
 run cp /pbba_build/linux/docker_image/support/s3cmd_wrapper.sh /hbb/bin/s3cmd
 
-run pip install python-dateutil
+run pip install --cert /etc/ssl/certs/ca-bundle.crt python-dateutil
