@@ -7,9 +7,9 @@ DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
 source "$ROOTDIR/shared/lib/library.sh"
 
 if [ "${GITHUB_ACTIONS}" = "true" ]; then
-REGISTRY = "ghcr.io"
+REGISTRY="ghcr.io"
 else
-REGISTRY = "docker.io"
+REGISTRY="docker.io"
 fi
 BUILDBOX_NAME="${REGISTRY}/phusion/passenger_binary_build_automation"
 
