@@ -1,0 +1,34 @@
+name: Build all images
+
+on:
+  push:
+    branches: [ master ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: build ${{ matrix.img }} ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Purge containers
+        run: 'docker kill $(docker ps -q) || exit 0'
+      - name: Enable docker multiarch
+        run: 'docker run --privileged --rm tonistiigi/binfmt --install all'
+      - name: "Run linux/setup-docker-images"
+        run: "./linux/setup-docker-images"
+      - name: Log in to the Container registry
+        if: ${{ github.event.pull_request.merged || github.actor == 'CamJN' }}
+        uses: docker/login-action@v3
+        id: login
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push to github container registry
+        if: ${{ success() && steps.login.conclusion != 'skipped' }}
+        run: "./linux/publish-docker-images"

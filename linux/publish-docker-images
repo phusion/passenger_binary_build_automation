@@ -6,7 +6,12 @@ DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
 # shellcheck source=../shared/lib/library.sh
 source "$ROOTDIR/shared/lib/library.sh"
 
-BUILDBOX_NAME="phusion/passenger_binary_build_automation"
+if [ "${GITHUB_ACTIONS}" = "true" ]; then
+REGISTRY = "ghcr.io"
+else
+REGISTRY = "docker.io"
+fi
+BUILDBOX_NAME="$(REGISTRY)/phusion/passenger_binary_build_automation"
 
 for ARCH in amd64 arm64; do
 run docker tag "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH" "$BUILDBOX_NAME:latest-$ARCH"
