@@ -11,7 +11,7 @@ REGISTRY = "ghcr.io"
 else
 REGISTRY = "docker.io"
 fi
-BUILDBOX_NAME="$(REGISTRY)/phusion/passenger_binary_build_automation"
+BUILDBOX_NAME="${REGISTRY}/phusion/passenger_binary_build_automation"
 
 set -x
 for ARCH in amd64 arm64; do
