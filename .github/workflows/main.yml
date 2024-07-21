@@ -10,7 +10,6 @@ defaults:
 
 jobs:
   build:
-    name: build ${{ matrix.img }} ${{ matrix.arch }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -18,7 +17,7 @@ jobs:
       - name: Purge containers
         run: 'docker kill $(docker ps -q) || exit 0'
       - name: Enable docker multiarch
-        run: 'docker run --privileged --rm tonistiigi/binfmt --install all'
+        uses: docker/setup-qemu-action@v3
       - name: "Run linux/setup-docker-images"
         run: "./linux/setup-docker-images"
       - name: Log in to the Container registry
