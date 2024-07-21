@@ -38,7 +38,7 @@ fi
 
 # Sleep for a random amount of time in order to work around Docker/AUFS bugs
 # that may be triggered if multiple containers are shut down at the same time.
-echo 'import random, time; time.sleep(random.random() * 4)' | python
+echo 'import random, time; time.sleep(random.random() * 4)' | python2
 
 run rm -rf "$WORKSPACE/output"
 
