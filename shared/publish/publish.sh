@@ -18,7 +18,7 @@ require_envvar TESTING "$TESTING"
 
 if [[ -e /usr/bin/sw_vers ]]; then
 	# On macOS
-	GPG=/usr/local/bin/gpg
+	GPG=$(env -i PATH=/usr/local/bin:/opt/homebrew/bin /usr/bin/which gpg)
 else
 	GPG=gpg
 fi

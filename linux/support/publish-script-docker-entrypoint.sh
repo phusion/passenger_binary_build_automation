@@ -4,23 +4,6 @@ set -o pipefail
 source /hbb/activate
 source /system/shared/lib/library.sh
 
-# Note that we do not use gpg-agent inside Docker. The reason is as follows.
-#
-# GPG passes the current TTY's name to pinentry, and pinentry tries to
-# read the password from that TTY. But Docker sets its environment up
-# in such a way that the filename of the TTY's filename refers to a
-# nonexistant file.
-#
-# It even looks like real TTYs don't exist inside a Docker container.
-# Since pinentry is run from gpg-agent, and gpg-agent is daemonized,
-# there is no way for pinentry to get a hold on the original TTY.
-# The loopback mode works around this problem.
-#
-# I tried setting pinentry to loopback mode as described here...
-# http://stackoverflow.com/questions/36356924/not-a-tty-error-in-alpine-based-duplicity-image
-# ...but it didn't work. Why it didn't work is unknown: I stopped
-# bothering investigating it further.
-
 /system/linux/support/inituidgid.sh
 
 export WORKDIR=`setuser builder mktemp -d /tmp/publish.XXXXXXXX`
@@ -31,6 +14,7 @@ export AWS_SECRET_KEY=`cat /aws_secret_key`
 setuser builder mkdir ~builder/.gnupg
 setuser builder chmod 700 ~builder/.gnupg
 setuser builder touch ~builder/.gnupg/gpg.conf
+setuser builder touch ~builder/.gnupg/gpg-agent.conf
 
 if [[ ! -e /signing_key_password ]]; then
 	PASSWORD=`echo -e 'OPTION ttyname /dev/tty\nSETDESC Enter your GPG key password.\nSETPROMPT GPG key password:\nGETPIN' | pinentry-curses | grep ^D `
@@ -41,8 +25,11 @@ fi
 export GPG_OPTS="--batch --trust-model always --passphrase-file /signing_key_password"
 
 echo "+ Ensuring GPG works in a non-TTY environment"
-echo no-tty >> ~builder/.gnupg/gpg.conf
-# echo pinentry-mode loopback >> ~builder/.gnupg/gpg.conf
+echo "use-agent" >> ~builder/.gnupg/gpg.conf
+echo "no-tty" >> ~builder/.gnupg/gpg.conf
+echo "pinentry-mode loopback" >> ~builder/.gnupg/gpg.conf
+echo "pinentry-program /usr/bin/pinentry" >> ~builder/.gnupg/gpg-agent.conf
+echo "allow-loopback-pinentry" >> ~builder/.gnupg/gpg-agent.conf
 
 echo "+ Importing GPG key"
 setuser builder gpg --batch -q --import /signing_key
