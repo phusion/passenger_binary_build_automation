@@ -8,7 +8,7 @@ header "Installing libreadline $READLINE_VERSION"
 cd /tmp
 download_and_extract readline-$READLINE_VERSION.tar.gz \
 		     readline-$READLINE_VERSION \
-		     https://git.savannah.gnu.org/cgit/readline.git/snapshot/readline-$READLINE_VERSION.tar.gz
+		     https://ftp.gnu.org/gnu/readline/readline-$READLINE_VERSION.tar.gz
 run rm -f "/tmp/readline-$READLINE_VERSION.tar.gz"
 run ./configure --prefix="/hbb"
 run make -j2
