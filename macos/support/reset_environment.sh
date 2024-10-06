@@ -12,7 +12,8 @@ else
 	exit 1
 fi
 
-export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+# /usr/local/libexec/sccache is where the Passenger Github CI job stores the sccache compiler wrappers.
+export PATH=/usr/local/libexec/sccache:/usr/bin:/bin:/usr/sbin:/sbin
 export CC=cc
 export CXX=c++
 export MACOSX_DEPLOYMENT_TARGET=`cat "$ROOTDIR/shared/definitions/macosx_deployment_target"`
