@@ -122,12 +122,12 @@ GEM_HOME="$GEM_HOME/ruby/${LAST_RUBY_VERSION%.[0-9]}.0"
 fi
 
 export PASSENGER_ROOT="$TEMP_DIR/passenger"
-echo "+ $RVM_EXEC $LAST_RUBY_VERSION env GEM_HOME=$GEM_HOME GEM_PATH=$GEM_HOME PATH=$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH $ROOTDIR/shared/build/copy-passenger-source-dir.sh $PASSENGER_DIR $PASSENGER_ROOT"
+echo "+ $RVM_EXEC $LAST_RUBY_VERSION env GEM_HOME=$GEM_HOME GEM_PATH=$GEM_HOME PATH=$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH $ROOTDIR/shared/build/copy-dir.rb $PASSENGER_DIR $PASSENGER_ROOT"
 $RVM_EXEC "$LAST_RUBY_VERSION" env \
 	GEM_HOME="$GEM_HOME" \
 	GEM_PATH="$GEM_HOME" \
 	PATH="$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH" \
-	"$ROOTDIR/shared/build/copy-passenger-source-dir.sh" \
+	"$ROOTDIR/shared/build/copy-dir.rb" \
 	"$PASSENGER_DIR" "$PASSENGER_ROOT"
 
 header "Running integration tests"

@@ -47,7 +47,7 @@ namespace :passenger do
   task :source_copy do
     $PASSENGER_SOURCE_DIR_COPY = "#{WORK_DIR}/passenger-source"
     run("mkdir #{shesc $PASSENGER_SOURCE_DIR_COPY}")
-    run("#{shesc ROOT}/shared/build/copy-passenger-source-dir.sh" \
+    run("#{shesc ROOT}/shared/build/copy-dir.rb" \
       " #{shesc PASSENGER_DIR}" \
       " #{shesc $PASSENGER_SOURCE_DIR_COPY}")
   end
@@ -125,7 +125,7 @@ namespace :nginx do
     $NGINX_SOURCE_DIR_COPY = "#{WORK_DIR}/nginx-source"
     run("mkdir #{shesc $NGINX_SOURCE_DIR_COPY}")
     if NGINX_DIR
-      run("#{shesc ROOT}/shared/build/copy-nginx-source-dir.sh" \
+      run("#{shesc ROOT}/shared/build/copy-dir.rb" \
         " #{shesc NGINX_DIR}" \
         " #{shesc $NGINX_SOURCE_DIR_COPY}")
     else
