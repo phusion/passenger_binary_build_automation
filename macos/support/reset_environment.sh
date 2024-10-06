@@ -3,6 +3,15 @@ if [[ "$RUNTIME_DIR" = "" ]]; then
 	exit 1
 fi
 
+if [[ -e /opt/homebrew/bin/brew ]]; then
+	export HOMEBREW_PREFIX=/opt/homebrew
+elif [[ -e /usr/local/bin/brew ]]; then
+	export HOMEBREW_PREFIX=/usr/local
+else
+	echo "ERROR: Homebrew not found"
+	exit 1
+fi
+
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export CC=cc
 export CXX=c++

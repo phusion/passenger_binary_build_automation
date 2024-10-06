@@ -3,7 +3,7 @@ set -e
 CC=(/usr/bin/cc)
 ARGS=()
 
-if [[ "$RUNTIME_DIR" != "" && -e "$RUNTIME_DIR/bin/ccache" ]]; then
-	CC=("$RUNTIME_DIR/bin/ccache" /usr/bin/cc)
+if [[ -n "$RUNTIME_DIR" && -n "$CACHE_DIR" ]]; then
+	CC=("$HOMEBREW_PREFIX/bin/ccache" /usr/bin/cc)
 fi
 exec "${CC[@]}" "$@"
