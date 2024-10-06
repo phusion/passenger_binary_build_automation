@@ -29,10 +29,10 @@ function usage()
 	echo "Required options:"
 	echo "  -p DIR     Path to Passenger source directory"
 	echo "  -r DIR     Path to runtime directory"
-	echo "  -c DIR     Path to cache directory"
 	echo "  -o DIR     Path in which to store build products"
 	echo
 	echo "Optional options:"
+	echo "  -c DIR     Path to cache directory (requires ccache)"
 	echo "  -w DIR     Path to workspace directory. Default: create temporary one"
 	echo "  -n DIR     Path to Nginx source directory"
 	echo "  -N VER     Nginx version number"
@@ -121,11 +121,7 @@ function parse_options()
 			echo "ERROR: $RUNTIME_DIR does not exist."
 			exit 1
 		fi
-		if [[ "$CACHE_DIR" = "" ]]; then
-			echo "ERROR: please specify a cache directory with -c."
-			exit 1
-		fi
-		if [[ ! -e "$CACHE_DIR" ]]; then
+		if [[ -n "$CACHE_DIR" && ! -e "$CACHE_DIR" ]]; then
 			echo "ERROR: $CACHE_DIR does not exist."
 			exit 1
 		fi
@@ -181,12 +177,15 @@ if $SHOW_TASKS; then
 		rake -f "$ROOTDIR/shared/build/Rakefile" -T
 else
 	PASSENGER_DIR=$(absolute_path "$PASSENGER_DIR")
-	CACHE_DIR=$(absolute_path "$CACHE_DIR")
 	OUTPUT_DIR=$(absolute_path "$OUTPUT_DIR")
 	export PASSENGER_DIR
-	export CACHE_DIR
 	export OUTPUT_DIR
 
+	if [[ -n "$CACHE_DIR" ]]; then
+		CACHE_DIR=$(absolute_path "$CACHE_DIR")
+		export CACHE_DIR
+		export PATH="$ROOTDIR/macos/support/ccache-wrappers:$PATH"
+	fi
 	if [[ -n "$WORK_DIR" ]]; then
 		WORK_DIR=$(absolute_path "$WORK_DIR")
 		export WORK_DIR

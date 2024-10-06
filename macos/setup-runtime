@@ -16,11 +16,11 @@ function usage()
 	echo "Setup the runtime."
 	echo
 	echo "Required options:"
-	echo "  -c DIR     Path to cache directory"
 	echo "  -o DIR     Path in which to store the runtime"
 	echo
 	echo "Optional options:"
 	echo "  -w DIR     Path to workspace. Default: create a temporary one"
+	echo "  -c DIR     Path to cache directory (requires ccache)"
 	echo "  -j NUM     Set build concurrency. Default: 2"
 	echo
 	echo "  -h         Show usage"
@@ -54,7 +54,7 @@ function parse_options()
 		esac
 	done
 
-	if [[ ! -e "$CACHE_DIR" ]]; then
+	if [[ -n "$CACHE_DIR" && ! -e "$CACHE_DIR" ]]; then
 		echo "ERROR: $CACHE_DIR does not exist."
 		exit 1
 	fi
@@ -80,9 +80,10 @@ source "$SELFDIR/support/reset_environment.sh"
 
 export CONCURRENCY
 export PATH="$ROOTDIR/macos/support/bin:$RUNTIME_DIR/bin:$PATH"
-if [[ "$CACHE_DIR" != "" ]]; then
+if [[ -n "$CACHE_DIR" ]]; then
 	export CACHE_DIR="`absolute_path \"$CACHE_DIR\"`"
 	export CCACHE_DIR="$CACHE_DIR/ccache-runtime"
+	export PATH="$ROOTDIR/macos/support/ccache-wrappers:$PATH"
 fi
 
 if [[ -n "$WORKDIR" ]]; then

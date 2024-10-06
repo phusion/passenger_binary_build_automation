@@ -54,7 +54,7 @@ def set_constants_and_envvars
   if !SHOW_TASKS
     set_constant_and_envvar :PASSENGER_DIR, getenv('PASSENGER_DIR')
     set_constant_and_envvar :OUTPUT_DIR, getenv('OUTPUT_DIR')
-    set_constant_and_envvar :CACHE_DIR, getenv('CACHE_DIR')
+    set_constant_and_envvar :CACHE_DIR, getenv('CACHE_DIR', nil)
     set_constant_and_envvar :WORK_DIR, getenv('WORK_DIR', lambda { create_temp_work_dir })
     set_constant_and_envvar :CONCURRENCY, getenv('CONCURRENCY', '2').to_i
     set_constant_and_envvar :IN_HOLY_BUILD_BOX, getenv('IN_HOLY_BUILD_BOX', 'false') == 'true'

@@ -129,9 +129,9 @@ namespace :nginx do
         " #{shesc NGINX_DIR}" \
         " #{shesc $NGINX_SOURCE_DIR_COPY}")
     else
-      tarball_path = "#{CACHE_DIR}/#{nginx_tarball_basename}"
+      tarball_path = "#{CACHE_DIR || WORK_DIR}/#{nginx_tarball_basename}"
       if !File.exist?(tarball_path)
-        download(nginx_tarball_url, CACHE_DIR)
+        download(nginx_tarball_url, CACHE_DIR || WORK_DIR)
       end
       run("tar -xzf #{shesc tarball_path} -C #{shesc $NGINX_SOURCE_DIR_COPY}")
       run("mv #{shesc $NGINX_SOURCE_DIR_COPY}/*/* #{shesc $NGINX_SOURCE_DIR_COPY}/")
