@@ -45,6 +45,7 @@ def initialize_rakefile!
   end
   set_constants_and_envvars
   load_passenger
+  clear_work_dir if !SHOW_TASKS
 end
 
 def set_constants_and_envvars
@@ -54,6 +55,7 @@ def set_constants_and_envvars
     set_constant_and_envvar :PASSENGER_DIR, getenv('PASSENGER_DIR')
     set_constant_and_envvar :OUTPUT_DIR, getenv('OUTPUT_DIR')
     set_constant_and_envvar :CACHE_DIR, getenv('CACHE_DIR')
+    set_constant_and_envvar :WORK_DIR, getenv('WORK_DIR', lambda { create_temp_work_dir })
     set_constant_and_envvar :CONCURRENCY, getenv('CONCURRENCY', '2').to_i
     set_constant_and_envvar :IN_HOLY_BUILD_BOX, getenv('IN_HOLY_BUILD_BOX', 'false') == 'true'
     set_constant_and_envvar :NGINX_DIR, getenv('NGINX_DIR', nil)
@@ -76,7 +78,9 @@ def getenv(name, *default)
     ENV[name] || abort("Environment variable required: #{name}")
   else
     default = default[0]
-    ENV.fetch(name, default)
+    result = ENV.fetch(name, default)
+    result = result.call if result.respond_to?(:call)
+    result
   end
 end
 
@@ -224,5 +228,20 @@ def libext
     'bundle'
   else
     'so'
+  end
+end
+
+def create_temp_work_dir
+  path = Dir.mktmpdir
+  at_exit do
+    log("Removing #{path}")
+    FileUtils.remove_entry_secure(path)
+  end
+  path
+end
+
+def clear_work_dir
+  Dir.glob("*", flags: File::FNM_DOTMATCH, base: WORK_DIR).each do |basename|
+    FileUtils.remove_entry_secure(File.join(WORK_DIR, basename)) unless basename == "."
   end
 end

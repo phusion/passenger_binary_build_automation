@@ -20,6 +20,7 @@ function usage()
 	echo "  -o DIR     Path in which to store the runtime"
 	echo
 	echo "Optional options:"
+	echo "  -w DIR     Path to workspace. Default: create a temporary one"
 	echo "  -j NUM     Set build concurrency. Default: 2"
 	echo
 	echo "  -h         Show usage"
@@ -29,13 +30,16 @@ function parse_options()
 {
 	local OPTIND=1
 	local opt
-	while getopts "c:o:j:h" opt; do
+	while getopts "c:o:w:j:h" opt; do
 		case "$opt" in
 		c)
 			CACHE_DIR="$OPTARG"
 			;;
 		o)
 			OUTPUT_DIR="$OPTARG"
+			;;
+		w)
+			WORKDIR="$OPTARG"
 			;;
 		j)
 			CONCURRENCY=$OPTARG
@@ -81,12 +85,18 @@ if [[ "$CACHE_DIR" != "" ]]; then
 	export CCACHE_DIR="$CACHE_DIR/ccache-runtime"
 fi
 
-export WORKDIR=`mktemp -d /tmp/pbba.XXXXXX`
-function cleanup()
-{
-	echo "+ rm -rf $WORKDIR"
-	rm -rf "$WORKDIR"
-}
+if [[ -n "$WORKDIR" ]]; then
+	export WORKDIR=$(absolute_path "$WORKDIR")
+	echo "+ rm -rf $WORKDIR/*"
+	rm -rf "$WORKDIR"/*
+else
+	export WORKDIR=$(mktemp -d /tmp/pbba.XXXXXX)
+	function cleanup()
+	{
+		echo "+ rm -rf $WORKDIR"
+		rm -rf "$WORKDIR"
+	}
+fi
 
 cd "$WORKDIR"
 

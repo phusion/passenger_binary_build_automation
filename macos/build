@@ -12,6 +12,7 @@ LAST_RUBY_VERSION=${RUBY_VERSIONS[${#RUBY_VERSIONS[@]} - 1]}
 PASSENGER_DIR=
 RUNTIME_DIR=
 CACHE_DIR=
+WORK_DIR=
 OUTPUT_DIR=
 NGINX_DIR=
 NGINX_VERSION=
@@ -32,6 +33,7 @@ function usage()
 	echo "  -o DIR     Path in which to store build products"
 	echo
 	echo "Optional options:"
+	echo "  -w DIR     Path to workspace directory. Default: create temporary one"
 	echo "  -n DIR     Path to Nginx source directory"
 	echo "  -N VER     Nginx version number"
 	echo "  -j NUM     Set build concurrency. Default: 2"
@@ -46,7 +48,7 @@ function parse_options()
 	local OPTIND=1
 	local ORIG_ARGV
 	local opt
-	while getopts "p:r:c:o:n:N:j:tTh" opt; do
+	while getopts "p:r:c:w:o:n:N:j:tTh" opt; do
 		case "$opt" in
 		p)
 			PASSENGER_DIR="$OPTARG"
@@ -56,6 +58,9 @@ function parse_options()
 			;;
 		c)
 			CACHE_DIR="$OPTARG"
+			;;
+		w)
+			WORK_DIR="$OPTARG"
 			;;
 		o)
 			OUTPUT_DIR="$OPTARG"
@@ -181,6 +186,11 @@ else
 	export PASSENGER_DIR
 	export CACHE_DIR
 	export OUTPUT_DIR
+
+	if [[ -n "$WORK_DIR" ]]; then
+		WORK_DIR=$(absolute_path "$WORK_DIR")
+		export WORK_DIR
+	fi
 	if [[ "$NGINX_DIR" != "" ]]; then
 		NGINX_DIR=$(absolute_path "$NGINX_DIR")
 		export NGINX_DIR
