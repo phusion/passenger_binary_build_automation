@@ -91,15 +91,6 @@ function cleanup()
 cd "$WORKDIR"
 
 "$SELFDIR/runtime_setup_stages/version_lockdown.sh"
-if [[ ! -e "$OUTPUT_DIR/bin/cmake" ]]; then
-	"$SELFDIR/runtime_setup_stages/install_cmake.sh"
-fi
-if [[ ! -e "$OUTPUT_DIR/bin/ccache" ]]; then
-	"$SELFDIR/runtime_setup_stages/install_ccache.sh"
-fi
-if [[ ! -e "$OUTPUT_DIR/bin/pkg-config" ]]; then
-	"$SELFDIR/runtime_setup_stages/install_pkg_config.sh"
-fi
 if [[ ! -e "$OUTPUT_DIR/lib/libz.a" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_zlib.sh"
 fi
@@ -123,9 +114,6 @@ if [[ ! -e "$OUTPUT_DIR/lib/libpcre.a" ]]; then
 fi
 if [[ ! -e "$OUTPUT_DIR/lib/libpcre2.a" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_pcre2.sh"
-fi
-if [[ ! -e "$OUTPUT_DIR/bin/s3cmd" ]]; then
-	"$SELFDIR/runtime_setup_stages/install_s3cmd.sh"
 fi
 "$SELFDIR/runtime_setup_stages/install_gems.sh"
 
