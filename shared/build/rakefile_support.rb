@@ -53,7 +53,7 @@ def set_constants_and_envvars
   if !SHOW_TASKS
     set_constant_and_envvar :PASSENGER_DIR, getenv('PASSENGER_DIR')
     set_constant_and_envvar :OUTPUT_DIR, getenv('OUTPUT_DIR')
-    set_constant_and_envvar :CACHE_DIR, getenv('CACHE_DIR')
+    set_constant_and_envvar :CACHE_DIR, getenv('CACHE_DIR', Dir.tmpdir)
     set_constant_and_envvar :CONCURRENCY, getenv('CONCURRENCY', '2').to_i
     set_constant_and_envvar :IN_HOLY_BUILD_BOX, getenv('IN_HOLY_BUILD_BOX', 'false') == 'true'
     set_constant_and_envvar :NGINX_DIR, getenv('NGINX_DIR', nil)
