@@ -120,9 +120,6 @@ fi
 if [[ ! -e "$OUTPUT_DIR/lib/libGeoIP.a" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_geoip.sh"
 fi
-if [[ ! -e "$OUTPUT_DIR/lib/libpcre.a" ]]; then
-	"$SELFDIR/runtime_setup_stages/install_pcre.sh"
-fi
 if [[ ! -e "$OUTPUT_DIR/lib/libpcre2-posix.a" ]]; then
 	"$SELFDIR/runtime_setup_stages/install_pcre2.sh"
 fi
