@@ -8,8 +8,8 @@ CURL_VERSION=$(cat "$ROOTDIR/shared/definitions/curl_version")
 
 header "Installing libcurl $CURL_VERSION"
 download_and_extract "curl-$CURL_VERSION.tar.gz" \
-		     "curl-$CURL_VERSION" \
-		     "https://curl.haxx.se/download/curl-$CURL_VERSION.tar.gz"
+		"curl-$CURL_VERSION" \
+		"https://curl.haxx.se/download/curl-$CURL_VERSION.tar.gz"
 
 if (curl-config --configure | grep -Fqe libressl); then
 	TLS_LIB=(
