@@ -104,7 +104,7 @@ export PACKAGED_ARTEFACTS_DIR
 UNPACKAGED_ARTEFACTS_DIR="$(absolute_path "$UNPACKAGED_INPUT_DIR")"
 export UNPACKAGED_ARTEFACTS_DIR
 
-export RUNTIME_DIR="$RUNTIME_DIR"
+export RUNTIME_DIR=$(absolute_path "$RUNTIME_DIR")
 source "$SELFDIR/support/reset_environment.sh"
 
 check_macos_runtime_compatibility "$RUNTIME_DIR" "$MACOS_RUNTIME_VERSION"
@@ -118,17 +118,21 @@ function cleanup()
 
 GEM_HOME="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION"
 if vergte "$LAST_RUBY_VERSION" '3.2.0' ; then
-GEM_HOME="$GEM_HOME/ruby/${LAST_RUBY_VERSION%.[0-9]}.0"
+	GEM_HOME="$GEM_HOME/ruby/${LAST_RUBY_VERSION%.[0-9]}.0"
 fi
 
 export PASSENGER_ROOT="$TEMP_DIR/passenger"
-echo "+ $RVM_EXEC $LAST_RUBY_VERSION env GEM_HOME=$GEM_HOME GEM_PATH=$GEM_HOME PATH=$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH $ROOTDIR/shared/build/copy-dir.rb $PASSENGER_DIR $PASSENGER_ROOT"
-$RVM_EXEC "$LAST_RUBY_VERSION" env \
-	GEM_HOME="$GEM_HOME" \
-	GEM_PATH="$GEM_HOME" \
-	PATH="$GEM_HOME/bin:$HOME/.rvm/rubies/ruby-$LAST_RUBY_VERSION/bin:$PATH" \
+echo "+ $RVM_EXEC $LAST_RUBY_VERSION $ROOTDIR/shared/build/copy-dir.rb $PASSENGER_DIR $PASSENGER_ROOT"
+$RVM_EXEC "$LAST_RUBY_VERSION" \
 	"$ROOTDIR/shared/build/copy-dir.rb" \
 	"$PASSENGER_DIR" "$PASSENGER_ROOT"
+
+header "Installing gem bundle"
+echo "+ $RVM_EXEC "$LAST_RUBY_VERSION" env BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" bundle install -j 4"
+$RVM_EXEC "$LAST_RUBY_VERSION" env \
+	BUNDLE_PATH="$RUNTIME_DIR/gems/$LAST_RUBY_VERSION" \
+	BUNDLE_GEMFILE="$ROOTDIR/shared/Gemfile" \
+	bundle install -j 4
 
 header "Running integration tests"
 echo "+ $RVM_EXEC $LAST_RUBY_VERSION env BUNDLE_PATH=$RUNTIME_DIR/gems/$LAST_RUBY_VERSION BUNDLE_GEMFILE=$ROOTDIR/shared/Gemfile BUNDLE_DISABLE_SHARED_GEMS=true bundle exec rspec --tty -c -f d $ROOTDIR/shared/test/integration_test.rb ${ARGV[*]}"
