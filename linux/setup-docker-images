@@ -16,8 +16,8 @@ BUILDBOX_NAME="${REGISTRY}/phusion/passenger_binary_build_automation"
 set -x
 for ARCH in amd64 arm64; do
     docker buildx build --force-rm --pull \
-	--platform "linux/$ARCH" \
-	-t "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH" \
-	-f "$ROOTDIR/linux/docker_image/Dockerfile" \
-	"$ROOTDIR"
+		--platform "linux/$ARCH" \
+		-t "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH" \
+		-f "$ROOTDIR/linux/docker_image/Dockerfile" \
+		"$ROOTDIR"
 done

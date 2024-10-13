@@ -9,7 +9,7 @@ source "$ROOTDIR/shared/lib/library.sh"
 PASSENGER_DIR=
 CACHE_DIR=
 OUTPUT_DIR=
-ARCHITECTURE=
+DOCKER_ARCH=
 NGINX_DIR=
 NGINX_VERSION=
 CONCURRENCY=2
@@ -26,7 +26,7 @@ function usage()
 	echo "  -p DIR     Path to Passenger source directory"
 	echo "  -c DIR     Path to cache directory"
 	echo "  -o DIR     Path in which to store build products"
-	echo "  -a ARCH    Architecture to build for (aarch64, x86_64)"
+	echo "  -A ARCH    Docker architecture name to build in (amd64, arm64)"
 	echo
 	echo "Optional options:"
 	echo "  -n DIR     Path to Nginx source directory"
@@ -43,7 +43,7 @@ function parse_options()
 	local OPTIND=1
 	local ORIG_ARGV
 	local opt
-	while getopts "p:c:o:a:n:N:j:tTh" opt; do
+	while getopts "p:c:o:A:n:N:j:tTh" opt; do
 		case "$opt" in
 		p)
 			PASSENGER_DIR="$OPTARG"
@@ -54,8 +54,8 @@ function parse_options()
 		o)
 			OUTPUT_DIR="$OPTARG"
 			;;
-		a)
-			ARCHITECTURE="$OPTARG"
+		A)
+			DOCKER_ARCH="$OPTARG"
 			;;
 		n)
 			NGINX_DIR="$OPTARG"
@@ -121,12 +121,9 @@ function parse_options()
 			echo "ERROR: $OUTPUT_DIR does not exist."
 			exit 1
 		fi
-		if [[ "$ARCHITECTURE" = "" ]]; then
-			echo "ERROR: please specify an architecture with -a."
+		if [[ "$DOCKER_ARCH" = "" ]]; then
+			echo "ERROR: please specify a Docker architecture with -A."
 			exit 1
-		fi
-		if [[ "$ARCHITECTURE" != aarch64 && "$ARCHITECTURE" != x86_64 ]]; then
-			echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either aarch64 or x86_64."
 		fi
 		if [[ "$NGINX_DIR" != "" ]]; then
 			if [[ ! -e "$NGINX_DIR" ]]; then
@@ -149,12 +146,6 @@ else
 	TTY_ARGS=
 fi
 
-if [[ "$ARCHITECTURE" == x86_64 ]]; then
-	ARCHITECTURE=amd64
-elif [[ "$ARCHITECTURE" = aarch64 ]]; then
-	ARCHITECTURE=arm64
-fi
-
 DOCKER_IMAGE=phusion/passenger_binary_build_automation
 
 if $SHOW_TASKS; then
@@ -163,7 +154,7 @@ if $SHOW_TASKS; then
 		-e "APP_UID=$(/usr/bin/id -u)" \
 		-e "APP_GID=$(/usr/bin/id -g)" \
 		-e "SHOW_TASKS=true" \
-		--platform "linux/$ARCHITECTURE" \
+		--platform "linux/$DOCKER_ARCH" \
 		"$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION" \
 		/system/linux/support/build-script-docker-entrypoint.sh -T
 else
@@ -189,7 +180,7 @@ else
 		-e "APP_GID=$(/usr/bin/id -g)" \
 		-e "SHOW_TASKS=false" \
 		-e "CONCURRENCY=$CONCURRENCY" \
-		--platform "linux/$ARCHITECTURE" \
+		--platform "linux/$DOCKER_ARCH" \
 		"${EXTRA_DOCKER_ARGS[@]}" \
 		"$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION" \
 		/system/linux/support/build-script-docker-entrypoint.sh \

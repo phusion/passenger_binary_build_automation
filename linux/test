@@ -8,7 +8,7 @@ source "$ROOTDIR/shared/lib/library.sh"
 PASSENGER_DIR=
 UNPACKAGED_INPUT_DIR=
 PACKAGED_INPUT_DIR=
-ARCHITECTURE=
+DOCKER_ARCH=
 LICENSE_KEY=
 
 function usage()
@@ -20,7 +20,7 @@ function usage()
 	echo "  -p DIR     Path to Passenger source directory"
 	echo "  -i DIR     Path to directory containing unpackaged build products"
 	echo "  -I DIR     Path to directory containing packaged build products"
-	echo "  -a ARCH    Architecture to test for (x86_64,aarch64)"
+	echo "  -A ARCH    Docker architecture to run in (amd64, arm64)"
 	echo
 	echo "Optional options:"
 	echo "  -L PATH    Path to Passenger Enterprise license key"
@@ -32,7 +32,7 @@ function parse_options()
 	local OPTIND=1
 	local ORIG_ARGV
 	local opt
-	while getopts "p:i:I:a:L:h" opt; do
+	while getopts "p:i:I:A:L:h" opt; do
 		case "$opt" in
 		p)
 			PASSENGER_DIR="$OPTARG"
@@ -43,8 +43,8 @@ function parse_options()
 		I)
 			PACKAGED_INPUT_DIR="$OPTARG"
 			;;
-		a)
-			ARCHITECTURE="$OPTARG"
+		A)
+			DOCKER_ARCH="$OPTARG"
 			;;
 		L)
 			LICENSE_KEY="$OPTARG"
@@ -87,12 +87,9 @@ function parse_options()
 		echo "ERROR: $UNPACKAGED_INPUT_DIR does not exist."
 		exit 1
 	fi
-	if [[ "$ARCHITECTURE" = "" ]]; then
-		echo "ERROR: please specify an architecture with -a."
+	if [[ "$DOCKER_ARCH" = "" ]]; then
+		echo "ERROR: please specify a Docker architecture with -A."
 		exit 1
-	fi
-	if [[ "$ARCHITECTURE" != aarch64 && "$ARCHITECTURE" != x86_64 ]]; then
-		echo "ERROR: specified architecture ($ARCHITECTURE) not recognized. Please specify either aarch64 or x86_64."
 	fi
 	if [[ "$LICENSE_KEY" != "" && ! -e "$LICENSE_KEY" ]]; then
 		echo "ERROR: $LICENSE_KEY does not exist."
@@ -109,11 +106,6 @@ fi
 if [[ "$LICENSE_KEY" != "" ]]; then
 	DOCKER_EXTRA_ARGS+=(-v "$LICENSE_KEY:/etc/passenger-enterprise-license:ro")
 fi
-if [[ "$ARCHITECTURE" = x86_64 ]]; then
-	ARCHITECTURE=amd64
-elif [[ "$ARCHITECTURE" = aarch64 ]]; then
-	ARCHITECTURE=arm64
-fi
 DOCKER_IMAGE=phusion/passenger_binary_build_automation
 
 PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
@@ -129,6 +121,6 @@ exec docker run --rm \
 	-e "APP_UID=`/usr/bin/id -u`" \
 	-e "APP_GID=`/usr/bin/id -g`" \
 	"${DOCKER_EXTRA_ARGS[@]}" \
-	--platform "linux/$ARCHITECTURE" \
+	--platform "linux/$DOCKER_ARCH" \
 	$DOCKER_IMAGE:$DOCKER_IMAGE_VERSION \
 	/system/linux/support/test-script-docker-entrypoint.sh
