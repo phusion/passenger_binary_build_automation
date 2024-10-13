@@ -20,6 +20,7 @@ if $SHOW_TASKS; then
 else
 	export PASSENGER_DIR=/passenger
 	export CACHE_DIR=/cache
+	export WORK_DIR=/work
 	export OUTPUT_DIR=/output
 	export IN_HOLY_BUILD_BOX=true
 	if [[ -e /nginx ]]; then
@@ -27,12 +28,15 @@ else
 	fi
 
 	export USE_CCACHE=true
+	export CCACHE_BASEDIR=/work
 	export CCACHE_SLOPPINESS=time_macros
 	export CCACHE_NOHASHDIR=true
 	unset CCACHE_HASHDIR
 
+	run mkdir /work
+	run chown builder: /cache /work
 	run setuser builder mkdir -p "$CCACHE_DIR"
-	run chown builder: /cache "$CCACHE_DIR"
+	run chown builder: /cache /work "$CCACHE_DIR"
 
 	run_exec setuser builder \
 		/usr/local/rvm/bin/rvm-exec ruby-$LAST_RUBY_VERSION \
