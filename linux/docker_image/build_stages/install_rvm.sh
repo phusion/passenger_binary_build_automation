@@ -6,15 +6,15 @@ source /hbb/activate
 header "Installing RVM"
 
 KEYSERVERS=(
+	keyserver.ubuntu.com
+	hkp://keyserver.ubuntu.com:80
+	hkp://pgp.mit.edu
+	pgp.mit.edu
 	hkp://keyserver.pgp.com
 	hkp://keys.gnupg.net
 	ha.pool.sks-keyservers.net
 	hkp://p80.pool.sks-keyservers.net:80
 	hkp://ipv4.pool.sks-keyservers.net
-	keyserver.ubuntu.com
-	hkp://keyserver.ubuntu.com:80
-	hkp://pgp.mit.edu
-	pgp.mit.edu
 	-end-
 )
 
