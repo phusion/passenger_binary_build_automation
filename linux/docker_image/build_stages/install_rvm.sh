@@ -39,5 +39,5 @@ for KEY in "${KEYS[@]}"; do
 done
 
 run curl -L -o /tmp/install-rvm.sh https://get.rvm.io
-run bash /tmp/install-rvm.sh stable
+run bash /tmp/install-rvm.sh master
 run /usr/local/rvm/bin/rvm autolibs disable
