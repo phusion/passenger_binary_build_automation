@@ -2,6 +2,8 @@
 
 ROOTDIR=$(dirname "$0")
 
+shopt -s lastpipe
+
 if [ -n "$GITHUB_API_TOKEN" ]; then
 TOKEN="$GITHUB_API_TOKEN"
 else
@@ -148,4 +150,22 @@ if [ "${RESTRICT:-libyaml}" = "libyaml" ]; then
 	getLatestTag yaml/libyaml  > "$ROOTDIR/shared/definitions/libyaml_version"
 else
 	echo skipping libyaml…
+fi
+
+if [ "$(uname)" = "Darwin" ]; then
+	echo starting macOS…
+	declare -a macOS_versions
+	current_macOS="$(sw_vers -ProductVersion | cut -d. -f1)"
+	tr ' ' "\n" < "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets" | sort -V | mapfile -t macOS_versions
+	if ! printf '%s\0' "${macOS_versions[@]}" | grep -Fxzqe "$current_macOS" && sort --check=silent <<< "${macOS_versions[-1]}\n${current_macOS}"; then
+		printf '%s\n' "${macOS_versions[@]}" | tail -2 | cat - <(echo "$current_macOS") > "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets"
+	fi
+fi
+
+if ! git diff --quiet --exit-code; then
+	echo bumping runtime versions
+	old_docker="$(cat "$ROOTDIR/shared/definitions/docker_image_version")"
+	echo $((old_docker + 1)) > "$ROOTDIR/shared/definitions/docker_image_version"
+	old_macOS="$(cat "$ROOTDIR/shared/definitions/macos_runtime_version")"
+	echo $((old_macOS + 1)) > "$ROOTDIR/shared/definitions/macos_runtime_version"
 fi
