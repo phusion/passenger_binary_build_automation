@@ -17,18 +17,19 @@ jobs:
       fail-fast: false
       matrix:
         arch:
-          - platform: linux/amd64
+          - name: amd64
             runner: ubuntu-24.04
-          - platform: linux/arm64
+          - name: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.arch.runner }}
     steps:
+      - uses: actions/checkout@v4
       - name: Prepare
         run: |
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
           echo "DOCKER_IMAGE_VERSION=$(cat "./shared/definitions/docker_image_version")" >> $GITHUB_ENV
         env:
-          platform: ${{ matrix.arch.platform }}
+          platform: linux/${{ matrix.arch.name }}
 
       - name: Docker meta
         id: meta
@@ -36,6 +37,9 @@ jobs:
         with:
           images: |
             ${{ env.GHCR_REPO }}
+          tags: |
+            type=raw,value=${{ env.DOCKER_IMAGE_VERSION }}-${{ matrix.arch.name }}
+            type=edge,enable=true,priority=700,prefix=,suffix=${{ matrix.arch.name }},branch=$repo.default_branch
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -50,14 +54,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push by digest
+      - name: Build and push by tag
         id: build
         uses: docker/build-push-action@v6
         with:
           file: ./linux/docker_image/Dockerfile
-          platforms: ${{ matrix.arch.platform }}
+          platforms: linux/${{ matrix.arch.name }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: "type=image,name=${{ env.GHCR_REPO }},push-by-digest=true,name-canonical=true,push=true"
+          tags: ${{ steps.meta.outputs.tags }}
+          outputs: "type=image,name=${{ env.GHCR_REPO }},push-by-digest=false,name-canonical=true,push=true"
 
       - name: Export digest
         run: |
@@ -78,6 +83,10 @@ jobs:
     needs:
       - build
     steps:
+      - uses: actions/checkout@v4
+      - name: Prepare
+        run: echo "DOCKER_IMAGE_VERSION=$(cat "./shared/definitions/docker_image_version")" >> $GITHUB_ENV
+
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
@@ -102,10 +111,9 @@ jobs:
           images: |
             ${{ env.GHCR_REPO }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=${{ env.DOCKER_IMAGE_VERSION }}
+            type=raw,value=latest
+            type=edge,enable=true,priority=700,prefix=,suffix=,branch=$repo.default_branch
 
       - name: Create manifest list and push
         working-directory: /tmp/digests
