@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+ROOTDIR=$(dirname "$0")
+ROOTDIR=$(cd "$ROOTDIR/.." && pwd)
+DOCKER_IMAGE_VERSION=$(cat "$ROOTDIR/shared/definitions/docker_image_version")
+# shellcheck source=../shared/lib/library.sh
+source "$ROOTDIR/shared/lib/library.sh"
+
+BUILDBOX_NAME="phusion/passenger_binary_build_automation"
+
+for ARCH in amd64 arm64; do
+	run docker pull --platform "linux/$ARCH" "ghcr.io/$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH"
+	run docker tag "ghcr.io/$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH" "$BUILDBOX_NAME:$DOCKER_IMAGE_VERSION-$ARCH"
+done
