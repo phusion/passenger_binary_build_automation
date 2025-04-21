@@ -13,7 +13,7 @@ download_and_extract "zlib-$ZLIB_VERSION.tar.gz" \
 echo "+ rm -f $WORKDIR/zlib-$ZLIB_VERSION.tar.gz"
 rm -f "$WORKDIR/zlib-$ZLIB_VERSION.tar.gz"
 echo "+ env CFLAGS='-O2 -fvisibility=hidden' ./configure --prefix=$OUTPUT_DIR --static"
-env CFLAGS='-O2 -fvisibility=hidden' ./configure --prefix="$OUTPUT_DIR" --static
+env CFLAGS='-O2 -fvisibility=hidden' ./configure --prefix="$OUTPUT_DIR" --static || (cat configure.log && false)
 echo "+ make -j$CONCURRENCY"
 make -j"$CONCURRENCY"
 echo "+ make install"
