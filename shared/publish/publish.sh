@@ -11,8 +11,15 @@ require_envvar VERSION "$VERSION"
 require_envvar FILE_SERVER_PASSWORD "$FILE_SERVER_PASSWORD"
 require_envvar REPOSITORY_NAME "$REPOSITORY_NAME"
 require_envvar S3_BUCKET_NAME "$S3_BUCKET_NAME"
-require_envvar AWS_ACCESS_KEY "$AWS_ACCESS_KEY"
-require_envvar AWS_SECRET_KEY "$AWS_SECRET_KEY"
+if [ "${GITHUB_ACTION:-false}" != "true" ]; then
+	require_envvar AWS_ACCESS_KEY "$AWS_ACCESS_KEY"
+	require_envvar AWS_SECRET_KEY "$AWS_SECRET_KEY"
+else
+	require_envvar AWS_ACCESS_KEY_ID "$AWS_ACCESS_KEY_ID"
+	require_envvar AWS_SECRET_ACCESS_KEY "$AWS_SECRET_ACCESS_KEY"
+	require_envvar AWS_SESSION_TOKEN "$AWS_SESSION_TOKEN"
+	require_envvar AWS_REGION "$AWS_REGION"
+fi
 require_envvar TESTING "$TESTING"
 
 
@@ -53,16 +60,21 @@ curl --fail -L -K "$WORKDIR/curl.cfg" \
 	https://oss-binaries.phusionpassenger.com/binary_build_automation/add
 echo
 
-S3CMD_ARGS=()
+declare -a S3CMD_ARGS
 if ! $TESTING; then
 	S3CMD_ARGS+=(--skip-existing)
 fi
+if [ "${GITHUB_ACTION:-false}" != "true" ]; then
 cat >>"$WORKDIR/s3cfg" <<EOF
 access_key = $AWS_ACCESS_KEY
 secret_key = $AWS_SECRET_KEY
 EOF
-echo "+ s3cmd -c $WORKDIR/s3cfg	--storage-class=STANDARD_IA --human-readable-sizes --follow-symlinks --no-delete-removed --acl-public --guess-mime-type	${S3CMD_ARGS[*]} sync $WORKDIR/content/	s3://phusion-passenger/binaries/$S3_BUCKET_NAME/by_release/$VERSION/"
-s3cmd -c "$WORKDIR/s3cfg" \
+S3CMD_ARGS+=("-c" "$WORKDIR/s3cfg")
+else
+
+fi
+echo "+ s3cmd --storage-class=STANDARD_IA --human-readable-sizes --follow-symlinks --no-delete-removed --acl-public --guess-mime-type	${S3CMD_ARGS[*]} sync $WORKDIR/content/	s3://phusion-passenger/binaries/$S3_BUCKET_NAME/by_release/$VERSION/"
+s3cmd \
 	--storage-class=STANDARD_IA \
 	--human-readable-sizes \
 	--follow-symlinks \
