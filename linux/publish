@@ -12,7 +12,7 @@ declare INPUT_DIR
 declare VERSION
 declare SIGNING_KEY_FILE
 declare FILE_SERVER_PASSWORD_FILE
-if [ "${GITHUB_ACTION:-false}" != "true" ]; then
+if [ "${GITHUB_ACTIONS:-false}" != "true" ]; then
 	declare AWS_ACCESS_KEY
 	declare AWS_SECRET_KEY_FILE
 else
@@ -34,7 +34,7 @@ function usage()
 	echo "  -v VERSION Passenger version number"
 	echo "  -S PATH    File containing the package signing key"
 	echo "  -p PATH    File containing the binary build automation file server password"
-	if [ "${GITHUB_ACTION:-false}" != "true" ]; then
+	if [ "${GITHUB_ACTIONS:-false}" != "true" ]; then
 		echo "  -a KEY     Amazon S3 access key"
 		echo "  -s KEY     File containing the Amazon S3 secret key"
 	else
@@ -122,7 +122,7 @@ function parse_options()
 		echo "ERROR: $FILE_SERVER_PASSWORD_FILE does not exist."
 		exit 1
 	fi
-	if [ "${GITHUB_ACTION:-false}" != "true" ]; then
+	if [ "${GITHUB_ACTIONS:-false}" != "true" ]; then
 		if [[ "$AWS_ACCESS_KEY" = "" ]]; then
 			echo "ERROR: please specify an AWS S3 access key with -a."
 			exit 1
@@ -167,7 +167,7 @@ declare -a EXTRA_DOCKER_ARGS
 INPUT_DIR=$(absolute_path "$INPUT_DIR")
 FILE_SERVER_PASSWORD_FILE=$(absolute_path "$FILE_SERVER_PASSWORD_FILE")
 declare -a S3_ARGS
-if [ "${GITHUB_ACTION:-false}" != "true" ]; then
+if [ "${GITHUB_ACTIONS:-false}" != "true" ]; then
 	AWS_SECRET_KEY_FILE=$(absolute_path "$AWS_SECRET_KEY_FILE")
 	S3_ARGS=("-v" "$AWS_SECRET_KEY_FILE:/aws_secret_key:ro" "-e" "AWS_ACCESS_KEY=$AWS_ACCESS_KEY")
 else
@@ -177,7 +177,7 @@ else
 		"-e" "AWS_SECRET_ACCESS_KEY"
 		"-e" "AWS_SESSION_TOKEN"
 		"-e" "AWS_REGION=us-east-1"
-		"-e" "GITHUB_ACTION=true"
+		"-e" "GITHUB_ACTIONS=true"
 	)
 fi
 if [[ "$SIGNING_KEY_PASSWORD_FILE" != "" ]]; then

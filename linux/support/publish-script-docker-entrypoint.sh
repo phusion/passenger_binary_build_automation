@@ -9,14 +9,14 @@ source /system/shared/lib/library.sh
 export WORKDIR=`setuser builder mktemp -d /tmp/publish.XXXXXXXX`
 export INPUT_DIR=/input
 export FILE_SERVER_PASSWORD=`cat /file_server_password`
-if [ "${GITHUB_ACTION:-false}" != "true" ]; then
+if [ "${GITHUB_ACTIONS:-false}" != "true" ]; then
 	export AWS_SECRET_KEY=`cat /aws_secret_key`
 else
 	export "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
 	export "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
 	export "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN"
 	export "AWS_REGION=$AWS_REGION"
-	export "GITHUB_ACTION=$GITHUB_ACTION"
+	export "GITHUB_ACTIONS=$GITHUB_ACTIONS"
 fi
 
 setuser builder mkdir ~builder/.gnupg

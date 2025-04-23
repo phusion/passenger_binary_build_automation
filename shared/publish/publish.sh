@@ -11,7 +11,7 @@ require_envvar VERSION "$VERSION"
 require_envvar FILE_SERVER_PASSWORD "$FILE_SERVER_PASSWORD"
 require_envvar REPOSITORY_NAME "$REPOSITORY_NAME"
 require_envvar S3_BUCKET_NAME "$S3_BUCKET_NAME"
-if [ "${GITHUB_ACTION:-false}" != "true" ]; then
+if [ "${GITHUB_ACTIONS:-false}" != "true" ]; then
 	require_envvar AWS_ACCESS_KEY "$AWS_ACCESS_KEY"
 	require_envvar AWS_SECRET_KEY "$AWS_SECRET_KEY"
 else
@@ -64,7 +64,7 @@ declare -a S3CMD_ARGS
 if ! $TESTING; then
 	S3CMD_ARGS+=(--skip-existing)
 fi
-if [ "${GITHUB_ACTION:-false}" != "true" ]; then
+if [ "${GITHUB_ACTIONS:-false}" != "true" ]; then
 cat >>"$WORKDIR/s3cfg" <<EOF
 access_key = $AWS_ACCESS_KEY
 secret_key = $AWS_SECRET_KEY
