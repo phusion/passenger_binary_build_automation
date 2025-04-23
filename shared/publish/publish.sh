@@ -71,7 +71,7 @@ secret_key = $AWS_SECRET_KEY
 EOF
 S3CMD_ARGS+=("-c" "$WORKDIR/s3cfg")
 else
-
+	echo "Using env vars to authenticate s3cmd to AWS"
 fi
 echo "+ s3cmd --storage-class=STANDARD_IA --human-readable-sizes --follow-symlinks --no-delete-removed --acl-public --guess-mime-type	${S3CMD_ARGS[*]} sync $WORKDIR/content/	s3://phusion-passenger/binaries/$S3_BUCKET_NAME/by_release/$VERSION/"
 s3cmd \
