@@ -69,7 +69,7 @@ else
 fi
 if [ "${RESTRICT:-rubygems}" = "rubygems" ]; then
 	echo starting rubygems…
-	getLatestTag rubygems/rubygems > "$ROOTDIR/shared/definitions/rubygems_version"
+	getLatestTag ruby/rubygems > "$ROOTDIR/shared/definitions/rubygems_version"
 else
 	echo skipping rubygems…
 fi
@@ -155,10 +155,10 @@ fi
 if [ "$(uname)" = "Darwin" ]; then
 	echo starting macOS…
 	declare -a macOS_versions
-	current_macOS="$(sw_vers -ProductVersion | cut -d. -f1)"
-	tr ' ' "\n" < "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets" | sort -V | mapfile -t macOS_versions
+	declare current_macOS="$(sw_vers -ProductVersion | cut -d. -f1)"
+	readarray -t macOS_versions < <(tr ' ' "\n" < "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets" | sort -V)
 	if ! printf '%s\0' "${macOS_versions[@]}" | grep -Fxzqe "$current_macOS" && sort --check=silent <<< "${macOS_versions[-1]}\n${current_macOS}"; then
-		printf '%s\n' "${macOS_versions[@]}" | tail -2 | cat - <(echo "$current_macOS") > "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets"
+		printf '%s\n' "${macOS_versions[@]}" | tail -2 | cat - <(echo "$current_macOS") | paste -sd ' ' - > "$ROOTDIR/shared/definitions/macosx_compatible_deployment_targets"
 	fi
 fi
 
