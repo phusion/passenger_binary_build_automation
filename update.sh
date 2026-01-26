@@ -11,6 +11,10 @@ read -p "Enter Your GitHub Token: " TOKEN
 echo
 fi
 
+if ! ruby -rnokogiri -e '' 2>/dev/null; then
+    gem install nokogiri
+fi
+
 write_version() {
 	read file version
 	echo "$version" > "$ROOTDIR/shared/definitions/$file"
@@ -100,7 +104,7 @@ fi
 if [ "${RESTRICT:-gnupg}" = "gnupg" ]; then
 	echo 'starting gnupg & associated…'
 	curl --silent "https://www.gnupg.org/download/index.html" | \
-		ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("#text-1-1 > table > tbody > tr > td:nth-child(-n+2)").map{|e|e.text}.each_slice(2).reject{|elts| elts.first.include?(" ") && elts.first != "GnuPG (LTS)" }.map{|elts|elts.join(" ").gsub(" (LTS)","")}' | \
+		ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("#text-1-1 > table > tbody > tr > td:nth-child(-n+2)").map{|e|e.text}.each_slice(2).reject{|elts| elts.first.include?(" ") && elts.first != "GnuPG (stable)" }.map{|elts|elts.join(" ").gsub(" (stable)","")}' | \
 		tee \
 			>(grep -F GnuPG | awk '{print "gnupg_version",$2}' | write_version) \
 			>(grep -F Libassuan | awk '{print "libassuan_version",$2}' | write_version) \
