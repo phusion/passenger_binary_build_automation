@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.6.2)
+    logger (1.7.0)
     paint (2.3.0)
     rack (2.2.21)
     rake (13.3.1)
@@ -23,6 +24,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  logger
   paint
   rack (< 3.0)
   rake

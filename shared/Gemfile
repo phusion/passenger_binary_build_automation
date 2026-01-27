@@ -1,11 +1,14 @@
 source 'https://rubygems.org/'
 
+# If you change this you must bump the macos runtime version in shared/definitions/macos_runtime_version
+
 # Needed by our own tooling
 gem 'paint'
 gem 'rake'
 gem 'rspec', '~> 3.0.0'
+gem 'logger'
 
 # Needed by Passenger
-gem 'rack', '< 3.0' # Rack 2.0+ does not work with Ruby 2.0, which is default on OS X
+gem 'rack', '< 3.0'
 
 gem "webrick", "~> 1.7"
