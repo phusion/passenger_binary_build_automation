@@ -21,10 +21,17 @@ run make -j1
 run make install_sw
 
 run strip "/hbb/bin/openssl"
-run strip -S "/hbb/lib/libssl.a"
-run strip -S "/hbb/lib/libcrypto.a"
 
-run sed -i'' 's/^Libs:.*/Libs: -L${libdir} -lssl -lcrypto -ldl/' /hbb/lib/pkgconfig/openssl.pc
-run sed -i'' 's/^Libs.private:.*/Libs.private: -L${libdir} -lssl -lcrypto -ldl -lz/' /hbb/lib/pkgconfig/openssl.pc
-run sed -i'' 's/^Libs:.*/Libs: -L${libdir} -lssl -lcrypto -ldl/' /hbb/lib/pkgconfig/libssl.pc
-run sed -i'' 's/^Libs.private:.*/Libs.private: -L${libdir} -lssl -lcrypto -ldl -lz/' /hbb/lib/pkgconfig/libssl.pc
+if [ "$(uname -m)" = "x86_64" ]; then
+    LIBS="/hbb/lib64"
+else
+    LIBS="/hbb/lib"
+fi
+
+run strip -S "$LIBS/libssl.a"
+run strip -S "$LIBS/libcrypto.a"
+
+run sed -i'' 's/^Libs:.*/Libs: -L${libdir} -lssl -lcrypto -ldl/' $LIBS/pkgconfig/openssl.pc
+run sed -i'' 's/^Libs.private:.*/Libs.private: -L${libdir} -lssl -lcrypto -ldl -lz/' $LIBS/pkgconfig/openssl.pc
+run sed -i'' 's/^Libs:.*/Libs: -L${libdir} -lssl -lcrypto -ldl/' $LIBS/pkgconfig/libssl.pc
+run sed -i'' 's/^Libs.private:.*/Libs.private: -L${libdir} -lssl -lcrypto -ldl -lz/' $LIBS/pkgconfig/libssl.pc
