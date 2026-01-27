@@ -1,10 +1,10 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    diff-lcs (1.5.0)
+    diff-lcs (1.6.2)
     paint (2.3.0)
-    rack (2.2.6.4)
-    rake (13.0.6)
+    rack (2.2.21)
+    rake (13.3.1)
     rspec (3.0.0)
       rspec-core (~> 3.0.0)
       rspec-expectations (~> 3.0.0)
@@ -17,7 +17,7 @@ GEM
     rspec-mocks (3.0.4)
       rspec-support (~> 3.0.0)
     rspec-support (3.0.4)
-    webrick (1.7.0)
+    webrick (1.9.2)
 
 PLATFORMS
   ruby
