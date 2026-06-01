@@ -146,7 +146,7 @@ else
 	TTY_ARGS=
 fi
 
-DOCKER_IMAGE=phusion/passenger_binary_build_automation
+DOCKER_IMAGE=ghcr.io/phusion/passenger_binary_build_automation
 
 if $SHOW_TASKS; then
 	exec docker run $TTY_ARGS --rm \
