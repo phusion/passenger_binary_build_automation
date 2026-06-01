@@ -106,7 +106,7 @@ fi
 if [[ "$LICENSE_KEY" != "" ]]; then
 	DOCKER_EXTRA_ARGS+=(-v "$LICENSE_KEY:/etc/passenger-enterprise-license:ro")
 fi
-DOCKER_IMAGE=phusion/passenger_binary_build_automation
+DOCKER_IMAGE=ghcr.io/phusion/passenger_binary_build_automation
 
 PASSENGER_DIR="`absolute_path \"$PASSENGER_DIR\"`"
 PACKAGED_INPUT_DIR="`absolute_path \"$PACKAGED_INPUT_DIR\"`"
