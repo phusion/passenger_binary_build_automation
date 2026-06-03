@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 #  Phusion Passenger - https://www.phusionpassenger.com/
 #  Copyright (c) 2013-2025 Asynchronous B.V.
 #
@@ -130,7 +131,7 @@ describe 'Downloaded Passenger binaries' do
       Thread.current.abort_on_exception = true
       server.start
     end
-    [server, "http://127.0.0.1:#{server.config[:Port]}"]
+    [ server, "http://127.0.0.1:#{server.config[:Port]}" ]
   end
 
 
@@ -139,12 +140,12 @@ describe 'Downloaded Passenger binaries' do
 
     Dir.chdir(@temp_dir) do
       File.open('config.ru', 'w') do |f|
-        f.write(%Q{
+        f.write(%Q(
           app = lambda do |env|
             [200, { 'Content-Type' => 'text/plain' }, ['ok']]
           end
           run app
-        })
+        ))
       end
       Dir.mkdir('public')
       Dir.mkdir('tmp')

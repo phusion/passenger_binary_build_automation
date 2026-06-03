@@ -23,7 +23,7 @@ COMMAND_COLORS = [
   "MediumOrchid1",
   "DeepSkyBlue",
   "chartreuse1",
-  "aquamarine"
+  "aquamarine",
 ].freeze
 
 $NEXT_COMMAND_ID = 1
