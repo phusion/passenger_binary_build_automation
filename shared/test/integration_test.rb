@@ -48,6 +48,7 @@ ENV.delete('PASSENGER_DEBUG')
 
 
 module TestHelper
+
   def sh(*command)
     if !system(*command)
       abort "Command failed: #{command.join(' ')}"
@@ -57,6 +58,7 @@ module TestHelper
   def shesc(path)
     Shellwords.escape(path)
   end
+
 end
 
 
