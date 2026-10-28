@@ -103,18 +103,17 @@ else
 fi
 if [ "${RESTRICT:-gnupg}" = "gnupg" ]; then
 	echo 'starting gnupg & associated…'
-	curl --silent "https://www.gnupg.org/download/index.html" | \
-		ruby -rnokogiri -e 'puts Nokogiri::HTML(STDIN.read).css("#text-1-1 > table > tbody > tr > td:nth-child(-n+2)").map{|e|e.text}.each_slice(2).reject{|elts| elts.first.include?(" ") && elts.first != "GnuPG (stable)" }.map{|elts|elts.join(" ").gsub(" (stable)","")}' | \
-		tee \
-			>(grep -F GnuPG | awk '{print "gnupg_version",$2}' | write_version) \
-			>(grep -F Libassuan | awk '{print "libassuan_version",$2}' | write_version) \
-			>(grep -F Libgcrypt | awk '{print "libgcrypt_version",$2}' | write_version) \
-			>(grep -F Libgpg-error | awk '{print "libgpg_error_version",$2}' | write_version) \
-			>(grep -F Libksba | awk '{print "libksba_version",$2}' | write_version) \
-			>(grep -F nPth | awk '{print "npth_version",$2}' | write_version) \
-			>(grep -F Pinentry | awk '{print "pinentry_version",$2}' | write_version) \
-			>(grep -F ntbTLS | awk '{print "ntbtls_version",$2}' | write_version) \
-			>/dev/null
+	ruby -rnokogiri -ropen-uri -e 'puts Nokogiri::HTML(URI.open("https://www.gnupg.org/download/index.html").read).css("#content > table > tbody > tr").map{it.children.slice(1,3).map(&:text)}.reduce(Hash.new){|h,e| h.update(e.first => e.last)}.transform_keys{|k|k.delete(" ")}.select{|k| %w[ GnuPG(stable) Libassuan Libgcrypt Libgpg-error Libksba nPth Pinentry ntbTLS ].include?(k)}.reduce(""){|a,(k,v)| a << "#{k} #{v}\n" }' | \
+	    tee \
+		>(grep -F 'GnuPG(stable)' | awk '{print "gnupg_version",$2}' | write_version) \
+		>(grep -F Libassuan | awk '{print "libassuan_version",$2}' | write_version) \
+		>(grep -F Libgcrypt | awk '{print "libgcrypt_version",$2}' | write_version) \
+		>(grep -F Libgpg-error | awk '{print "libgpg_error_version",$2}' | write_version) \
+		>(grep -F Libksba | awk '{print "libksba_version",$2}' | write_version) \
+		>(grep -F nPth | awk '{print "npth_version",$2}' | write_version) \
+		>(grep -F Pinentry | awk '{print "pinentry_version",$2}' | write_version) \
+		>(grep -F ntbTLS | awk '{print "ntbtls_version",$2}' | write_version) \
+		>/dev/null
 else
 	echo skipping gnupg…
 fi
