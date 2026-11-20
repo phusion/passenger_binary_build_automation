@@ -67,7 +67,7 @@ else
 fi
 if [ "${RESTRICT:-zstd}" = "zstd" ]; then
 	echo starting zstd…
-	getLatest facebook/zstd > "$ROOTDIR/shared/definitions/zstd_version"
+	getLatest meta/zstd > "$ROOTDIR/shared/definitions/zstd_version"
 else
 	echo skipping zstd…
 fi
